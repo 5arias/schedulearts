@@ -60,15 +60,16 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
   $our_demands = _resource_conflict_get_node_resource_demand($node);
   foreach ($conflicting_nodes as $conflicting_node) {
     $other_demands = _resource_conflict_get_node_resource_demand($conflicting_node);
-
     // select the resources that both this node and the other node demands
     $conflicting_resources = array();
-    foreach ($our_demands as $our_demand => $dummy) {
-      if (isset($other_demands[$our_demand])) {
-        $conflicting_resources[$our_demand] = node_load($our_demand);
+    foreach ($other_demands as $other_demand) {
+      foreach ($our_demands as $our_demand) {
+        if ($our_demand['target_id'] == $other_demand['target_id'] && $our_demand['target_type'] == $other_demand['target_type']) {
+          $conflicting_resources[] = entity_load($our_demand['target_type'], array($our_demand['target_id']));
+        }
       }
     }
-
+  
     // display the error for each conflict
     foreach ($conflicting_resources as $conflicting_resource) {
       $date_field = variable_get('rc_date_field_' . $conflicting_node->type, FALSE);
@@ -89,11 +90,11 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
         '@booker-url' => url('node/' . $conflicting_node->nid),
         '%booker' => $conflicting_node->title,
         '@resource-url' => url('node/' . $conflicting_resource->nid),
-        '%resource' => $conflicting_resource->title,
+        '%resource' => entity_label($conflicting_resource,
         '%start' => $start,
         '%end' => $end,
       )
-      );
+      ); // This is where I stopped. it's throwing errors because the old code for grabbing node name etc doesn't work on entities.
 
       // This is a bit of a hack, but there's no way with FAPI to have
       // multiple form errors on the same field.  So, we just pass in
@@ -120,6 +121,7 @@ function resource_conflict_form_alter(&$form, $form_state, $form_id) {
       '#type' => 'fieldset',
       '#title' => t('Resource Conflict'),
       '#collapsible' => TRUE,
+      '#group' => 'additional_settings',
     );
 
     // The user is adding a new content type
@@ -131,19 +133,18 @@ function resource_conflict_form_alter(&$form, $form_state, $form_id) {
       );
       return;
     }
-
     $date_fields = array();
     if ($type != NULL) {
       $fields = field_info_instances('node', $type);
       foreach ($fields as $fieldname => $field) {
-        if ($field['display']['default']['module'] == 'node_reference') {
-          $nodereference_fields[$fieldname] = $field['label'];
-        }
-        elseif (($field['display']['default']['module'] == 'date')&&($field['required'] == 1)) {
+        if (isset($field['display']['default']['module'])&&($field['display']['default']['module'] == 'date')&&($field['required'] == 1)) {
           $fieldinfo = field_info_field($fieldname);
           if ($fieldinfo['settings']['todate'] == 'required' ) {
             $date_fields[$fieldname] = $field['label'];
           }
+        }
+        else {
+          $nodereference_fields[$fieldname] = $field['label'];
         }
       }
     }
@@ -177,7 +178,6 @@ function resource_conflict_form_alter(&$form, $form_state, $form_id) {
 
     if (!empty($requirements)) {
       _resource_conflict_disable($type, TRUE);
-
       $form['resource_conflict_set']['requirements'] = array(
         '#prefix' => '<p>' . t('The following requirements for Resource Conflict have not been met:') . '</p><ol>',
         '#suffix' => '</ol>',
@@ -289,6 +289,7 @@ function _resource_conflict_get_node_resource_demand($node) {
   $reference_fields = variable_get('rc_reference_fields_' . $type, array());
   $demand = array();
   foreach ($reference_fields as $reference_field) {
+    $fieldinfo = field_info_field($reference_field);
     $references = $node->{$reference_field}['und'];
     foreach ($references as $key => $reference) {
       /**
@@ -298,14 +299,19 @@ function _resource_conflict_get_node_resource_demand($node) {
        * file the error against the fake 'no_resources' element as CCK files
        * it's own "Illegal choice" error before we get called.
        */
-      if (is_numeric($reference['nid'])) {
-        $demand[$reference['nid']] = TRUE;
+      if (is_numeric($reference['target_id'])) {
+        $demand[] = array(
+          'target_id' => $reference['target_id'], 
+          'target_type' => $fieldinfo['settings']['target_type'],
+        );
+        //$demand[$reference['target_id']] = TRUE;
       }
-      else {
+      elseif ($reference != 'Add another item') {
         form_set_error('no_resources', t('No bookable resources have been created. Please create resources to book before attempting to create a resource booking.'));
       }
     }
   }
+  form_set_error('tester', 'everything is fine, but you cannot move on for test purposes');
   return $demand;
 }
 
