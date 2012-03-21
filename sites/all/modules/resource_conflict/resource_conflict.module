@@ -144,7 +144,7 @@ function resource_conflict_form_alter(&$form, $form_state, $form_id) {
             $date_fields[$fieldname] = $field['label'];
           }
         }
-        else {
+        elseif (isset($field['widget']['module']) && ($field['widget']['module'] == 'entityreference')) {
           $nodereference_fields[$fieldname] = $field['label'];
         }
       }
