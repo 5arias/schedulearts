@@ -137,6 +137,7 @@ function resource_conflict_form_alter(&$form, $form_state, $form_id) {
     $date_fields = array();
     if ($type != NULL) {
       $fields = field_info_instances('node', $type);
+      krumo($fields);
       foreach ($fields as $fieldname => $field) {
         if (isset($field['display']['default']['module'])&&($field['display']['default']['module'] == 'date')&&($field['required'] == 1)) {
           $fieldinfo = field_info_field($fieldname);
@@ -144,7 +145,7 @@ function resource_conflict_form_alter(&$form, $form_state, $form_id) {
             $date_fields[$fieldname] = $field['label'];
           }
         }
-        elseif (isset($field['widget']['module']) && ($field['widget']['module'] == 'entityreference') || ($field['display']['default']['module'] == 'taxonomy')) {
+        elseif (isset($field['widget']['module']) && ($field['widget']['module'] == 'entityreference') || ($field['display']['default']['module'] == 'taxonomy' || $field['display']['default']['module'] == 'entityreference')) {
           $nodereference_fields[$fieldname] = $field['label'];
         }
       }
