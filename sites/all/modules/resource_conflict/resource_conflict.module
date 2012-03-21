@@ -65,7 +65,8 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
     foreach ($other_demands as $other_demand) {
       foreach ($our_demands as $our_demand) {
         if ($our_demand['target_id'] == $other_demand['target_id'] && $our_demand['target_type'] == $other_demand['target_type']) {
-          $conflicting_resources[] = entity_load($our_demand['target_type'], array($our_demand['target_id']));
+//          $conflicting_resources[] = entity_load($our_demand['target_type'], array($our_demand['target_id']));
+          $conflicting_resources[] = entity_metadata_wrapper($our_demand['target_type'], $our_demand['target_id']);
         }
       }
     }
@@ -76,33 +77,33 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
       if (strpos($date_field, 'field_', 0) === 0) {
         $type = DATE_ISO;
         $startobj =  new DateObject($conflicting_node->{$date_field}['und'][0]['value']);
-        $start = $startobj->format('U');
+        $start = $startobj->format('Y-m-d H:i');
         $endobj =  new DateObject($conflicting_node->{$date_field}['und'][0]['value2']);
-        $end = $endobj->format('U');
+        $end = $endobj->format('Y-m-d H:i');
       }
       else {
-        $start = format_date($conflicting_node->event_start);
-        $end = format_date($conflicting_node->event_end);
+        $start = format_date($conflicting_node->event_start, 'Y-m-d H:i');
+        $end = format_date($conflicting_node->event_end, 'Y-m-d H:i');
       }
 
       $error = t('There is a resource conflict: <a href="@resource-url">%resource</a> is currently booked for <a href="@booker-url">%booker</a> from %start to %end. Please choose a different time or a different resource.',
         array(
         '@booker-url' => url('node/' . $conflicting_node->nid),
         '%booker' => $conflicting_node->title,
-        '@resource-url' => url('node/' . $conflicting_resource->nid),
-        '%resource' => entity_label($conflicting_resource,
+        '@resource-url' => $conflicting_resource->url->value(array('sanitize' => 'TRUE')),
+        '%resource' => $conflicting_resource->name->value(),
         '%start' => $start,
         '%end' => $end,
       )
-      ); // This is where I stopped. it's throwing errors because the old code for grabbing node name etc doesn't work on entities.
+      );
 
       // This is a bit of a hack, but there's no way with FAPI to have
       // multiple form errors on the same field.  So, we just pass in
       // a bogus (but unique) ID for each error message, to ensure
       // that all conflicts are reported simultaneously.  We use the
-      // nid of the conflicting resource (thing) appended with the nid
+      // title of the conflicting resource (thing) appended with the nid
       // of the conflicting node (reservation event).
-      $conflict_id = $conflicting_resource->nid . '_' . $conflicting_node->nid;
+      $conflict_id = $conflicting_resource->name->value() . '_' . $conflicting_node->nid;
       form_set_error($conflict_id, $error);
     }
   }
@@ -311,7 +312,7 @@ function _resource_conflict_get_node_resource_demand($node) {
       }
     }
   }
-  form_set_error('tester', 'everything is fine, but you cannot move on for test purposes');
+  //form_set_error('tester', 'everything is fine, but you cannot move on for test purposes');
   return $demand;
 }
 
