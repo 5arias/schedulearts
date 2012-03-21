@@ -307,7 +307,7 @@ function _resource_conflict_get_node_resource_demand($node) {
         );
         //$demand[$reference['target_id']] = TRUE;
       }
-      elseif ($reference != 'Add another item') {
+      elseif (($reference != 'Add another item') && ($reference['target_id'] != '')) {
         form_set_error('no_resources', t('No bookable resources have been created. Please create resources to book before attempting to create a resource booking.'));
       }
     }
