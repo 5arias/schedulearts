@@ -65,8 +65,14 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
     foreach ($other_demands as $other_demand) {
       foreach ($our_demands as $our_demand) {
         if ($our_demand['target_id'] == $other_demand['target_id'] && $our_demand['target_type'] == $other_demand['target_type']) {
-//          $conflicting_resources[] = entity_load($our_demand['target_type'], array($our_demand['target_id']));
-          $conflicting_resources[] = entity_metadata_wrapper($our_demand['target_type'], $our_demand['target_id']);
+          $conflicting_entity = reset(entity_load($our_demand['target_type'], array($our_demand['target_id'])));
+          //$conflicting_resources[] = entity_metadata_wrapper($our_demand['target_type'], $our_demand['target_id']);
+          $conflicting_resources[] = array(
+            'id'  =>  entity_id($our_demand['target_type'], $conflicting_entity), 
+            'label' => entity_label($our_demand['target_type'], $conflicting_entity),
+            'type' => $our_demand['target_type'],
+            'uri' => entity_uri($our_demand['target_type'], $conflicting_entity),
+          );
         }
       }
     }
@@ -85,13 +91,12 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
         $start = format_date($conflicting_node->event_start, 'Y-m-d H:i');
         $end = format_date($conflicting_node->event_end, 'Y-m-d H:i');
       }
-
       $error = t('There is a resource conflict: <a href="@resource-url">%resource</a> is currently booked for <a href="@booker-url">%booker</a> from %start to %end. Please choose a different time or a different resource.',
         array(
         '@booker-url' => url('node/' . $conflicting_node->nid),
         '%booker' => $conflicting_node->title,
-        '@resource-url' => $conflicting_resource->url->value(array('sanitize' => 'TRUE')),
-        '%resource' => $conflicting_resource->name->value(),
+        '@resource-url' => url($conflicting_resource['uri']['path'], $conflicting_resource['uri']['options']),
+        '%resource' => $conflicting_resource['label'],
         '%start' => $start,
         '%end' => $end,
       )
@@ -103,7 +108,7 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
       // that all conflicts are reported simultaneously.  We use the
       // title of the conflicting resource (thing) appended with the nid
       // of the conflicting node (reservation event).
-      $conflict_id = $conflicting_resource->name->value() . '_' . $conflicting_node->nid;
+      $conflict_id = $conflicting_resource['type'] . '_' . $conflicting_resource['id'] . '_' . $conflicting_node->nid;
       form_set_error($conflict_id, $error);
     }
   }
