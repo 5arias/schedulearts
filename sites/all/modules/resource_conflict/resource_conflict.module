@@ -66,7 +66,6 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
       foreach ($our_demands as $our_demand) {
         if ($our_demand['target_id'] == $other_demand['target_id'] && $our_demand['target_type'] == $other_demand['target_type']) {
           $conflicting_entity = reset(entity_load($our_demand['target_type'], array($our_demand['target_id'])));
-          //$conflicting_resources[] = entity_metadata_wrapper($our_demand['target_type'], $our_demand['target_id']);
           $conflicting_resources[] = array(
             'id'  =>  entity_id($our_demand['target_type'], $conflicting_entity), 
             'label' => entity_label($our_demand['target_type'], $conflicting_entity),
@@ -142,44 +141,24 @@ function resource_conflict_form_alter(&$form, $form_state, $form_id) {
     $date_fields = array();
     if ($type != NULL) {
       $fields = field_info_instances('node', $type);
-      krumo($fields);
       foreach ($fields as $fieldname => $field) {
-        if (isset($field['display']['default']['module'])&&($field['display']['default']['module'] == 'date')&&($field['required'] == 1)) {
           $fieldinfo = field_info_field($fieldname);
+        if (isset($field['display']['default']['module'])&&($field['display']['default']['module'] == 'date')&&($field['required'] == 1)) {
           if ($fieldinfo['settings']['todate'] == 'required' ) {
             $date_fields[$fieldname] = $field['label'];
           }
         }
-        elseif (isset($field['widget']['module']) && ($field['widget']['module'] == 'entityreference') || ($field['display']['default']['module'] == 'taxonomy' || $field['display']['default']['module'] == 'entityreference')) {
+        elseif (($fieldinfo['type'] == 'entityreference') || ($fieldinfo['type'] == 'taxonomy_term_reference')) {
           $nodereference_fields[$fieldname] = $field['label'];
         }
       }
     }
 
     if (empty($nodereference_fields)) {
-      $requirements['nodereference'] = t('At least one Node Reference field must be added to this content type.');
+      $requirements['entityreference'] = t('At least one Entity Reference field must be added to this content type.');
     }
 
-    if (module_exists('event')) {
-      $event_enabled = (event_enabled_state($type) == "all" || event_enabled_state($type) == "solo");
-    }
-    else {
-      $event_enabled = FALSE;
-    }
-
-    // If we are event enabled, allow the selection of the Event field.
-    if ($event_enabled) {
-      $date_fields += array('event' => t('Use Event Field from the Event Module'));
-    }
-
-    if (empty($date_fields) && !$event_enabled) {
-      if (module_exists('event')) {
-        $requirements['event'] = t('This content type is not event enabled. Please event-enable this content type if you wish to use Resource Conflict with the Event module.');
-      }
-      else {
-        $requirements['event'] = t('This content type is not event enabled. Please install the Event module if you wish to use Resource Conflict with the Event module.');
-      }
-
+    if (empty($date_fields)) {
       $requirements['date_api'] = t('This content type does not contain any suitable Date fields. Please add at least one Date field with required start and end dates if you wish to use Resource Conflict with the Date module.');
     }
 
@@ -319,7 +298,6 @@ function _resource_conflict_get_node_resource_demand($node) {
           $demand[] = array(
             'target_id' => $rid, 
             'target_type' => $target_type,
-            //$demand[$reference['target_id']] = TRUE;
           );
         }
         elseif (($reference != 'Add another item') && ($rid != '')) {
