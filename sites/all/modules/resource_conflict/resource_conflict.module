@@ -49,6 +49,21 @@ function resource_conflict_node_validate($node, $form) {
   _resource_conflict_display_conflict_errors($node, $conflicting_nodes);
 }
 
+/* 
+ * Take a conflicting object and turn it into a standardized array
+ */
+function _resource_conflict_create_conflict_array($type, $id) {
+  $conflicting_entity = reset(entity_load($type, array($id)));
+  $conflicting_resources[] = array(
+    'id'  =>  entity_id($type, $conflicting_entity), 
+    'label' => entity_label($type, $conflicting_entity),
+    'type' => $type,
+    'uri' => entity_uri($type, $conflicting_entity),
+  );
+ return $conflicting_resources; 
+}
+
+
 /**
  * Compare our demand to the demand of overlapping nodes
  * and display errors for the intersections
@@ -65,13 +80,22 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
     foreach ($other_demands as $other_demand) {
       foreach ($our_demands as $our_demand) {
         if ($our_demand['target_id'] == $other_demand['target_id'] && $our_demand['target_type'] == $other_demand['target_type']) {
-          $conflicting_entity = reset(entity_load($our_demand['target_type'], array($our_demand['target_id'])));
-          $conflicting_resources[] = array(
-            'id'  =>  entity_id($our_demand['target_type'], $conflicting_entity), 
-            'label' => entity_label($our_demand['target_type'], $conflicting_entity),
-            'type' => $our_demand['target_type'],
-            'uri' => entity_uri($our_demand['target_type'], $conflicting_entity),
-          );
+          $conflicting_resources[] = _resource_conflict_create_conflict_array($our_demand['target_type'], $our_demand['target_id']);
+        }
+        if ($our_demand['target_type'] == 'taxonomy_term' && $other_demand['target_type'] == 'taxonomy_term') {
+          // Check for conflicts with term parents.
+          $our_demand_parents = taxonomy_get_parents_all($our_demand['target_id']);
+          $other_demand_parents = taxonomy_get_parents_all($other_demand['target_id']);
+          foreach ($our_demand_parents as $our_demand_parent) {
+            if ($our_demand_parent->tid == $other_demand['target_id']) {
+              $conflicting_resources[] = _resource_conflict_create_conflict_array('taxonomy_term', $our_demand_parent->tid); 
+            }
+          }
+          foreach ($other_demand_parents as $other_demand_parent) {
+            if ($other_demand_parent->tid == $our_demand['target_id']) {
+              $conflicting_resources[] = _resource_conflict_create_conflict_array('taxonomy_term', $our_demand['target_id']); 
+            }
+          }
         }
       }
     }
@@ -94,8 +118,8 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
         array(
         '@booker-url' => url('node/' . $conflicting_node->nid),
         '%booker' => $conflicting_node->title,
-        '@resource-url' => url($conflicting_resource['uri']['path'], $conflicting_resource['uri']['options']),
-        '%resource' => $conflicting_resource['label'],
+        '@resource-url' => url($conflicting_resource['0']['uri']['path'], $conflicting_resource['0']['uri']['options']),
+        '%resource' => $conflicting_resource['0']['label'],
         '%start' => $start,
         '%end' => $end,
       )
@@ -107,10 +131,12 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
       // that all conflicts are reported simultaneously.  We use the
       // title of the conflicting resource (thing) appended with the nid
       // of the conflicting node (reservation event).
-      $conflict_id = $conflicting_resource['type'] . '_' . $conflicting_resource['id'] . '_' . $conflicting_node->nid;
+      $conflict_id = $conflicting_resource['0']['type'] . '_' . $conflicting_resource['0']['id'] . '_' . $conflicting_node->nid;
       form_set_error($conflict_id, $error);
     }
   }
+      // debug erro
+      //form_set_error('debugerror', 'Debug error. Blocking form submission.' );
 }
 
 /**
@@ -306,7 +332,7 @@ function _resource_conflict_get_node_resource_demand($node) {
       }
     }
   }
-  //form_set_error('tester', 'everything is fine, but you cannot move on for test purposes');
+  form_set_error('Debug', 'everything is fine, but you cannot move on for test purposes');
   return $demand;
 }
 

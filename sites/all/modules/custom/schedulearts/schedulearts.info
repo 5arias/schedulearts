@@ -1,0 +1,6 @@
+name = Schedule Arts Custom Module
+description = Custom tweaks and functionality for Schedule Arts
+project = "schedulearts"
+version = "7.x-2.x-dev"
+core = "7.x"
+project = "schedulearts"

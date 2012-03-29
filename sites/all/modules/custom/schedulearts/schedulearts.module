@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * Implements hook_node_validate().
+ */
+function schedulearts_node_validate($node, $form) {
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function schedulearts_form_alter(&$form, $form_state, $form_id) {
+/*  krumo($form);
+  if ($form_id == 'views_exposed_form') {
+    if (isset($form['field_event_groups_tax_tid'])) {
+      $form['field_event_groups_tax_tid'] = array(
+        '#type' => 'hierarchical_select',
+        '#size' => '1',
+        '#config' => array(
+          'module' => 'hs_taxonomy',
+          'params' => array(
+            'vid' => '4',
+          ),
+          'dropbox' => array(
+            'status' => '1',
+            'title' => 'All selections',
+            'save_lineage' => '0',
+            
+          ),
+        ),
+      );
+    }
+  }
+ */
+}
+/**
+ * Validate the node_type_form
+ */
+function schedulearts_form_validate($form, &$form_state) {
+  if ($form_state['values']['form_id'] == 'node_type_form') {
+  }
+}
+
+/**
+ * Submit the node_type_form
+ */
+function schedulearts_form_submit($form, &$form_state) {
+
+}
