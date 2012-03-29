@@ -332,7 +332,7 @@ function _resource_conflict_get_node_resource_demand($node) {
       }
     }
   }
-  form_set_error('Debug', 'everything is fine, but you cannot move on for test purposes');
+  //form_set_error('Debug', 'everything is fine, but you cannot move on for test purposes');
   return $demand;
 }
 
