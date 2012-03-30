@@ -97,10 +97,42 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
             }
           }
         }
+        if ($our_demand['target_type'] == 'taxonomy_term' && $other_demand['target_type'] == 'user') {
+          $entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $our_demand['target_id']));
+          foreach ($entities as $entity) {
+            if ($entity->entity_id == $other_demand['target_id']) {
+              $conflicting_user = reset(entity_load('user', array($other_demand['target_id'])));
+              $conflicting_term = reset(entity_load('taxonomy_term', array($our_demand['target_id'])));
+              $conflicting_resources_soft[] = array(
+                'id'  =>  entity_id('user', $conflicting_user), 
+                'label' => entity_label('user', $conflicting_user),
+                'type' => 'user',
+                'uri' => entity_uri('user', $conflicting_user),
+                'term' => entity_label('taxonomy_term', $conflicting_term)
+              );
+            }
+          }
+        }
+        if ($other_demand['target_type'] == 'taxonomy_term' && $our_demand['target_type'] == 'user') {
+          $entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $other_demand['target_id']));
+          foreach ($entities as $entity) {
+            if ($entity->entity_id == $our_demand['target_id']) {
+              $conflicting_user = reset(entity_load('user', array($our_demand['target_id'])));
+              $conflicting_term = reset(entity_load('taxonomy_term', array($other_demand['target_id'])));
+              $conflicting_resources_soft[] = array(
+                'id'  =>  entity_id('user', $conflicting_user), 
+                'label' => entity_label('user', $conflicting_user),
+                'type' => 'user',
+                'uri' => entity_uri('user', $conflicting_user),
+                'term' => entity_label('taxonomy_term', $conflicting_term)
+              );
+            }
+          }
+        }
       }
     }
-  
-    // display the error for each conflict
+
+    // display the error for each conflict 
     foreach ($conflicting_resources as $conflicting_resource) {
       $date_field = variable_get('rc_date_field_' . $conflicting_node->type, FALSE);
       if (strpos($date_field, 'field_', 0) === 0) {
@@ -134,9 +166,44 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
       $conflict_id = $conflicting_resource['0']['type'] . '_' . $conflicting_resource['0']['id'] . '_' . $conflicting_node->nid;
       form_set_error($conflict_id, $error);
     }
+
+    // display the error for each soft conflict
+    foreach ($conflicting_resources_soft as $conflicting_resource) {
+      $date_field = variable_get('rc_date_field_' . $conflicting_node->type, FALSE);
+      if (strpos($date_field, 'field_', 0) === 0) {
+        $type = DATE_ISO;
+        $startobj =  new DateObject($conflicting_node->{$date_field}['und'][0]['value']);
+        $start = $startobj->format('Y-m-d H:i');
+        $endobj =  new DateObject($conflicting_node->{$date_field}['und'][0]['value2']);
+        $end = $endobj->format('Y-m-d H:i');
+      }
+      else {
+        $start = format_date($conflicting_node->event_start, 'Y-m-d H:i');
+        $end = format_date($conflicting_node->event_end, 'Y-m-d H:i');
+      }
+      $error = t('<a href="@resource-url">%resource</a> is a part of group %group, and is called for <a href="@booker-url">%booker</a> from %start to %end. They have been excused from the group rehearsal.',
+        array(
+        '@booker-url' => url('node/' . $conflicting_node->nid),
+        '%booker' => $conflicting_node->title,
+        '%group' => $conflicting_resource['term'],
+        '@resource-url' => url($conflicting_resource['uri']['path'], $conflicting_resource['uri']['options']),
+        '%resource' => $conflicting_resource['label'],
+        '%start' => $start,
+        '%end' => $end,
+      )
+      );
+
+      // This is a bit of a hack, but there's no way with FAPI to have
+      // multiple form errors on the same field.  So, we just pass in
+      // a bogus (but unique) ID for each error message, to ensure
+      // that all conflicts are reported simultaneously.  We use the
+      // title of the conflicting resource (thing) appended with the nid
+      // of the conflicting node (reservation event).
+      $conflict_id = $conflicting_resource['type'] . '_' . $conflicting_resource['id'] . '_' . $conflicting_node->nid;
+      drupal_set_message($error, 'warning');
+    }
+
   }
-      // debug erro
-      //form_set_error('debugerror', 'Debug error. Blocking form submission.' );
 }
 
 /**
