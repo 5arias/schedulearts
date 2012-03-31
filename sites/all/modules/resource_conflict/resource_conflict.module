@@ -262,13 +262,13 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
 
       }
 
-      // If one doesn't exist yet, create a conflict node to record the conflict
+      // Delete any existing conflicts, and create a conflict node to record the conflict
       $entities = db_query('SELECT node.nid AS nid 
         FROM node
         LEFT JOIN {field_data_field_conflict_grp_call} field_data_field_conflict_grp_call ON node.nid = field_data_field_conflict_grp_call.entity_id AND (field_data_field_conflict_grp_call.entity_type = \'node\' AND field_data_field_conflict_grp_call.deleted = 0)
         LEFT JOIN {field_data_field_conflict_ind_call} field_data_field_conflict_ind_call ON node.nid = field_data_field_conflict_ind_call.entity_id AND (field_data_field_conflict_ind_call.entity_type = \'node\' AND field_data_field_conflict_ind_call.deleted = 0)
         LEFT JOIN {field_data_field_conflict_usr} field_data_field_conflict_usr ON node.nid = field_data_field_conflict_usr.entity_id AND (field_data_field_conflict_usr.entity_type = \'node\' AND field_data_field_conflict_usr.deleted = 0)
-        WHERE (( (node.status = 1) AND (node.type  = \'conflict\') AND (field_data_field_conflict_grp_call.field_conflict_grp_call_target_id = :grp) AND (field_data_field_conflict_ind_call.field_conflict_ind_call_target_id = :ind) AND (field_data_field_conflict_usr.field_conflict_usr_target_id = :usr) ))', 
+        WHERE (( (node.status = 1 AND node.type  = \'conflict\') AND ((field_data_field_conflict_grp_call.field_conflict_grp_call_target_id = :grp AND field_data_field_conflict_ind_call.field_conflict_ind_call_target_id = :ind) OR (field_data_field_conflict_grp_call.field_conflict_grp_call_target_id = :ind AND field_data_field_conflict_ind_call.field_conflict_ind_call_target_id = :grp)) AND (field_data_field_conflict_usr.field_conflict_usr_target_id = :usr) ))', 
         array(
           ':grp' => $conflicting_resource['grpcall'],
           ':ind' => $conflicting_resource['indcall'],
@@ -277,21 +277,43 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
       );
 
       foreach ($entities as $entity) {
-        $exists = TRUE;
+        node_delete($entity->nid);
       }
-      if (!isset($exists)) {
-        $cnode = new stdClass();
-        $cnode->type = 'conflict';
-        $cnode->title = $conflicting_resource['label'] . ' excused from ' . $conflicting_resource['term'] . ' call for ' . $conflicting_node->title; 
-        $cnode->language = LANGUAGE_NONE;
-        $cnode->field_conflict_grp_call[$cnode->language][0]['target_id'] = $conflicting_resource['grpcall'];
-        $cnode->field_conflict_usr[$cnode->language][0]['target_id'] = $conflicting_resource['id'];
-        $cnode->field_conflict_ind_call[$cnode->language][0]['target_id'] = $conflicting_resource['indcall'];
-        node_save($cnode);
-        }
+      $cnode = new stdClass();
+      $cnode->type = 'conflict';
+      $cnode->title = $conflicting_resource['label'] . ' excused from ' . $conflicting_resource['term'] . ' call for ' . $conflicting_node->title; 
+      $cnode->language = LANGUAGE_NONE;
+      $cnode->field_conflict_grp_call[$cnode->language][0]['target_id'] = $conflicting_resource['grpcall'];
+      $cnode->field_conflict_usr[$cnode->language][0]['target_id'] = $conflicting_resource['id'];
+      $cnode->field_conflict_ind_call[$cnode->language][0]['target_id'] = $conflicting_resource['indcall'];
+      node_save($cnode);
       } 
     }
   }
+}
+
+/** 
+ * Delete any conflicts when this node is deleted
+ * Implements hook_node_delete().
+ */
+
+function resource_conflict_node_delete($node) {
+  if ($node->type == 'call') {
+    $entities = db_query('SELECT node.nid AS nid 
+      FROM node
+      LEFT JOIN {field_data_field_conflict_grp_call} field_data_field_conflict_grp_call ON node.nid = field_data_field_conflict_grp_call.entity_id AND (field_data_field_conflict_grp_call.entity_type = \'node\' AND field_data_field_conflict_grp_call.deleted = 0)
+      LEFT JOIN {field_data_field_conflict_ind_call} field_data_field_conflict_ind_call ON node.nid = field_data_field_conflict_ind_call.entity_id AND (field_data_field_conflict_ind_call.entity_type = \'node\' AND field_data_field_conflict_ind_call.deleted = 0)
+      LEFT JOIN {field_data_field_conflict_usr} field_data_field_conflict_usr ON node.nid = field_data_field_conflict_usr.entity_id AND (field_data_field_conflict_usr.entity_type = \'node\' AND field_data_field_conflict_usr.deleted = 0)
+      WHERE (( (node.status = 1 AND node.type  = \'conflict\') AND (field_data_field_conflict_grp_call.field_conflict_grp_call_target_id = :me OR field_data_field_conflict_ind_call.field_conflict_ind_call_target_id = :me) ))',
+        array(
+          ':me' => $node->nid
+        )
+      );
+
+    foreach ($entities as $entity) {
+      node_delete($entity->nid);
+    }
+  } 
 }
 
 /**
