@@ -24,12 +24,5 @@ function schedulearts_views_query_alter(&$view, &$query) {
         }
       }
     }
-    
-    //$query->where['2']['conditions']['0']['value'] = $ugroups_array;
-    //$view->query->where['2']['conditions']['1'] = $view->query->where['0']['conditions']['0'];
-    //unset($view->query->where['0']);
-    //unset($view->query->where['2']['conditions']['1']);
-//    $view->query->where['2']['conditions']['1']['value'] = array('1' =>'1');
-
   }
 }

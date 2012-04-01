@@ -2,6 +2,8 @@
 
 /**
  * Simple filter to handle greater than/less than filters
+ *
+ * @ingroup views_filter_handlers
  */
 class views_handler_filter_numeric extends views_handler_filter {
   var $always_multiple = TRUE;
@@ -17,14 +19,6 @@ class views_handler_filter_numeric extends views_handler_filter {
     );
 
     return $options;
-  }
-
-  function value_definition() {
-    return array(
-      'min' => TRUE,
-      'max' => TRUE,
-      'value' => TRUE,
-    );
   }
 
   function operators() {

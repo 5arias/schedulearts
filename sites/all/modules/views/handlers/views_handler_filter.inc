@@ -25,6 +25,35 @@
  */
 class views_handler_filter extends views_handler {
   /**
+   * Contains the actual value of the field,either configured in the views ui
+   * or entered in the exposed filters.
+   */
+  var $value = NULL;
+
+  /**
+   * Contains the operator which is used on the query.
+   */
+  var $operator = '=';
+
+  /**
+   * @var bool
+   * Disable the possibility to force a single value.
+   */
+  var $always_multiple = FALSE;
+
+  /**
+   * @var bool
+   * Disable the possibility to use operators.
+   */
+  var $no_operator = FALSE;
+
+  /**
+   * @var bool
+   * Disable the possibility to allow a exposed input to be optional.
+   */
+  var $always_required = FALSE;
+
+  /**
    * Provide some extra help to get the operator/value easier to use.
    *
    * This likely has to be overridden by filters which are more complex
@@ -60,10 +89,8 @@ class views_handler_filter extends views_handler {
 
     $options['operator'] = array('default' => '=');
     $options['value'] = array('default' => '');
-    $options['argument_value'] = array('default' => array());
-    $options['group'] = array('default' => '0');
+    $options['group'] = array('default' => '1');
     $options['exposed'] = array('default' => FALSE);
-    $options['pull_value'] = array('default' => FALSE);
     $options['expose'] = array(
       'contains' => array(
         'operator_id' => array('default' => FALSE),
@@ -79,17 +106,6 @@ class views_handler_filter extends views_handler {
 
     return $options;
   }
-
-  /**
-   * Define how value looks like.
-   *
-   * This function is not required but it helps views to adapt it's behavior.
-   *
-   * @return array
-   *   The keys of the array of the fields in $value and the value is TRUE if
-   *   it's really an value or just some kind of configuration.
-   */
-  function value_definition() { return array(); }
 
   /**
    * Display the filter on the administrative summary
@@ -117,16 +133,15 @@ class views_handler_filter extends views_handler {
     $form['clear_markup_start'] = array(
       '#markup' => '<div class="clearfix">',
     );
-
+    // Add the subform from operator_form().
     $this->show_operator_form($form, $form_state);
+    // Add the subform from value_form().
     $this->show_value_form($form, $form_state);
-    $this->show_pull_value_form($form, $form_state);
-    $this->show_pull_value_button($form, $form_state);
-
     $form['clear_markup_end'] = array(
       '#markup' => '</div>',
     );
     if ($this->can_expose()) {
+      // Add the subform from expose_form().
       $this->show_expose_form($form, $form_state);
     }
   }
@@ -164,10 +179,12 @@ class views_handler_filter extends views_handler {
   }
 
   /**
-   * Provide a form for setting the operator.
+   * Options form subform for setting the operator.
    *
    * This may be overridden by child classes, and it must
    * define $form['operator'];
+   *
+   * @see options_form().
    */
   function operator_form(&$form, &$form_state) {
     $options = $this->operator_options();
@@ -210,140 +227,12 @@ class views_handler_filter extends views_handler {
   }
 
   /**
-    * Shortcut to display the pull value select elements.
-    */
-  function show_pull_value_form(&$form, &$form_state) {
-    if (empty($this->options['pull_value'])) {
-      return;
-    }
-    $options = array('' => t('None'));
-    foreach ($this->view->display_handler->get_handlers('argument') as $id => $argument) {
-      $options[$id] = $argument->ui_name(TRUE);
-    }
-    // Add argument selection forms.
-    // If a certain filter handler has multiple form elements both
-    // add the value as possible form element and update the dependency.
-    $option_definition = $this->option_definition();
-    $value_definition = $this->value_definition();
-    if (isset($option_definition['value']['contains'])) {
-      foreach ($option_definition['value']['contains'] as $value => $definition) {
-        // Some fields uses 'value' in the form or as a child element. So take care about it.
-        if ($value == 'value') {
-          if (isset($form['value']['value'])) {
-            $values[$value] = array(
-              'title' => isset($form['value']['value']['#title']) ? $form['value']['value']['#title'] : '',
-              'weight' => isset($form['value']['value']['#weight']) ? $form['value']['value']['#weight'] : 0,
-              'dependency' => isset($form['value']['value']['#dependency']) ? $form['value']['value']['#dependency'] : array(),
-            );
-            $form['value']['value']['#dependency']['edit-options-argument-value-' . $value] = array('');
-            $form['value']['value']['#dependency_count'] = count($form['value']['value']['#dependency']);
-          }
-          else {
-            $values[$value] = array(
-              'title' => isset($form['value']['#title']) ? $form['value']['#title'] : '',
-              'weight' => isset($form['value']['#weight']) ? $form['value']['#weight'] : 0,
-              'value_single' => TRUE,
-              'dependency' => isset($form['value']['#dependency']) ? $form['value']['#dependency'] : array(),
-            );
-            $form['value']['#dependency']['edit-options-argument-value-' . $value] = array('');
-            $form['value']['#dependency_count'] = count($form['value']['#dependency']);
-          }
-        }
-        else {
-          // If the handler exposed the value_definition uses it, else show the form all the time.
-          if (!isset($value_definition[$value]) || !empty($value_definition[$value])) {
-            $values[$value] = array(
-              'title' => isset($form['value'][$value]['#title']) ? $form['value'][$value]['#title'] : '',
-              'weight' => isset($form['value'][$value]['#weight']) ? $form['value'][$value]['#weight'] : 0,
-              'dependency' => isset($form['value'][$value]['#dependency']) ? $form['value'][$value]['#dependency'] : array(),
-            );
-            $form['value'][$value]['#dependency']['edit-options-argument-value-' . $value] = array('');
-            $form['value'][$value]['#dependency_count'] = count($form['value'][$value]['#dependency']);
-          }
-        }
-      }
-    }
-    else {
-      $values = array('value' => array(
-        'title' => isset($form['value']['#title']) ? $form['value']['#title'] : '',
-        'weight' => isset($form['value']['#weight']) ? $form['value']['#weight'] : 0,
-        'value_single' => TRUE,
-        'dependency' => isset($form['value']['#dependency']) ? $form['value']['#dependency'] : array(),
-      ));
-      $form['value']['#dependency']['edit-options-argument-value-value'] = array('');
-    }
-
-    foreach ($values as $value => $setting) {
-      $setting['value_name'] = $value;
-      $form['argument_value'][$value] = array(
-        '#type' => 'select',
-        '#title' => t('Select value from argument for @field.', array('@field' => $setting['title'])),
-        '#options' => $options,
-        '#default_value' => isset($this->options['argument_value'][$value]) ? $this->options['argument_value'][$value] : '',
-        '#weight' => ++$setting['weight'],
-        '#value_setting' => $setting,
-        '#dependency' => $setting['dependency'],
-      );
-    }
-
-    // Add a pre_render function to draw the value + the argument value form in the same container.
-    $form['#pre_render'][] = 'views_handler_filter_form_argument_value_pre_render';
-  }
-
-  /**
-   * Shortcut to display the pull value button.
-   */
-  function show_pull_value_button(&$form, &$form_state) {
-    $form['argument_value_button'] = array(
-      '#prefix' => '<div class="views-argument-value views-checkboxify-wrapper clearfix">',
-      '#suffix' => '</div>',
-      // Should always come after the description and the relationship.
-      '#weight' => -200,
-    );
-
-    // Add a checkbox for JS users, which will have behavior attached to it
-    // so it can replace the button.
-    $form['argument_value_button']['checkbox'] = array(
-      '#theme_wrappers' => array('container'),
-      '#attributes' => array('class' => array('js-only')),
-    );
-    $form['argument_value_button']['checkbox']['checkbox'] = array(
-      '#title' => t('Pick values from arguments'),
-      '#type' => 'checkbox',
-    );
-
-    // Then add the button itself.
-    if (empty($this->options['pull_value'])) {
-      $form['argument_value_button']['markup'] = array(
-        '#markup' => '<div class="description exposed-description">' . t('The filter values can\'t be pulled from the argument. Pull values to allow it.') . '</div>',
-      );
-      $form['argument_value_button']['button'] = array(
-        '#limit_validation_errors' => array(),
-        '#type' => 'submit',
-        '#value' => t('Pull values'),
-        '#submit' => array('views_ui_config_item_form_pull_value'),
-      );
-      $form['argument_value_button']['checkbox']['checkbox']['#default_value'] = 0;
-    }
-    else {
-      $form['argument_value_button']['markup'] = array(
-        '#markup' => '<div class="description exposed-description">' . t('This filter values can be pulled.') . '</div>',
-      );
-      $form['argument_value_button']['button'] = array(
-        '#limit_validation_errors' => array(),
-        '#type' => 'submit',
-        '#value' => t("Don't pull values"),
-        '#submit' => array('views_ui_config_item_form_pull_value'),
-      );
-      $form['argument_value_button']['checkbox']['checkbox']['#default_value'] = 1;
-    }
-  }
-
-  /**
-   * Provide a form for setting options.
+   * Options form subform for setting options.
    *
    * This should be overridden by all child classes and it must
    * define $form['value']
+   *
+   * @see options_form().
    */
   function value_form(&$form, &$form_state) { $form['value'] = array(); }
 
@@ -363,7 +252,7 @@ class views_handler_filter extends views_handler {
    */
   function show_expose_button(&$form, &$form_state) {
     $form['expose_button'] = array(
-      '#prefix' => '<div class="views-expose views-checkboxify-wrapper clearfix">',
+      '#prefix' => '<div class="views-expose clearfix">',
       '#suffix' => '</div>',
       // Should always come after the description and the relationship.
       '#weight' => -200,
@@ -383,7 +272,7 @@ class views_handler_filter extends views_handler {
     // Then add the button itself.
     if (empty($this->options['exposed'])) {
       $form['expose_button']['markup'] = array(
-        '#markup' => '<div class="description exposed-description views-checkboxify-description">' . t('This filter is not exposed. Expose it to allow the users to change it.') . '</div>',
+        '#markup' => '<div class="description exposed-description">' . t('This filter is not exposed. Expose it to allow the users to change it.') . '</div>',
       );
       $form['expose_button']['button'] = array(
         '#limit_validation_errors' => array(),
@@ -407,6 +296,11 @@ class views_handler_filter extends views_handler {
     }
   }
 
+  /**
+   * Options form subform for exposed filter options.
+   *
+   * @see options_form().
+   */
   function expose_form(&$form, &$form_state) {
     $form['#theme'] = 'views_ui_expose_filter_form';
     // #flatten will move everything from $form['expose'][$key] to $form[$key]
@@ -617,7 +511,7 @@ class views_handler_filter extends views_handler {
    * Tell the renderer about our exposed form. This only needs to be
    * overridden for particularly complex forms. And maybe not even then.
    *
-   * @return
+   * @return array|null
    *   An array with the following keys:
    *   - operator: The $form key of the operator. Set to NULL if no operator.
    *   - value: The $form key of the value. Set to NULL if no value.
@@ -729,27 +623,6 @@ class views_handler_filter extends views_handler {
   }
 
   /**
-   * If pulling arguments from the filter is set, set $this->value here.
-   */
-  function pre_query() {
-    // If there are multiple values, store the value in $this->value as an array.
-    // else store a singular item in $this->value.
-    $count = count($this->options['argument_value']);
-    foreach ($this->options['argument_value'] as $value => $argument) {
-      if (!empty($argument)) {
-        if ($count == 1) {
-          $argument = $this->view->argument[$argument];
-          $this->value = $argument->get_value();
-        }
-        else {
-          $argument = $this->view->argument[$argument];
-          $this->value[$value] = $argument->get_value();
-        }
-      }
-    }
-  }
-
-  /**
    * Add this filter to the query.
    *
    * Due to the nature of fapi, the value and the operator have an unintended
@@ -768,6 +641,8 @@ class views_handler_filter extends views_handler {
    * with OR groups. Some filters must also use HAVING which also makes
    * them not groupable. These filters will end up in a special group
    * if OR grouping is in use.
+   *
+   * @return bool
    */
    function can_group() {
      return TRUE;
@@ -777,6 +652,8 @@ class views_handler_filter extends views_handler {
 
 /**
  * A special handler to take the place of missing or broken handlers.
+ *
+ * @ingroup views_filter_handlers
  */
 class views_handler_filter_broken extends views_handler_filter {
   function ui_name($short = FALSE) {
