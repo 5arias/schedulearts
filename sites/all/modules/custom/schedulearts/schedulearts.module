@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * Implements hook_views_api().
+ */
+function schedulearts_views_api() {
+  return array(
+    'api' => 3,
+  );
+}
+
+/**
  * Implements hook_node_validate().
  */
 function schedulearts_node_validate($node, $form) {
