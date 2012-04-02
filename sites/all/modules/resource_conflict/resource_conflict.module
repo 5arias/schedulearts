@@ -196,9 +196,15 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
   foreach ($other_demands as $other_demand) {
     foreach ($our_demands as $our_demand) {
       if ($our_demand['target_type'] == 'taxonomy_term' && $other_demand['target_type'] == 'user') {
-        $entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $our_demand['target_id']));
+        //$entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $our_demand['target_id']));
+        $entities = db_query('SELECT DISTINCT users.uid AS uid 
+          FROM {users} users 
+          INNER JOIN {field_data_field_user_groups} field_data_field_user_groups 
+          ON users.uid = field_data_field_user_groups.entity_id 
+          AND (field_data_field_user_groups.entity_type = \'user\') 
+          WHERE (( ( users.status <> \'0\') AND (field_data_field_user_groups.field_user_groups_tid = :tid ) ))', array(':tid' => $our_demand['target_id']));
         foreach ($entities as $entity) {
-          if ($entity->entity_id == $other_demand['target_id']) {
+          if ($entity->uid == $other_demand['target_id']) {
             $conflicting_user = reset(entity_load('user', array($other_demand['target_id'])));
             $conflicting_term = reset(entity_load('taxonomy_term', array($our_demand['target_id'])));
             $conflicting_resources_soft[] = array(
@@ -214,9 +220,15 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
         }
       }
       if ($other_demand['target_type'] == 'taxonomy_term' && $our_demand['target_type'] == 'user') {
-        $entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $other_demand['target_id']));
+        //$entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $other_demand['target_id']));
+        $entities = db_query('SELECT DISTINCT users.uid AS uid 
+          FROM {users} users 
+          INNER JOIN {field_data_field_user_groups} field_data_field_user_groups 
+          ON users.uid = field_data_field_user_groups.entity_id 
+          AND (field_data_field_user_groups.entity_type = \'user\')  
+          WHERE (( ( users.status <> \'0\') AND (field_data_field_user_groups.field_user_groups_tid = :tid ) ))', array(':tid' => $other_demand['target_id']));
         foreach ($entities as $entity) {
-          if ($entity->entity_id == $our_demand['target_id']) {
+          if ($entity->uid == $our_demand['target_id']) {
             $conflicting_user = reset(entity_load('user', array($our_demand['target_id'])));
             $conflicting_term = reset(entity_load('taxonomy_term', array($other_demand['target_id'])));
             $conflicting_resources_soft[] = array(
