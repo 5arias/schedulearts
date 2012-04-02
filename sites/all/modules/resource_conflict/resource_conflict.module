@@ -245,7 +245,7 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
       }
 
       // display the error message for each soft conflict
-      if ($conflicting_resources_soft) {
+      if (isset($conflicting_resources_soft)) {
         foreach ($conflicting_resources_soft as $conflicting_resource) {
           $date_field = variable_get('rc_date_field_' . $conflicting_node->type, FALSE);
           if (strpos($date_field, 'field_', 0) === 0) {
