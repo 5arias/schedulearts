@@ -6,9 +6,9 @@
  */
 
 /**
- * Implements hook_fullcalendar_option_info().
+ * Implements hook_fullcalendar_options_info().
  */
-function fullcalendar_options_fullcalendar_option_info() {
+function fullcalendar_options_fullcalendar_options_info() {
   return array(
     'fullcalendar_options' => array(
       'name' => t('Extra'),
@@ -18,14 +18,14 @@ function fullcalendar_options_fullcalendar_option_info() {
 }
 
 /**
- * Implements hook_fullcalendar_option_definition().
+ * Implements hook_fullcalendar_options_definition().
  */
-function fullcalendar_options_fullcalendar_option_definition() {
+function fullcalendar_options_fullcalendar_options_definition() {
   $options = array();
 
   foreach (_fullcalendar_options_list() as $key => $info) {
     $options[$key]['default'] = $info['#default_value'];
-    // If this is a boolean value, set the 'bool' flag for export.
+    // If this is a Boolean value, set the 'bool' flag for export.
     if (isset($info['#data_type']) && $info['#data_type'] == 'bool') {
       $options[$key]['bool'] = TRUE;
     }

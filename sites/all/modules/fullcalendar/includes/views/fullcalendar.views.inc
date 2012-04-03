@@ -12,18 +12,6 @@ function fullcalendar_views_plugins() {
   $path = drupal_get_path('module', 'fullcalendar');
   return array(
     'module' => 'fullcalendar',
-    'display' => array(
-      'fullcalendar' => array(
-        'title' => t('FullCalendar'),
-        'handler' => 'fullcalendar_plugin_display_page',
-        'help' => t('For use with FullCalendar style'),
-        'path' => $path . '/includes/views/plugins',
-        'parent' => 'page',
-        'theme' => 'views_view',
-        'uses hook menu' => TRUE,
-        'use pager' => TRUE,
-      ),
-    ),
     'style' => array(
       'fullcalendar' => array(
         'title' => t('FullCalendar'),
@@ -42,6 +30,17 @@ function fullcalendar_views_plugins() {
       ),
     ),
   );
+}
+
+/**
+ * Implements hook_views_plugins_alter().
+ */
+function fullcalendar_views_plugins_alter(&$plugins) {
+  $plugins['display']['fullcalendar'] = array(
+    'title' => t('FullCalendar - Deprecated, use page display instead!'),
+    'help' => t('Stop using this display, use page instead'),
+    'no ui' => TRUE,
+  ) + $plugins['display']['page'];
 }
 
 /**
@@ -78,10 +77,11 @@ function fullcalendar_views_pre_view(&$view, &$display_id, &$args) {
   }
 
   // Get the current view settings.
-  $settings = $view->display_handler->get_option('style_options');
+  $view->init_style();
+  $settings = $view->style_plugin->options;
 
   fullcalendar_include_api();
-  $fullcalendar_options = module_invoke_all('fullcalendar_option_info');
+  $fullcalendar_options = module_invoke_all('fullcalendar_options_info');
   uasort($fullcalendar_options, 'drupal_sort_weight');
   foreach (array_intersect(array_keys($fullcalendar_options), module_implements('fullcalendar_options_pre_view')) as $module) {
     $function = $module . '_fullcalendar_options_pre_view';
@@ -89,7 +89,7 @@ function fullcalendar_views_pre_view(&$view, &$display_id, &$args) {
   }
 
   // Set the new view settings.
-  $view->display_handler->set_option('style_options', $settings);
+  $view->style_plugin->options = $settings;
 
   // If we're not using ajax, we're done.
   if (!$view->display_handler->get_option('use_ajax')) {
@@ -112,14 +112,17 @@ function fullcalendar_views_pre_view(&$view, &$display_id, &$args) {
   foreach ($view->display_handler->get_handlers('field') as $field) {
     if (fullcalendar_field_is_date($field)) {
       // Add an argument for the date field.
-      $view->add_item($display_id, 'argument', 'field_data_' . $field->field, $field->field . '_value', array(
-          'default_action' => 'default',
-          'default_argument_type' => 'fixed',
-          'default_argument_options' => array(
-            'argument' => $range,
-          ),
-        )
+      $options = array(
+        'default_action' => 'default',
+        'default_argument_type' => 'fixed',
+        'default_argument_options' => array(
+          'argument' => $range,
+        ),
       );
+      if (!empty($field->options['relationship'])) {
+        $options['relationship'] = $field->options['relationship'];
+      }
+      $view->add_item($display_id, 'argument', 'field_data_' . $field->field, $field->field . '_value', $options);
       $view->fullcalendar_args++;
     }
   }

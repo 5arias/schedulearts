@@ -184,6 +184,7 @@ function fullcalendar_update($action, $eid) {
   }
 
   // Save the new start/end values.
+  field_attach_presave($entity_type, $entity);
   field_attach_update($entity_type, $entity);
 
   drupal_json_output(array('msg' => t('The new event time has been saved.') . ' [' . l(t('Close'), NULL, array('attributes' => array('class' => array('fullcalendar-status-close')))) . ']', 'dom_id' => $_POST['dom_id']));
@@ -197,6 +198,12 @@ function fullcalendar_fullcalendar_classes($entity) {
     'fc-event-default',
     $entity->bundle,
   );
+
+  // Add a class for the date field being used.
+  if (isset($entity->fullcalendar_date_field)) {
+    $classes[] = "fc-event-field-$entity->fullcalendar_date_field";
+  }
+
   return $classes;
 }
 
@@ -206,12 +213,21 @@ function fullcalendar_fullcalendar_classes($entity) {
  * Since we force the query to be distinct, reflect that in the UI.
  */
 function fullcalendar_form_views_ui_edit_display_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_state['view']->display_handler->get_option('style_plugin') != 'fullcalendar' && empty($form['options']['query'])) {
+  if ($form_state['view']->display_handler->get_option('style_plugin') != 'fullcalendar' || empty($form['options']['query']['options']['distinct'])) {
     return;
   }
 
-  $form['options']['query']['options']['distinct']['#disabled'] = TRUE;
-  $form['options']['query']['options']['distinct']['#description'] .= '<br><strong>' . t('FullCalendar requires that the query be distinct.') . '</strong>';
+  $distinct = &$form['options']['query']['options']['distinct'];
+
+  if (!isset($distinct['#description'])) {
+    $distinct['#description'] = '';
+  }
+  else {
+    $distinct['#description'] .= '<br>';
+  }
+
+  $distinct['#disabled'] = TRUE;
+  $distinct['#description'] .= '<strong>' . t('FullCalendar requires that the query be distinct.') . '</strong>';
 }
 
 /**

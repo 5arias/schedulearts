@@ -87,10 +87,9 @@ class fullcalendar_plugin_style_fullcalendar extends views_plugin_style {
       unset($this->options['times']['fc_timeformat']);
     }
 
-    // If the options are from before the plugin system, update them.
+    // Move Colorbox settings into their own array.
     $options = $this->options;
-    if (!isset($options['fullcalendar'])) {
-      // Move Colorbox settings into their own array.
+    if (isset($options['colorbox']) && !is_array($options['colorbox'])) {
       $colorbox = array();
       foreach ($options as $key => $value) {
         if (substr($key, 0, 8) == 'colorbox') {
@@ -99,10 +98,6 @@ class fullcalendar_plugin_style_fullcalendar extends views_plugin_style {
         }
       }
       $options['colorbox'] = $colorbox;
-
-      // Process the old values.
-      fullcalendar_include_api();
-      fullcalendar_process_options($options);
       $this->unpack_options($this->options, $options);
     }
   }
@@ -110,13 +105,13 @@ class fullcalendar_plugin_style_fullcalendar extends views_plugin_style {
   function option_definition() {
     // Load all FullCalendar options and merge in their form info.
     fullcalendar_include_api();
-    return module_invoke_all('fullcalendar_option_definition');
+    return module_invoke_all('fullcalendar_options_definition');
   }
 
   function options_form(&$form, &$form_state) {
     // Load all FullCalendar options and merge in their form info.
     fullcalendar_include_api();
-    $fullcalendar_options = module_invoke_all('fullcalendar_option_info');
+    $fullcalendar_options = module_invoke_all('fullcalendar_options_info');
     uasort($fullcalendar_options, 'drupal_sort_weight');
     if (!empty($fullcalendar_options)) {
       $arguments = array(&$form, &$form_state, &$this);
@@ -175,15 +170,18 @@ class fullcalendar_plugin_style_fullcalendar extends views_plugin_style {
     return parent::validate();
   }
 
-  function fullcalendar_parse_fields() {
+  function fullcalendar_parse_fields($include_gcal = TRUE) {
+    // Ensure the handlers are there.
+    $this->view->init_handlers();
+
     $labels = $this->display->handler->get_field_labels();
-    $field_options = array();
-    foreach ($this->display->handler->get_handlers('field') as $id => $field) {
-      if (fullcalendar_field_is_date($field, TRUE)) {
-        $field_options[$id] = $labels[$id];
+    $date_fields = array();
+    foreach ($this->view->field as $id => $field) {
+      if (fullcalendar_field_is_date($field, $include_gcal)) {
+        $date_fields[$id] = $labels[$id];
       }
     }
-    return $field_options;
+    return $date_fields;
   }
 
   /**
