@@ -52,7 +52,7 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
         // Build the view
         $allowed_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
         $view = views_get_view('taxonomy_term_calendar' , TRUE);
-        $arg[] = 'dummy'; // TODO: date range filter for the View
+        $arg[] =$node->field_sched_date['und']['0'];
         $arg[] = $userfields->uid;
         $views_result = $view->preview('page_2', $arg);
         $sched_view_output = drupal_html_to_text($views_result, $allowed_tags);

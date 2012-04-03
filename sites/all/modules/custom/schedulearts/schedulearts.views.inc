@@ -27,10 +27,10 @@ function schedulearts_views_query_alter(&$view, &$query) {
   }
   if ($view->name == 'taxonomy_term_calendar' && $view->current_display == 'page_2') {
     // set TID filters to the user's TIDs
-    krumo($view);
     $url_uid = $view->args[1];
     $userfields = user_load($url_uid);
     $ugroups = $userfields->field_user_groups['und']; 
+    $daterange = $view->args[0];
     foreach ($ugroups as $ugroup) {
         $ugroups_array[$ugroup['tid']] = $ugroup['tid'];
     }
@@ -42,6 +42,11 @@ function schedulearts_views_query_alter(&$view, &$query) {
         // set UID filter to the user's UID
         if ($condition['field'] == 'field_data_field_event_individuals.field_event_individuals_target_id') {
           $condition['value']['0'] = $url_uid;
+        }
+        // Set date range filter from argument
+        if ($condition['field'] == 'DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') >= :node_date_filter AND DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') <= :node_date_filter1') {
+          $condition['value'][':node_date_filter'] = $daterange['value'];
+          $condition['value'][':node_date_filter1'] = $daterange['value2'];
         }
       }
     }
