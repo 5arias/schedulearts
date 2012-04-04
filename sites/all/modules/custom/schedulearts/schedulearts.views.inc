@@ -44,7 +44,7 @@ function schedulearts_views_query_alter(&$view, &$query) {
           $condition['value']['0'] = $url_uid;
         }
         // Set date range filter from argument
-        if ($condition['field'] == 'DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') >= :node_date_filter AND DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') <= :node_date_filter1') {
+        if ($condition['field'] == 'DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') >= :node_date_filter AND DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') <= :node_date_filter1' && $view->args[0] !== 'none') {
           $condition['value'][':node_date_filter'] = $daterange['value'];
           $condition['value'][':node_date_filter1'] = $daterange['value2'];
         }
