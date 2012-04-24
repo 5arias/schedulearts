@@ -138,10 +138,23 @@ function _resource_conflict_display_conflict_errors($node, $conflicting_nodes) {
 }
 
 /**
- * Detect soft conflicts
- * Implements hook_node_insert().
+ * Implements hook_node_update()
  */
-function resource_conflict_node_presave($node) {
+function resource_conflict_node_update($node) {
+  resource_conflict_soft_conflict_check($node);
+}
+
+/**
+ * Implements hook_node_insert() {
+ */
+function resource_conflict_node_insert($node) {
+  resource_conflict_soft_conflict_check($node);
+}
+
+/**
+ * Detect soft conflicts
+ */
+function resource_conflict_soft_conflict_check($node) {
   $type = $node->type;
   if (!variable_get('rc_type_' . $type, FALSE)) {
     // Conflict handling is not enabled for this node.
@@ -187,40 +200,53 @@ function resource_conflict_node_presave($node) {
 }
 
 function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
+  // Delete any existing conflicts for this node
+  $entities = db_query('SELECT node.nid AS nid 
+    FROM node
+    LEFT JOIN {field_data_field_conflict_grp_call} field_data_field_conflict_grp_call ON node.nid = field_data_field_conflict_grp_call.entity_id AND (field_data_field_conflict_grp_call.entity_type = \'node\' AND field_data_field_conflict_grp_call.deleted = 0)
+    LEFT JOIN {field_data_field_conflict_ind_call} field_data_field_conflict_ind_call ON node.nid = field_data_field_conflict_ind_call.entity_id AND (field_data_field_conflict_ind_call.entity_type = \'node\' AND field_data_field_conflict_ind_call.deleted = 0)
+    LEFT JOIN {field_data_field_conflict_usr} field_data_field_conflict_usr ON node.nid = field_data_field_conflict_usr.entity_id AND (field_data_field_conflict_usr.entity_type = \'node\' AND field_data_field_conflict_usr.deleted = 0)
+    WHERE (( (node.status = 1 AND node.type  = \'conflict\') AND ((field_data_field_conflict_grp_call.field_conflict_grp_call_target_id = :nid) OR (field_data_field_conflict_ind_call.field_conflict_ind_call_target_id = :nid)) ))', 
+    array(
+      ':nid' => $node->nid,
+    )
+  );
+  foreach ($entities as $entity) {
+    node_delete($entity->nid);
+  }
+
   // handle soft conflicts by displaying and saving a conflict node
   $our_demands = _resource_conflict_get_node_resource_demand($node);
   foreach ($conflicting_nodes as $conflicting_node) {
     $other_demands = _resource_conflict_get_node_resource_demand($conflicting_node);
     // select the resources that both this node and the other node demands
     $conflicting_resources = array();
-  foreach ($other_demands as $other_demand) {
-    foreach ($our_demands as $our_demand) {
-      if ($our_demand['target_type'] == 'taxonomy_term' && $other_demand['target_type'] == 'user') {
-        //$entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $our_demand['target_id']));
-        $entities = db_query('SELECT DISTINCT users.uid AS uid 
-          FROM {users} users 
-          INNER JOIN {field_data_field_user_groups} field_data_field_user_groups 
-          ON users.uid = field_data_field_user_groups.entity_id 
-          AND (field_data_field_user_groups.entity_type = \'user\') 
-          WHERE (( ( users.status <> \'0\') AND (field_data_field_user_groups.field_user_groups_tid = :tid ) ))', array(':tid' => $our_demand['target_id']));
-        foreach ($entities as $entity) {
-          if ($entity->uid == $other_demand['target_id']) {
-            $conflicting_user = reset(entity_load('user', array($other_demand['target_id'])));
-            $conflicting_term = reset(entity_load('taxonomy_term', array($our_demand['target_id'])));
-            $conflicting_resources_soft[] = array(
-              'id'  =>  entity_id('user', $conflicting_user), 
-              'label' => entity_label('user', $conflicting_user),
-              'type' => 'user',
-              'uri' => entity_uri('user', $conflicting_user),
-              'term' => entity_label('taxonomy_term', $conflicting_term),
-              'indcall' => $conflicting_node->nid,
-              'grpcall' => $node->nid,
-            );
+    foreach ($other_demands as $other_demand) {
+      foreach ($our_demands as $our_demand) {
+        if ($our_demand['target_type'] == 'taxonomy_term' && $other_demand['target_type'] == 'user') {
+          $entities = db_query('SELECT DISTINCT users.uid AS uid 
+            FROM {users} users 
+            INNER JOIN {field_data_field_user_groups} field_data_field_user_groups 
+            ON users.uid = field_data_field_user_groups.entity_id 
+            AND (field_data_field_user_groups.entity_type = \'user\') 
+            WHERE (( ( users.status <> \'0\') AND (field_data_field_user_groups.field_user_groups_tid = :tid ) ))', array(':tid' => $our_demand['target_id']));
+          foreach ($entities as $entity) {
+            if ($entity->uid == $other_demand['target_id']) {
+              $conflicting_user = reset(entity_load('user', array($other_demand['target_id'])));
+              $conflicting_term = reset(entity_load('taxonomy_term', array($our_demand['target_id'])));
+              $conflicting_resources_soft[] = array(
+                'id'  =>  entity_id('user', $conflicting_user), 
+                'label' => entity_label('user', $conflicting_user),
+                'type' => 'user',
+                'uri' => entity_uri('user', $conflicting_user),
+                'term' => entity_label('taxonomy_term', $conflicting_term),
+                'indcall' => $conflicting_node->nid,
+                'grpcall' => $node->nid,
+              );
+            }
           }
         }
-      }
       if ($other_demand['target_type'] == 'taxonomy_term' && $our_demand['target_type'] == 'user') {
-        //$entities = db_query('SELECT DISTINCT entity_id FROM field_data_field_user_groups WHERE field_user_groups_tid=:tid', array(':tid' => $other_demand['target_id']));
         $entities = db_query('SELECT DISTINCT users.uid AS uid 
           FROM {users} users 
           INNER JOIN {field_data_field_user_groups} field_data_field_user_groups 
@@ -259,7 +285,7 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
             $start = format_date($conflicting_node->event_start, 'Y-m-d H:i');
             $end = format_date($conflicting_node->event_end, 'Y-m-d H:i');
           }
-          $error = t('<a href="@resource-url">%resource</a> is a part of group %group, and is called for <a href="@booker-url">%booker</a> from %start to %end. They have been excused from the group rehearsal.',
+          /* $error = t('<a href="@resource-url">%resource</a> is a part of group %group, and is called for <a href="@booker-url">%booker</a> from %start to %end. They have been excused from the group rehearsal.',
             array(
               '@booker-url' => url('node/' . $conflicting_node->nid),
               '%booker' => $conflicting_node->title,
@@ -269,37 +295,20 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
               '%start' => $start,
               '%end' => $end,
             )
-          );
+          );*/
 
           drupal_set_message($error, 'warning');
 
-        }
-
-        // Delete any existing conflicts, and create a conflict node to record the conflict
-        $entities = db_query('SELECT node.nid AS nid 
-          FROM node
-          LEFT JOIN {field_data_field_conflict_grp_call} field_data_field_conflict_grp_call ON node.nid = field_data_field_conflict_grp_call.entity_id AND (field_data_field_conflict_grp_call.entity_type = \'node\' AND field_data_field_conflict_grp_call.deleted = 0)
-          LEFT JOIN {field_data_field_conflict_ind_call} field_data_field_conflict_ind_call ON node.nid = field_data_field_conflict_ind_call.entity_id AND (field_data_field_conflict_ind_call.entity_type = \'node\' AND field_data_field_conflict_ind_call.deleted = 0)
-          LEFT JOIN {field_data_field_conflict_usr} field_data_field_conflict_usr ON node.nid = field_data_field_conflict_usr.entity_id AND (field_data_field_conflict_usr.entity_type = \'node\' AND field_data_field_conflict_usr.deleted = 0)
-          WHERE (( (node.status = 1 AND node.type  = \'conflict\') AND ((field_data_field_conflict_grp_call.field_conflict_grp_call_target_id = :grp AND field_data_field_conflict_ind_call.field_conflict_ind_call_target_id = :ind) OR (field_data_field_conflict_grp_call.field_conflict_grp_call_target_id = :ind AND field_data_field_conflict_ind_call.field_conflict_ind_call_target_id = :grp)) AND (field_data_field_conflict_usr.field_conflict_usr_target_id = :usr) ))', 
-          array(
-            ':grp' => $conflicting_resource['grpcall'],
-            ':ind' => $conflicting_resource['indcall'],
-            ':usr' => $conflicting_resource['id']
-          )
-        );
-
-        foreach ($entities as $entity) {
-          node_delete($entity->nid);
-        }
-        $cnode = new stdClass();
-        $cnode->type = 'conflict';
-        $cnode->title = $conflicting_resource['label'] . ' excused from ' . $conflicting_resource['term'] . ' call for ' . $conflicting_node->title; 
-        $cnode->language = LANGUAGE_NONE;
-        $cnode->field_conflict_grp_call[$cnode->language][0]['target_id'] = $conflicting_resource['grpcall'];
-        $cnode->field_conflict_usr[$cnode->language][0]['target_id'] = $conflicting_resource['id'];
-        $cnode->field_conflict_ind_call[$cnode->language][0]['target_id'] = $conflicting_resource['indcall'];
-        node_save($cnode);
+          // Create a new conflict node for each soft conflict
+          $cnode = new stdClass();
+          $cnode->type = 'conflict';
+          $cnode->title = $conflicting_resource['label'] . ' excused from ' . $conflicting_resource['term'] . ' call for ' . $conflicting_node->title; 
+          $cnode->language = LANGUAGE_NONE;
+          $cnode->field_conflict_grp_call[$cnode->language][0]['target_id'] = $conflicting_resource['grpcall'];
+          $cnode->field_conflict_usr[$cnode->language][0]['target_id'] = $conflicting_resource['id'];
+          $cnode->field_conflict_ind_call[$cnode->language][0]['target_id'] = $conflicting_resource['indcall'];
+          node_save($cnode);
+          }
         }
       } 
     }
