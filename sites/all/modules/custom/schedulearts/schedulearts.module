@@ -102,12 +102,21 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
 }
 
 function schedulearts_form_alter(&$form, &$form_state, $form_id) {
+  // tweaks to user-groups View
+
+  // make the search field bigger
+  if($form_id == 'views_exposed_form') {
+    $form['field_user_searchable_name_value']['#size'] = 60;
+  }
+  // Set the order of VBO options 
   if($form_id == 'views_form_user_groups_page') {
     $form['select']['operation']['#options'] = array(
       '0' => '- Choose an operation -',
       'action::views_bulk_operations_modify_action' => 'Add to Groups',
-      'action::user_block_user_action' => 'Block',
-      'rules_component::rules_unblock_a_user' => 'Unblock',
+      'rules_component::rules_promote_to_company_administrator' => 'Promote to company admin',
+      'rules_component::rules_demote_from_company_administrator' => 'Demote from company admin',
+      'action::user_block_user_action' => 'De-Activate',
+      'rules_component::rules_unblock_a_user' => 'Activate',
       'action::views_bulk_operations_delete_item' => 'Delete',
     );
   }
