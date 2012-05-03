@@ -52,7 +52,7 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
         // Build the view
         $allowed_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
         $view = views_get_view('taxonomy_term_calendar' , TRUE);
-        $arg[] =$node->field_sched_date['und']['0'];
+        $arg[] = $node->field_sched_date['und']['0'];
         $arg[] = $userfields->uid;
         $views_result = $view->preview('page_2', $arg);
         $sched_view_output = drupal_html_to_text($views_result, $allowed_tags);
@@ -77,7 +77,6 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
 
   Thanks!";
 
-        // TODO : send the message!
 
         $mailtoken = microtime();
         $mailid = 'schedulearts' . '_' . $mailtoken;
@@ -99,5 +98,17 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
         }
       }
     }
+  }
+}
+
+function schedulearts_form_alter(&$form, &$form_state, $form_id) {
+  if($form_id == 'views_form_user_groups_page') {
+    $form['select']['operation']['#options'] = array(
+      '0' => '- Choose an operation -',
+      'action::views_bulk_operations_modify_action' => 'Add to Groups',
+      'action::user_block_user_action' => 'Block',
+      'rules_component::rules_unblock_a_user' => 'Unblock',
+      'action::views_bulk_operations_delete_item' => 'Delete',
+    );
   }
 }

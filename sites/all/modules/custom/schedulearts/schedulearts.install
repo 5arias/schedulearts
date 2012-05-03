@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the ScheduleArts module.
+ */
+
+
+//----------------------------------------------------------------------------
+// Updates.
+
+/**
+ * Update module weight to be heavier than Views Bulk Operations
+ */
+function schedulearts_update_7001() {
+  $weight = db_select('system', 's')
+    ->fields('s', array('weight'))
+    ->condition('name', 'views_bulk_operations', '=')
+    ->execute()
+    ->fetchField();
+  db_update('system')
+    ->fields(array('weight' => $weight +1))
+    ->condition('name', 'schedulearts', '=')
+    ->execute();
+}
