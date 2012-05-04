@@ -1,0 +1,62 @@
+.entityreference-browser-clear {
+  clear: both;
+}
+
+.entityreference-view-widget .fieldset-wrapper {
+  border: 10px solid #edefeb;
+  padding: 0;
+}
+
+.entityreference-browser-widget-left {
+  float: left;
+  width: 20%;
+  padding-left: 0px;
+  height: 380px;
+  overflow-y: auto;
+  overflow-x: none;
+  background-color: #eee;
+}
+
+.entityreference-browser-widget-left ul.entityreference-browser {
+  list-style-type: none;
+  float: left;
+  margin: 0px;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding: 0;
+}
+
+.entityreference-browser-widget-left ul.entityreference-browser li {
+  padding: 5px;
+  margin: 4px 0px;
+  font-size: 1em;
+  background: white;
+  cursor: move;
+  border: 1px solid lightgray;
+}
+
+.entityreference-browser-view-widget {
+  width: 100%;
+  border-left: 10px solid #edefeb;
+  height: 380px;
+}
+
+.entityreference-browser-view-widget .view {
+  padding-left: 15px;
+  height: 380px;
+  overflow-y: auto;
+}
+
+.entityreference-browser-view-widget .view .view-filters {
+  border-bottom: 1px solid gray;
+}
+
+.entityreference-browser-view-widget .view .view-content {
+  height: 262px;
+  overflow: auto;
+}
+
+.entityreference-browser-view-widget table {
+  border: 0;
+}
