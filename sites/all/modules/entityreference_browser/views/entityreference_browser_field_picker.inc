@@ -22,6 +22,17 @@ class entityreference_browser_field_picker extends views_handler_field {
   }
 
   function render($values) {
-    return l($values->node_title, 'node/' . $values->nid, array('attributes' => array('class' => 'picker', 'data-id' => $values->nid)));
+    $entities = entity_get_info();
+    foreach ($entities as $e_key => $e_value) {
+      if ($e_value['base table'] == $this->table) {
+        $entity_type = $e_key;
+      }
+    }
+
+    $id_key = $this->real_field;
+    $entity = reset(entity_load($entity_type, array($values->$id_key)));
+    $entity_label = entity_label($entity_type, $entity);
+    $entity_path = entity_uri($entity_type, $entity);
+    return l($entity_label, $entity_path['path'], array('attributes' => array('class' => 'picker', 'data-id' => $values->$id_key)));
   }
 }

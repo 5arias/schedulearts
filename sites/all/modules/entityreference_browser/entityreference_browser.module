@@ -95,7 +95,8 @@ function entityreference_browser_field_formatter_view($entity_type, $entity, $fi
   switch ($display['type']) {
     case 'entityreference_browser_formatter':
       foreach ($items as $delta => $item) {
-        $output = '<input type="checkbox" /> ' . l($item['value'], 'node/' . $item['value'], array('attributes' => array('data-id' => $item['value'])));
+        $entity_path = entity_uri($entity_type, $loaded_entity);
+        $output = '<input type="checkbox" /> ' . l($item['value'], $entity_path['path'], array('attributes' => array('data-id' => $item['value'])));
         $element[$delta] = array('#markup' => $output);
       }
       break;
@@ -232,8 +233,9 @@ function entityreference_browser_field_widget_form(&$form, &$form_state, $field,
   // Build HTML to represent selected items.
   $entities_array = array();
   foreach ($selected_entities as $id => $loaded_entity) {
-    $remove_item_link = l('[' . t('remove') . ']', 'node/' . $id, array('attributes' => array('class' => 'remove', 'data-id' => $id)));
-    $entities_array[] = array('data' => $loaded_entity->title . ' ' . $remove_item_link, 'data-ec' => $ec, 'data-id' => $id);
+    $entity_path = entity_uri($entity_type, $loaded_entity);
+    $remove_item_link = l('[' . t('remove') . ']', $entity_path['path'], array('attributes' => array('class' => 'remove', 'data-id' => $id)));
+    $entities_array[] = array('data' => entity_label($entity_type, $loaded_entity) . ' ' . $remove_item_link, 'data-ec' => $ec, 'data-id' => $id);
   }
 
   $variables = array(
