@@ -1,0 +1,43 @@
+diff --git a/sites/all/modules/entityreference_browser/entityreference_browser.css b/sites/all/modules/entityreference_browser/entityreference_browser.css
+index 46da548..39169a8 100644
+--- a/sites/all/modules/entityreference_browser/entityreference_browser.css
++++ b/sites/all/modules/entityreference_browser/entityreference_browser.css
+@@ -7,11 +7,15 @@
+   padding: 0;
+ }
+ 
++.entityreference-browser-wrapper {
++  height: 350px;
++}
++
+ .entityreference-browser-widget-left {
+   float: left;
+   width: 20%;
+   padding-left: 0px;
+-  height: 380px;
++  height: 100%;
+   overflow-y: auto;
+   overflow-x: none;
+   background-color: #eee;
+@@ -39,12 +43,11 @@
+ .entityreference-browser-view-widget {
+   width: 100%;
+   border-left: 10px solid #edefeb;
+-  height: 380px;
+ }
+ 
+ .entityreference-browser-view-widget .view {
+   padding-left: 15px;
+-  height: 380px;
++  height: 100%;
+   overflow-y: auto;
+ }
+ 
+@@ -53,7 +56,6 @@
+ }
+ 
+ .entityreference-browser-view-widget .view .view-content {
+-  height: 262px;
+   overflow: auto;
+ }
+ 
