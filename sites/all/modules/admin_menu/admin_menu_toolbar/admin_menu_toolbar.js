@@ -20,7 +20,35 @@ Drupal.admin.behaviors.toolbarActiveTrail = function (context, settings, $adminM
 };
 
 /**
- * @} End of "defgroup admin_behaviors".
+ * Toggles the shortcuts bar.
+ */
+Drupal.admin.behaviors.shortcutToggle = function (context, settings, $adminMenu) {
+  var $shortcuts = $adminMenu.find('li.admin-menu-shortcuts');
+  if (!$shortcuts.length) {
+    return;
+  }
+  var storage = window.localStorage || false;
+  var storageKey = 'Drupal.admin_menu.shortcut';
+  var $body = $(context).find('body');
+  var $toggle = $shortcuts.find('.toggle');
+  $toggle.click(function () {
+    var enable = !$shortcuts.hasClass('active');
+    $shortcuts.toggleClass('active', enable);
+    if (settings.admin_menu.margin_top) {
+      $body.toggleClass('admin-menu-with-shortcuts', enable);
+    }
+    // Persist toggle state across requests.
+    storage && enable ? storage.setItem(storageKey, 1) : storage.removeItem(storageKey);
+    return false;
+  });
+
+  if (!storage || storage.getItem(storageKey)) {
+    $toggle.trigger('click');
+  }
+};
+
+/**
+ * @} End of "ingroup admin_behaviors".
  */
 
 })(jQuery);

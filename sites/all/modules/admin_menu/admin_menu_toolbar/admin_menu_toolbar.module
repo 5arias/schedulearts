@@ -43,27 +43,22 @@ function admin_menu_toolbar_page_build(&$page) {
 function admin_menu_toolbar_admin_menu_output_build(&$content) {
   // Add shortcuts menu.
   $content['shortcuts'] = array(
+    '#access' => module_exists('shortcut'),
     '#theme' => 'admin_menu_links',
     '#weight' => -200,
   );
   $content['shortcuts']['shortcuts'] = array(
     '#title' => t('Show shortcuts'),
-    // @todo How do we want to trigger/store state?
     '#attributes' => array('class' => array('admin-menu-shortcuts')),
-    //'#attributes' => array('class' => array('admin-menu-shortcuts', 'admin-menu-shortcuts-active')),
     '#options' => array(
       'attributes' => array('class' => 'toggle'),
     ),
   );
-  // @todo Copy this from $content['menu'] instead.
-  $content['shortcuts']['shortcuts']['node-add'] = array(
-    '#title' => t('Add content'),
-    '#href' => 'node/add',
-  );
-  $content['shortcuts']['shortcuts']['admin-content-node'] = array(
-    '#title' => t('Find content'),
-    '#href' => 'admin/content/node',
-    '#access' => user_access('administer nodes'),
+  $content['shortcuts']['shortcuts']['shortcuts'] = array(
+    '#prefix' => '<div id="toolbar">',
+    '#suffix' => '</div>',
+    // @todo Links may contain .active-trail classes.
+    '#pre_render' => array('shortcut_toolbar_pre_render'),
   );
 }
 
