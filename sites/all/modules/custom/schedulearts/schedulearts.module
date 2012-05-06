@@ -127,9 +127,43 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
 
   // Tweaks to the Call people interface
   if ($form_id == 'call_node_form')  {
+    // Set the parent event from POST, and make the field unavailable for input
     $form['field_call_parent_event']['und']['#disabled'] = TRUE;
     if (!$form['nid']['#value']) {
       $form['field_call_parent_event']['und']['#default_value'] = $_POST['edit']['field_call_parent_event']['und'];
     }
+    // Get the parent event object
+    $parent_event = reset(entity_load('node', array($form['field_call_parent_event']['und']['#default_value'])));
+
+    // Set the default dates
+    $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
+    $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
+
+    // Limit available options in the dropdowns
+    $form_state['#schedulearts']['parent_event'] = $parent_event;
+    $form_state['#schedulearts']['min_date'] = $parent_event->field_event_date['und']['0']['value'];
+    $form_state['#schedulearts']['max_date'] = $parent_event->field_event_date['und']['0']['value2'];
+    $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
   }
+}
+
+/*
+ * Limit select options in field_event_date on Call node forms
+ */
+
+function schedulearts_call_date_limit($form_element, &$form_state) {
+  dpm($form_state);
+  dpm($form_element);
+  $min_date = new DateObject($form_state['#schedulearts']['min_date']);
+  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
+
+  // Set fixed date, since all events occur on a single day
+  $form_element['und']['0']['value']['year']['#options'] = array(date_format_date($min_date, 'custom', 'Y') => date_format_date($min_date, 'custom', 'Y'));
+  $form_element['und']['0']['value']['month']['#options'] = array(date_format_date($min_date, 'custom', 'M') => date_format_date($min_date, 'custom', 'M'));
+  $form_element['und']['0']['value']['day']['#options'] = array(date_format_date($min_date, 'custom', 'j') => date_format_date($min_date, 'custom', 'j'));
+  $form_element['und']['0']['value2']['year']['#options'] = array(date_format_date($min_date, 'custom', 'Y') => date_format_date($min_date, 'custom', 'Y'));
+  $form_element['und']['0']['value2']['month']['#options'] = array(date_format_date($min_date, 'custom', 'M') => date_format_date($min_date, 'custom', 'M'));
+  $form_element['und']['0']['value2']['day']['#options'] = array(date_format_date($min_date, 'custom', 'j') => date_format_date($min_date, 'custom', 'j'));
+
+  return $form_element;
 }
