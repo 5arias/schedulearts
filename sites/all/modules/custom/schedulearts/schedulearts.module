@@ -152,8 +152,8 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
  */
 
 function schedulearts_call_date_limit($form_element, &$form_state) {
-  dpm($form_state);
-  dpm($form_element);
+//  dpm($form_state);
+//  dpm($form_element);
   $min_date = new DateObject($form_state['#schedulearts']['min_date']);
   $max_date = new DateObject($form_state['#schedulearts']['max_date']);
 
