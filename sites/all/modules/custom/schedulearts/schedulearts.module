@@ -123,7 +123,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'call_node_form')  {
     // Set the parent event from POST, and make the field unavailable for input
     $form['field_call_parent_event']['und']['#disabled'] = TRUE;
-    if ($_POST['edit'] ){
+    if (isset($_POST['edit'])){
       $form['field_call_parent_event']['und']['#default_value']['0'] = $_POST['edit']['field_call_parent_event']['und'];
     }
     // Get the parent event object
@@ -140,6 +140,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
     // Custom validation based on parent event date
     $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
+    dpm($form_state);
 
   }
 }
@@ -177,14 +178,20 @@ function schedulearts_call_date_limit($form_element, &$form_state) {
 }
 
 function schedulearts_call_date_validate($form_element, &$form_state, $form) {
+  // Initialize variables; UNIX timestamps for all relevant times
   $min_date = new DateObject($form_state['#schedulearts']['min_date']);
   $max_date = new DateObject($form_state['#schedulearts']['max_date']);
   $min_date_unix = date_format_date($min_date, 'custom', 'U');
   $max_date_unix = date_format_date($max_date, 'custom', 'U');
+  $entered_from = new DateObject($form_state['values']['field_event_date']['und']['0']['value']);
+  $entered_to = new DateObject($form_state['values']['field_event_date']['und']['0']['value2']);
+  $entered_from_unix = date_format_date($entered_from, 'custom', 'U');
+  $entered_to_unix = date_format_date($entered_to, 'custom', 'U');
   
-  //dpm($form_element);
-  //dpm($form_state);
-  //form_set_error('field_event_date', 'development validation error');
+  if ($entered_from_unix < $min_date_unix || $entered_from_unix > $max_date_unix || $entered_to_unix < $min_date_unix || $entered_to_unix > $max_date_unix) {
+    // times were set outside of the parent event's time, error
+    form_set_error('field_event_date', t('Calls must be inside the event timerange of %from - %to.', array('%from' => date_format_date($min_date, 'custom', 'g:i a'), '%to' => date_format_date($max_date, 'custom', 'g:i a')))); 
+  }
 }
 
 /**
