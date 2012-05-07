@@ -122,24 +122,25 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   // Tweaks to the Call people interface
   if ($form_id == 'call_node_form')  {
     // Set the parent event from POST, and make the field unavailable for input
-    $form['field_call_parent_event']['und']['#disabled'] = TRUE;
     if (isset($_POST['edit'])){
       $form['field_call_parent_event']['und']['#default_value']['0'] = $_POST['edit']['field_call_parent_event']['und'];
+      $form['field_call_parent_event']['und']['#disabled'] = TRUE;
+
+      // Get the parent event object
+      $parent_event = reset(entity_load('node', array($form['field_call_parent_event']['und']['#default_value']['0'])));
+
+      // Set the default dates
+      $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
+      $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
+
+      // Limit available options in the dropdowns
+      $form_state['#schedulearts']['parent_event'] = $parent_event;
+      $form_state['#schedulearts']['min_date'] = $parent_event->field_event_date['und']['0']['value'];
+      $form_state['#schedulearts']['max_date'] = $parent_event->field_event_date['und']['0']['value2'];    
+      $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
+      // Custom validation based on parent event date
+      $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
     }
-    // Get the parent event object
-    $parent_event = reset(entity_load('node', array($form['field_call_parent_event']['und']['#default_value']['0'])));
-
-    // Set the default dates
-    $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
-    $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
-
-    // Limit available options in the dropdowns
-    $form_state['#schedulearts']['parent_event'] = $parent_event;
-    $form_state['#schedulearts']['min_date'] = $parent_event->field_event_date['und']['0']['value'];
-    $form_state['#schedulearts']['max_date'] = $parent_event->field_event_date['und']['0']['value2'];    
-    $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
-    // Custom validation based on parent event date
-    $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
   }
 }
 
