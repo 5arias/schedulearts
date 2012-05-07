@@ -123,8 +123,8 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'call_node_form')  {
     // Set the parent event from POST, and make the field unavailable for input
     $form['field_call_parent_event']['und']['#disabled'] = TRUE;
-    if (!$form['nid']['#value']) {
-      $form['field_call_parent_event']['und']['#default_value'] = $_POST['edit']['field_call_parent_event']['und'];
+    if ($_POST['edit'] ){
+      $form['field_call_parent_event']['und']['#default_value']['0'] = $_POST['edit']['field_call_parent_event']['und'];
     }
     // Get the parent event object
     $parent_event = reset(entity_load('node', array($form['field_call_parent_event']['und']['#default_value']['0'])));
@@ -140,8 +140,6 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
     // Custom validation based on parent event date
     $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
-
-  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
 
   }
 }
