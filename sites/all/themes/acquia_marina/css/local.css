@@ -17,3 +17,12 @@
 table {
   font-size: small;
 }
+
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-year,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-month,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-day,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value2-year,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value2-month,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value2-day {
+  display: none;
+}

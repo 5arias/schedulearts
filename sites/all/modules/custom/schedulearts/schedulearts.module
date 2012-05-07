@@ -121,25 +121,40 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
 
   // Tweaks to the Call people interface
   if ($form_id == 'call_node_form')  {
-    // Set the parent event from POST, and make the field unavailable for input
+    // Set the parent event from POST or value in edited node
     if (isset($_POST['edit'])){
       $form['field_call_parent_event']['und']['#default_value']['0'] = $_POST['edit']['field_call_parent_event']['und'];
+      $parent_event_id = $_POST['edit']['field_call_parent_event']['und'];
+    }
+    elseif (isset($form['#node']->field_call_parent_event['und']['0']['target_id'])) {
+      $parent_event_id = $form['#node']->field_call_parent_event['und']['0']['target_id'];
+    }
+
+    if (isset($parent_event_id)) {
+      // Disable the parent event field
       $form['field_call_parent_event']['und']['#disabled'] = TRUE;
 
       // Get the parent event object
-      $parent_event = reset(entity_load('node', array($form['field_call_parent_event']['und']['#default_value']['0'])));
+      $parent_event = reset(entity_load('node', array($parent_event_id)));
 
       // Set the default dates
       $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
       $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
 
-      // Limit available options in the dropdowns
+      // Limit available options in the dropdowns with custom after_build and validation calls
+      $min_date = new DateObject($parent_event->field_event_date['und']['0']['value']);
+      $max_date = new DateObject($parent_event->field_event_date['und']['0']['value2']);
       $form_state['#schedulearts']['parent_event'] = $parent_event;
-      $form_state['#schedulearts']['min_date'] = $parent_event->field_event_date['und']['0']['value'];
-      $form_state['#schedulearts']['max_date'] = $parent_event->field_event_date['und']['0']['value2'];    
+      $form_state['#schedulearts']['min_date'] = $min_date;
+      $form_state['#schedulearts']['max_date'] = $max_date;
       $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
-      // Custom validation based on parent event date
       $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
+
+      // Set the description
+      $form_state['field']['field_event_date']['und']['instance']['description'] = t('Calls must be inside the event timerange of %from - %to.', array('%from' => date_format_date($min_date, 'custom', 'g:i a'), '%to' => date_format_date($max_date, 'custom', 'g:i a')));
+    }
+    else {
+      drupal_set_message(t('Notice: Calls are designed to be added as a part of an Event, but no parent Event was detected.'), 'warning');
     }
   }
 }
@@ -150,7 +165,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
 
 function schedulearts_call_date_limit($form_element, &$form_state) {
   // set from date
-  $min_date = new DateObject($form_state['#schedulearts']['min_date']);
+  $min_date = $form_state['#schedulearts']['min_date'];
   $year = date_format_date($min_date, 'custom', 'Y');
   settype($year, "integer");
   $month_num = date_format_date($min_date, 'custom', 'n');
@@ -162,7 +177,7 @@ function schedulearts_call_date_limit($form_element, &$form_state) {
   $form_element['und']['0']['value']['day']['#options'] = array($day => $day);
 
   // set to date
-  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
+  $max_date = $form_state['#schedulearts']['max_date'];
   $year = date_format_date($max_date, 'custom', 'Y');
   settype($year, "integer");
   $month_num = date_format_date($max_date, 'custom', 'n');
@@ -173,17 +188,20 @@ function schedulearts_call_date_limit($form_element, &$form_state) {
   $form_element['und']['0']['value2']['month']['#options'] = array($month_num => $month);
   $form_element['und']['0']['value2']['day']['#options'] = array($day => $day);
 
+  // Apply CSS to hide the pre-set fields
+  $form_element['#attributes']['class'][] = 'schedulearts-hidden-date';
+
   return $form_element;
 }
 
 function schedulearts_call_date_validate($form_element, &$form_state, $form) {
   // Initialize variables; UNIX timestamps for all relevant times
-  $min_date = new DateObject($form_state['#schedulearts']['min_date']);
-  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
-  $min_date_unix = date_format_date($min_date, 'custom', 'U');
-  $max_date_unix = date_format_date($max_date, 'custom', 'U');
+  $min_date = $form_state['#schedulearts']['min_date'];
+  $max_date = $form_state['#schedulearts']['max_date'];
   $entered_from = new DateObject($form_state['values']['field_event_date']['und']['0']['value']);
   $entered_to = new DateObject($form_state['values']['field_event_date']['und']['0']['value2']);
+  $min_date_unix = date_format_date($min_date, 'custom', 'U');
+  $max_date_unix = date_format_date($max_date, 'custom', 'U');
   $entered_from_unix = date_format_date($entered_from, 'custom', 'U');
   $entered_to_unix = date_format_date($entered_to, 'custom', 'U');
   
