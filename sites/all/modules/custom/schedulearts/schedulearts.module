@@ -140,8 +140,6 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
     // Custom validation based on parent event date
     $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
-    dpm($form_state);
-
   }
 }
 
