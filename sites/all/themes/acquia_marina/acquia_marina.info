@@ -1,5 +1,5 @@
 name = Acquia Marina
-description = <a href="http://www.acquia.com">Acquia</a> Marina is a bright and colorful grid-based theme with point-and-click theming. Requires the <a href="http://drupal.org/project/fusion">Fusion Core</a> base theme and the <a href="http://drupal.org/project/skinr">Skinr</a> module. Created by <a href="http://www.topnotchthemes.com">TopNotchThemes</a> and <a href="http://fusiondrupalthemes.com">Fusion Drupal Themes</a>.
+description = <a href="http://www.acquia.com">Acquia</a> Marina is a bright and colorful grid-based theme with point-and-click theming. Requires the <a href="http://drupal.org/project/fusion">Fusion Core</a> base theme and the <a href="http://drupal.org/project/fusion_accelerator">Fusion Accelerator</a> module. Created by <a href="http://www.topnotchthemes.com">TopNotchThemes</a> and <a href="http://fusiondrupalthemes.com">Fusion Drupal Themes</a>.
 
 ; Note, the 7.x-2.x branch of fusion_core is required.
 base theme = fusion_core
@@ -7,8 +7,6 @@ core = 7.x
 engine = phptemplate
 
 stylesheets[all][] = css/fusion-acquia-marina-style.css
-scripts[] = js/jquery.corner.js
-scripts[] = js/acquia-marina-script.js
 
 ; --------------------------------------------------------------------------------
 ; This provides support for the Fusion Accelerator suite.  
@@ -187,9 +185,9 @@ settings[grid_adjusted_regions_fluid][content][] = sidebar_second
 settings[grid_adjusted_groups_fluid][content_group][] = sidebar_second
 
 
-; Information added by drupal.org packaging script on 2012-01-22
-version = "7.x-2.0-beta1"
+; Information added by drupal.org packaging script on 2012-04-24
+version = "7.x-2.0-beta1+8-dev"
 core = "7.x"
 project = "acquia_marina"
-datestamp = "1327206342"
+datestamp = "1335225701"
 

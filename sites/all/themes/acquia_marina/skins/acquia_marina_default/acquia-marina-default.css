@@ -74,7 +74,9 @@
   margin-left: 0;
 }
 
-.marina-list-raquo ul li {
+.marina-list-raquo ul li,
+.marina-list-raquo ul.links li,
+.marina-list-raquo .item-list ul li {
   background: url(images/raquo.png) no-repeat 0 8px;
   display: block;
   font-weight: bold;
@@ -95,7 +97,9 @@
 
 /* Marina - List - Green arrow */
 
-.marina-list-arrow-green .content ul li {
+.marina-list-arrow-green .content ul li,
+.marina-list-arrow-green ul.links li,
+.marina-list-arrow-green .item-list ul li{
   background: url(images/green-checkmark.png) no-repeat 0 5px;
   font-family: "Myriad Pro", "Myriad Web Pro Regular", "Lucida Grande", Geneva, Trebuchet MS, sans-serif;
   font-size: 150%; /* 18px/12px */
