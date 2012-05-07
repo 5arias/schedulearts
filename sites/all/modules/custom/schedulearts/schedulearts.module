@@ -10,12 +10,6 @@ function schedulearts_views_api() {
 }
 
 /**
- * Implements hook_node_validate().
- */
-function schedulearts_node_validate($node, $form) {
-}
-
-/**
  * Implements hook_flag_link().
  *
  * When Flag uses a link type provided by this module, it will call this
@@ -133,7 +127,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       $form['field_call_parent_event']['und']['#default_value'] = $_POST['edit']['field_call_parent_event']['und'];
     }
     // Get the parent event object
-    $parent_event = reset(entity_load('node', array($form['field_call_parent_event']['und']['#default_value'])));
+    $parent_event = reset(entity_load('node', array($form['field_call_parent_event']['und']['#default_value']['0'])));
 
     // Set the default dates
     $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
@@ -142,8 +136,13 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     // Limit available options in the dropdowns
     $form_state['#schedulearts']['parent_event'] = $parent_event;
     $form_state['#schedulearts']['min_date'] = $parent_event->field_event_date['und']['0']['value'];
-    $form_state['#schedulearts']['max_date'] = $parent_event->field_event_date['und']['0']['value2'];
+    $form_state['#schedulearts']['max_date'] = $parent_event->field_event_date['und']['0']['value2'];    
     $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
+    // Custom validation based on parent event date
+    $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
+
+  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
+
   }
 }
 
@@ -152,18 +151,47 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
  */
 
 function schedulearts_call_date_limit($form_element, &$form_state) {
-//  dpm($form_state);
-//  dpm($form_element);
+  // set from date
   $min_date = new DateObject($form_state['#schedulearts']['min_date']);
-  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
+  $year = date_format_date($min_date, 'custom', 'Y');
+  settype($year, "integer");
+  $month_num = date_format_date($min_date, 'custom', 'n');
+  $month = date_format_date($min_date, 'custom', 'M');
+  $day = date_format_date($min_date, 'custom', 'j');
+  settype($day, "integer");
+  $form_element['und']['0']['value']['year']['#options'] = array($year => $year);
+  $form_element['und']['0']['value']['month']['#options'] = array($month_num => $month);
+  $form_element['und']['0']['value']['day']['#options'] = array($day => $day);
 
-  // Set fixed date, since all events occur on a single day
-  $form_element['und']['0']['value']['year']['#options'] = array(date_format_date($min_date, 'custom', 'Y') => date_format_date($min_date, 'custom', 'Y'));
-  $form_element['und']['0']['value']['month']['#options'] = array(date_format_date($min_date, 'custom', 'M') => date_format_date($min_date, 'custom', 'M'));
-  $form_element['und']['0']['value']['day']['#options'] = array(date_format_date($min_date, 'custom', 'j') => date_format_date($min_date, 'custom', 'j'));
-  $form_element['und']['0']['value2']['year']['#options'] = array(date_format_date($min_date, 'custom', 'Y') => date_format_date($max_date, 'custom', 'Y'));
-  $form_element['und']['0']['value2']['month']['#options'] = array(date_format_date($min_date, 'custom', 'M') => date_format_date($max_date, 'custom', 'M'));
-  $form_element['und']['0']['value2']['day']['#options'] = array(date_format_date($min_date, 'custom', 'j') => date_format_date($max_date, 'custom', 'j'));
+  // set to date
+  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
+  $year = date_format_date($max_date, 'custom', 'Y');
+  settype($year, "integer");
+  $month_num = date_format_date($max_date, 'custom', 'n');
+  $month = date_format_date($max_date, 'custom', 'M');
+  $day = date_format_date($max_date, 'custom', 'j');
+  settype($day, "integer");
+  $form_element['und']['0']['value2']['year']['#options'] = array($year => $year);
+  $form_element['und']['0']['value2']['month']['#options'] = array($month_num => $month);
+  $form_element['und']['0']['value2']['day']['#options'] = array($day => $day);
 
   return $form_element;
 }
+
+function schedulearts_call_date_validate($form_element, &$form_state, $form) {
+  $min_date = new DateObject($form_state['#schedulearts']['min_date']);
+  $max_date = new DateObject($form_state['#schedulearts']['max_date']);
+  $min_date_unix = date_format_date($min_date, 'custom', 'U');
+  $max_date_unix = date_format_date($max_date, 'custom', 'U');
+  
+  //dpm($form_element);
+  //dpm($form_state);
+  //form_set_error('field_event_date', 'development validation error');
+}
+
+/**
+ * Implements hook_node_validate().
+ */
+function schedulearts_node_validate($node, $form) {
+}
+
