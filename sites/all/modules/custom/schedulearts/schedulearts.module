@@ -217,3 +217,44 @@ function schedulearts_call_date_validate($form_element, &$form_state, $form) {
 function schedulearts_node_validate($node, $form) {
 }
 
+/**
+ * Implements hook_node_update()
+ */
+function schedulearts_node_update($node) {
+  // If the date/time of an event has changed, update its Calls to the same relative times
+  if ($node->type == 'event') {
+    $old_node = reset(entity_load('node', array($node->nid)));
+    if ($node->field_event_date['und']['0']['value'] != $old_node->field_event_date['und']['0']['value'] || $node->field_event_date['und']['0']['value2'] != $old_node->field_event_date['und']['0']['value2'])   {
+    // Get UNIX timestamps for start, end for old and new nodes
+    $old_event_start_unix = strtotime($old_node->field_event_date['und']['0']['value']);
+    $old_event_end_unix = strtotime($old_node->field_event_date['und']['0']['value2']);
+    $new_event_start_unix = strtotime($node->field_event_date['und']['0']['value']);
+    $new_event_end_unix = strtotime($node->field_event_date['und']['0']['value2']);
+
+      // Calculate difference between old and new dates
+      $time_change = $new_event_start_unix - $old_event_start_unix;
+
+      $calls = db_query("SELECT node.title AS node_title, node.nid AS nid, 'node' AS field_data_field_event_date_node_entity_type, 'node' AS field_data_body_node_entity_type, 'node' AS field_data_field_event_groups_tax_node_entity_type, 'node' AS field_data_field_event_individuals_node_entity_type
+        FROM 
+    {node} node
+    LEFT JOIN {field_data_field_call_parent_event} field_data_field_call_parent_event ON node.nid = field_data_field_call_parent_event.entity_id AND (field_data_field_call_parent_event.entity_type = 'node' AND field_data_field_call_parent_event.deleted = '0')
+    INNER JOIN {node} node_field_data_field_call_parent_event ON field_data_field_call_parent_event.field_call_parent_event_target_id = node_field_data_field_call_parent_event.nid
+    WHERE (( (node.status = '1') AND (node_field_data_field_call_parent_event.nid = :nid) )AND(( (node.type IN  ('call')) )))", array(":nid" => $node->nid));
+      foreach ($calls as $call) {
+        $call_entity = reset(entity_load('node', array($call->nid)));
+        // Add the time difference to start/end dates
+        $new_start_unix = (strtotime($call_entity->field_event_date['und']['0']['value']) + $time_change);
+        $call_entity->field_event_date['und']['0']['value'] = date('Y-m-d H:i:s', $new_start_unix);
+        $new_end_unix = (strtotime($call_entity->field_event_date['und']['0']['value2']) + $time_change);
+        $call_entity->field_event_date['und']['0']['value2'] = date('Y-m-d H:i:s', $new_end_unix);
+        // Save and notify the user
+        node_save($call_entity);
+        drupal_set_message(t('Call %name has been moved to match the new event time', array('%name' => $call_entity->title)));
+        // Sanity check - if the new call times are outside the new event times, warn the user
+        if ($new_end_unix > $new_event_end_unix || $new_end_unix < $new_event_start_unix || $new_start_unix < $new_event_start_unix || $new_start_unix > $new_event_end_unix) {
+          drupal_set_message(t('WARNING: The call times for %name are set outside the new Event times.', array('%name' => $call_entity->title)), 'warning');
+        }
+      }
+    }
+  }
+}
