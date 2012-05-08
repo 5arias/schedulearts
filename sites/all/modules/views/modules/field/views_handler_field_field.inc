@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Definition of views_handler_field_field.
+ */
+
+/**
  * Helper function: Return an array of formatter options for a field type.
  *
  * Borrowed from field_ui.
@@ -33,13 +38,34 @@ function _field_view_formatter_options($field_type = NULL) {
 class views_handler_field_field extends views_handler_field {
   /**
    * An array to store field renderable arrays for use by render_items.
+   * @var array
    */
   public $items = array();
 
   /**
    * Store the field informations.
+   * @var array
    */
   public $field_info = array();
+
+
+  /**
+   * Does the field supports multiple field values.
+   * @var bool
+   */
+  public $multiple;
+
+  /**
+   * Does the rendered fields get limited.
+   * @var bool
+   */
+  public $limit_values;
+
+  /**
+   * A shortcut for $view->base_table.
+   * @var string
+   */
+  public $base_table;
 
   function init(&$view, &$options) {
     parent::init($view, $options);
@@ -68,10 +94,17 @@ class views_handler_field_field extends views_handler_field {
         $this->limit_values = TRUE;
       }
     }
+
+    // Convert old style entity id group column to new format.
+    // @todo Remove for next major version.
+    if ($this->options['group_column'] == 'entity id') {
+      $this->options['group_column'] = 'entity_id';
+    }
   }
 
   /**
-   * Return TRUE if the user has access to view this field.
+   * @return bool
+   *  Return TRUE if the user has access to view this field.
    */
   function access() {
     $base_table = $this->get_base_table();
@@ -170,7 +203,7 @@ class views_handler_field_field extends views_handler_field {
         $options = array($this->options['group_column'] => $this->options['group_column']);
       }
 
-      $options += $this->options['group_columns'];
+      $options += is_array($this->options['group_columns']) ? $this->options['group_columns'] : array();
 
 
       $fields = array();
@@ -206,7 +239,8 @@ class views_handler_field_field extends views_handler_field {
                                 $this->view->display_handler->options['field_language']);
         $placeholder = $this->placeholder();
         $language_fallback_candidates = array($language);
-        if (variable_get('locale_field_language_fallback', TRUE) && module_exists('locale')) {
+        if (variable_get('locale_field_language_fallback', TRUE)) {
+          require_once DRUPAL_ROOT . '/includes/language.inc';
           $language_fallback_candidates = array_merge($language_fallback_candidates, language_fallback_get_candidates());
         }
         else {
@@ -312,6 +346,7 @@ class views_handler_field_field extends views_handler_field {
     // Options used for multiple value fields.
     $options['group_rows'] = array(
       'default' => TRUE,
+      'bool' => TRUE,
     );
     // If we know the exact number of allowed values, then that can be
     // the default. Otherwise, default to 'all'.
@@ -323,9 +358,11 @@ class views_handler_field_field extends views_handler_field {
     );
     $options['delta_reversed'] = array(
       'default' => FALSE,
+      'bool' => TRUE,
     );
     $options['delta_first_last'] = array(
       'default' => FALSE,
+      'bool' => TRUE,
     );
 
     $options['multi_type'] = array(
@@ -337,6 +374,7 @@ class views_handler_field_field extends views_handler_field {
 
     $options['field_api_classes'] = array(
       'default' => FALSE,
+      'bool' => TRUE,
     );
 
     return $options;
