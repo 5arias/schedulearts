@@ -215,6 +215,7 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
     node_delete($entity->nid);
   }
 
+  dpm($conflicting_nodes, 'conflicting nodes');
   // handle soft conflicts by displaying and saving a conflict node
   $our_demands = _resource_conflict_get_node_resource_demand($node);
   foreach ($conflicting_nodes as $conflicting_node) {
@@ -285,7 +286,7 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
             $start = format_date($conflicting_node->event_start, 'Y-m-d H:i');
             $end = format_date($conflicting_node->event_end, 'Y-m-d H:i');
           }
-          /* $error = t('<a href="@resource-url">%resource</a> is a part of group %group, and is called for <a href="@booker-url">%booker</a> from %start to %end. They have been excused from the group rehearsal.',
+          $error = t('<a href="@resource-url">%resource</a> is a part of group %group, and is called for <a href="@booker-url">%booker</a> from %start to %end. They have been excused from the group rehearsal.',
             array(
               '@booker-url' => url('node/' . $conflicting_node->nid),
               '%booker' => $conflicting_node->title,
@@ -295,7 +296,7 @@ function _resource_conflict_soft_conflict_errors($node, $conflicting_nodes) {
               '%start' => $start,
               '%end' => $end,
             )
-          );*/
+          );
 
           drupal_set_message($error, 'warning');
 
@@ -598,9 +599,10 @@ function _resource_conflict_get_overlaps($start, $end) {
       $start_field_name = $date_field . '_value';
       $end_field_name = $date_field . '_value2';
       $query = "SELECT DISTINCT {node}.nid FROM {node} INNER JOIN $date_table date_table ON {node}.vid = date_table.revision_id
-       WHERE(:date_start >= date_table.$start_field_name AND :date_start < date_table.$end_field_name)
-       OR(:date_end > date_table.$start_field_name AND :date_end <= date_table.$end_field_name)
-       OR(:date_start <= date_table.$start_field_name AND :date_end >= date_table.$end_field_name)";
+        WHERE(node.type = '$type') 
+        AND((:date_start >= date_table.$start_field_name AND :date_start < date_table.$end_field_name)
+        OR(:date_end > date_table.$start_field_name AND :date_end <= date_table.$end_field_name)
+        OR(:date_start <= date_table.$start_field_name AND :date_end >= date_table.$end_field_name))";
       $result = db_query($query, array(':date_start' => $date_start, ':date_end' => $date_end));
 
       // Create an array of all of the results
