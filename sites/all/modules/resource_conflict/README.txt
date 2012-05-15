@@ -1,26 +1,78 @@
 = Resource Conflict =
 
-This module allows for users to book resources for use during events. For
-example, a student can book a microscope for use within their lab.
+This module allows for users to detect overlapping dates and respond with Rules.
+This is most often used for tracking bookable resources.  For example, a student 
+can book a microscope for use within their lab, but only one microscope can be 
+booked at a time. 
+
+By default, this module throws a form error for every overlapping date it finds
+among conflict-enabled nodes. It is intended to be customized using Rules, for 
+example to only throw errors when certain field values are identical.
 
 == Requirements ==
 
-CCK and it's nodereference module: http://drupal.org/project/cck
-Event: http://drupal.org/project/event
+Entity: http://drupal.org/project/entity
+Rules: http://drupal.org/project/rules
+Date: http://drupal.org/project/date
 
-== How does Resource Conflict work? ==
+== Installation ==
 
-Resource Conflict requires three things to be set up within a content type.  The
-content type must have at least one nodereference field.  The content type must
-be event-enabled.  The resource conflict option must be enabled, and at least
-one nodereference field must be selected. These will be the resources which will
-be checked for conflicts.
+Download the module to your modules directory, and enable it from admin/modules.
 
-If there is a pre-existing event which conflicts in both time and resource, a
-form error is set and the user is forced to either book a different resource or
-change the event times.
+You may wish to disable or modify the built in example Rule, which shows a form error
+message for conflicts as they are detected.
+
+== Usage ==
+
+1) Create a content type with a date field.
+2) On the Content Type Edit page, enable Conflict Checking for this Content Type.
+   Select the date field which should be used for conflict checking, and save 
+   the form.
+3) Create two nodes with overlapping dates to see the default Rule in action. Or
+   create your own Rule.
+
+
+== Rules Components ==
+
+EVENT: A RESOURCE CONFLICT WAS DETECTED
+
+This event is triggered any time a resource conflict is detected. By itself, this will
+never fire.
+
+
+CONDITION: CONTAINS A RESOURCE CONFLICT
+
+Evaluate a node object for conflicts. Returns TRUE if there are conflicts for the node.
+
+
+ACTION: LOAD A LIST OF CONFLICTING NODES
+
+Creates a list of nodes that conflict with the given node.
+
+
+ACTION: SET A FORM VALIDATION ERROR
+
+Stores a form validation error to be fired the next time a validation hook is called on 
+a conflict-enabled node. This is intended for use with the "Before saving content" Event,
+but you could probably find more creative uses for it.
+
+
+== To Do ==
+
+* Setting a form validation error currently works by setting a variable in $_SESSION, and 
+retrieving it in hook_node_validate. This is open to all sorts of abuse, and if mis-used
+properly could throw errors on the wrong node forms. At the very least, I should set a time
+expiry on these messages to avoid accidental abuse.
+
+* Make ANY fieldable entity capable of handling conflict detection. 
+
 
 == Contact ==
-This module was developed by Andrew Berry (andrewberry@sentex.net) for use at
-the Protein Dynamics lab at the University of Guelph.
+This module was originally developed by Andrew Berry (andrewberry@sentex.net) 
+for use at the Protein Dynamics lab at the University of Guelph.
+
+It was re-written for Rules and Entity integration by Campbell Vertesi (campbell@vertesi.com)
+for use on a private project.
+
 Project Page: http://drupal.org/project/resource_conflict
+
