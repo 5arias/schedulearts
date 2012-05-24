@@ -1,0 +1,112 @@
+diff --git a/sites/all/modules/fullcalendar/fullcalendar_options/fullcalendar_options.module b/sites/all/modules/fullcalendar/fullcalendar_options/fullcalendar_options.module
+index 9adf822..69ed931 100644
+--- a/sites/all/modules/fullcalendar/fullcalendar_options/fullcalendar_options.module
++++ b/sites/all/modules/fullcalendar/fullcalendar_options/fullcalendar_options.module
+@@ -177,3 +177,12 @@ if (module_exists('colorbox') && !function_exists('colorbox_fullcalendar_api'))
+     return fullcalendar_options_fullcalendar_api();
+   }
+ }
++
++/**
++ * Add Overlay integration.
++ */
++if (module_exists('overlay') && !function_exists('overlay_fullcalendar_api')) {
++  function overlay_fullcalendar_api() {
++    return fullcalendar_options_fullcalendar_api();
++  }
++}
+diff --git a/sites/all/modules/fullcalendar/fullcalendar_options/includes/overlay.fullcalendar.inc b/sites/all/modules/fullcalendar/fullcalendar_options/includes/overlay.fullcalendar.inc
+new file mode 100644
+index 0000000..1afa8ff
+--- /dev/null
++++ b/sites/all/modules/fullcalendar/fullcalendar_options/includes/overlay.fullcalendar.inc
+@@ -0,0 +1,55 @@
++<?php
++
++/**
++ * @file
++ * Provides extra FullCalendar configuration options for Overlay.
++ */
++
++/**
++ * Implements hook_fullcalendar_options_info().
++ */
++function overlay_fullcalendar_options_info() {
++  return array(
++    'overlay' => array(
++      'name' => t('Overlay'),
++      'js' => TRUE,
++      'parent' => 'fullcalendar_options',
++    ),
++  );
++}
++
++/**
++ * Implements hook_fullcalendar_options_definition().
++ */
++function overlay_fullcalendar_options_definition() {
++  $options['overlay']['contains'] = array(
++    'overlay' => array(
++      'default' => FALSE,
++      'bool' => TRUE,
++    ),
++  );
++  return $options;
++}
++
++/**
++ * Implements hook_fullcalendar_options_form().
++ */
++function overlay_fullcalendar_options_form(&$form, &$form_state, &$view) {
++  $form['overlay']['overlay'] = array(
++    '#type' => 'checkbox',
++    '#title' => t('Open events with Overlay'),
++    '#default_value' => $view->options['overlay']['overlay'],
++    '#data_type' => 'bool',
++  );
++
++  $form['sameWindow']['#dependency'] = array('edit-style-options-overlay-overlay' => array(0));
++}
++
++/**
++ * Implements hook_fullcalendar_options_process().
++ */
++function overlay_fullcalendar_options_process(&$variables, &$settings) {
++  if (empty($settings['overlay']['overlay'])) {
++    unset($settings['overlay']);
++  }
++}
+diff --git a/sites/all/modules/fullcalendar/fullcalendar_options/js/overlay.fullcalendar.js b/sites/all/modules/fullcalendar/fullcalendar_options/js/overlay.fullcalendar.js
+new file mode 100644
+index 0000000..823b6d1
+--- /dev/null
++++ b/sites/all/modules/fullcalendar/fullcalendar_options/js/overlay.fullcalendar.js
+@@ -0,0 +1,28 @@
++(function($) {
++
++Drupal.fullcalendar.plugins.overlay = {
++  options: function (fullcalendar, settings) {
++    if (!settings.overlay) {
++      return;
++    }
++    settings = settings.overlay;
++
++    var options = {
++      eventClick: function(calEvent, jsEvent, view) {
++        // Use overlay only for events based on entities
++        if (calEvent.eid !== undefined) {
++          alert('penis');
++          var url = calEvent.url;
++          url = '#overlay=' + url;
++          $.overlay({
++            href: url
++          });
++        }
++        return false;
++      }
++    };
++    return options;
++  }
++};
++
++}(jQuery));
