@@ -11,7 +11,6 @@ Drupal.fullcalendar.plugins.overlay = {
       eventClick: function(calEvent, jsEvent, view) {
         // Use overlay only for events based on entities
         if (calEvent.eid !== undefined) {
-          alert('penis');
           var url = calEvent.url;
           url = '#overlay=' + url;
           $.overlay({

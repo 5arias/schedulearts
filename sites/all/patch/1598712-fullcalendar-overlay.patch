@@ -95,7 +95,6 @@ index 0000000..823b6d1
 +      eventClick: function(calEvent, jsEvent, view) {
 +        // Use overlay only for events based on entities
 +        if (calEvent.eid !== undefined) {
-+          alert('penis');
 +          var url = calEvent.url;
 +          url = '#overlay=' + url;
 +          $.overlay({
