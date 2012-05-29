@@ -141,6 +141,11 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
       $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
 
+      // Set the default repeat
+      $form['field_event_date']['und']['0']['show_repeat_settings']['#default_value'] = '1';
+      $form['field_event_date']['und']['0']['#default_value']['rrule'] = $parent_event->field_event_date['und']['0']['rrule'];
+      $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_repeat_disable';
+
       // Limit available options in the dropdowns with custom after_build and validation calls
       $min_date = new DateObject($parent_event->field_event_date['und']['0']['value']);
       $max_date = new DateObject($parent_event->field_event_date['und']['0']['value2']);
@@ -150,7 +155,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_limit';
       $form['field_event_date']['#element_validate'][] = 'schedulearts_call_date_validate';
 
-      // Set the description
+      // Set the field description
       $form_state['field']['field_event_date']['und']['instance']['description'] = t('Calls must be inside the event timerange of %from - %to.', array('%from' => date_format_date($min_date, 'custom', 'g:i a'), '%to' => date_format_date($max_date, 'custom', 'g:i a')));
     }
     else {
@@ -160,9 +165,15 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /*
+ * Hide pre-set repeat fields
+ */
+function schedulearts_call_date_repeat_disable($form_element, &$form_state) {
+  $form_element['#attributes']['class'][] = 'schedulearts-hidden-repeat';
+  return $form_element;
+}
+/*
  * Limit select options in field_event_date on Call node forms
  */
-
 function schedulearts_call_date_limit($form_element, &$form_state) {
   // set from date
   $min_date = $form_state['#schedulearts']['min_date'];
@@ -194,6 +205,9 @@ function schedulearts_call_date_limit($form_element, &$form_state) {
   return $form_element;
 }
 
+/*
+ * Custom validation to ensure that only valid dates are entered
+ */
 function schedulearts_call_date_validate($form_element, &$form_state, $form) {
   // Initialize variables; UNIX timestamps for all relevant times
   $min_date = $form_state['#schedulearts']['min_date'];

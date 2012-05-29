@@ -26,3 +26,8 @@ table {
 #call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value2-day {
   display: none;
 }
+
+#call-node-form .schedulearts-hidden-repeat .form-item-field-event-date-und-0-show-repeat-settings,
+#call-node-form .schedulearts-hidden-repeat #repeat-settings-fieldset {
+  display: none;
+}
