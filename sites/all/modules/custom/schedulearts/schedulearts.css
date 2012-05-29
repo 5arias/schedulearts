@@ -1,0 +1,33 @@
+
+/****************************/
+/* LOCAL CSS                */
+/****************************/
+
+/* Put your custom CSS and CSS overrides in this file and  */
+/* rename it local.css.  By restricting your CSS changes   */
+/* to local.css, your changes will not be overwritten when */
+/* upgrading to a new version of this theme.  You can also */
+/* use a local-rtl.css file for the equivalent in RTL.     */
+
+/* Steps to activate local.css:                       */
+/* 1. Add your custom CSS to this file                */
+/* 2. Rename this file to local.css                   */
+/* 3. Clear cached data at admin/settings/performance */
+
+table {
+  font-size: small;
+}
+
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-year,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-month,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-day,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value2-year,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value2-month,
+#call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value2-day {
+  display: none;
+}
+
+#call-node-form .schedulearts-hidden-repeat .form-item-field-event-date-und-0-show-repeat-settings,
+#call-node-form .schedulearts-hidden-repeat #repeat-settings-fieldset {
+  display: none !important;
+}

@@ -272,3 +272,15 @@ function schedulearts_node_update($node) {
     }
   }
 }
+
+/*
+ * Add my custom stylesheet to all themes
+ */
+function schedulearts_init() {
+  $options = array(
+    'group' => CSS_THEME,
+    'every_page' => TRUE,
+    'weight' => 9999
+  );
+  drupal_add_css(drupal_get_path('module', 'schedulearts') . '/schedulearts.css', $options);
+}
