@@ -57,6 +57,10 @@ h1, h2, h3, h4, h5, h6 {
   border-top: none;
 }
 
+.region-sidebar-first .views-exposed-form .views-submit-button {
+  clear: both;
+}
+
 /* BRANDING */
 
 .zone-branding-wrapper {
@@ -253,10 +257,6 @@ filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr
 
 
 
-#breadcrumb {display: none;}
-
-
-
 /*calendar*/
 
 table.fc-header {
@@ -297,4 +297,8 @@ background: none !important;
 
 .region-content-inner .block-system-main ul {
   margin-left: 20px;
+}
+
+select {
+  width: 170px;
 }
