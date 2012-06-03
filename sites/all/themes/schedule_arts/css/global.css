@@ -1,0 +1,233 @@
+/* This file will hold styles for the mobile version of your website (mobile first). */
+/* This also can include ANY global CSS that applies site-wide. Unless overwritten by a more specific style rule, CSS declarations in global.css will apply site-wide. */
+
+.grid-3 {
+  width: 25%;
+  max-width: 250px;
+  float: left;
+  margin: 0 20px;
+}
+
+.grid-6 {
+  width: 50%;
+  float: left;
+  margin: 0 20px;
+}
+
+.grid-9 {
+  width: 75%;
+  float: left;
+  margin: 0 20px;
+}
+
+.grid-12 {
+  margin: 0 20px;
+}
+
+body {
+  font-family: helvetica, arial, sans-serif !important;
+  background: #f3f3f3;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: helvetica, arial, sans-serif !important;
+}
+
+/* BRANDING */
+
+.zone-branding-wrapper {
+  background: #000;
+}
+
+.zone-branding .region-inner{
+  position: relative;
+}
+
+.branding-data {
+  width: 50%;
+}
+
+.zone-branding a,
+.zone-branding a:link,
+.zone-branding a:visited {
+  color: #fff;
+  text-decoration: none;
+}
+
+.zone-branding a:hover {
+  color: #ee9c42;
+}
+
+.zone-branding h1.site-name {
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+.block-user-menu {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.block-user-menu ul {
+  list-style: none;
+  margin: 10px 0 0;
+}
+
+.block-user-menu ul li.leaf {
+  display: inline;
+  font-size: 14px;
+}
+
+.zone-menu {
+  margin: 20px 0;
+}
+
+
+#superfish-1 a {
+  text-decoration: none;
+  padding: 4px 10px;
+}
+
+#superfish-1 li.sf-depth-1 {
+  margin-right: 10px;
+}
+
+#superfish-1 li a.sf-depth-1 {
+  font-weight: bold;
+  font-size: 18px !important;
+}
+
+#superfish-1 li a.sf-depth-1{
+  font-size: 14px;
+  background: #e7e7e7;
+  border: 1px solid #b6b6b6;
+  color: #727272;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 1);
+  padding: 8px 10px;
+}
+
+
+#superfish-1 li.sf-item-1.sf-depth-1.menuparent a{
+  background: #ee9c42;
+  color: #fff;
+  
+}
+
+#superfish-1 li.menuparent a{
+background: #dfdfdf;
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#dfdfdf), to(#f3f3f3));
+background: -webkit-linear-gradient(top, #f3f3f3, #dfdfdf); 
+background: -moz-linear-gradient(top, #f3f3f3, #dfdfdf); 
+background: -ms-linear-gradient(top, #f3f3f3, #dfdfdf); 
+background: -o-linear-gradient(top, #f3f3f3, #dfdfdf);
+-ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf')Ó;
+filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf'); 
+  color: #5a5a5a;
+}
+
+#superfish-1 li.menuparent.sfHover a, #superfish-1 li.menuparent a:hover{
+background: #cdcdcd;
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cdcdcd), to(#ececec));
+background: -webkit-linear-gradient(top, #ececec, #cdcdcd); 
+background: -moz-linear-gradient(top, #ececec, #cdcdcd); 
+background: -ms-linear-gradient(top, #ececec, #cdcdcd); 
+background: -o-linear-gradient(top, #ececec, #cdcdcd);
+-ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ececec', endColorstr='#cdcdcd')Ó;
+filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ececec', endColorstr='#cdcdcd'); 
+}
+
+
+#superfish-1 li.menuparent a.sf-depth-1{
+
+}
+
+#superfish-1 li.sf-item-1.menuparent a.sf-depth-1{
+  color: #bf5f02;
+  border: 1px solid #bf5f02;
+background: #ee9b40;
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ee9b40, to(#f2ad56)));
+background: -webkit-linear-gradient(top, #f2ad56, #ee9b40); 
+background: -moz-linear-gradient(top, #f2ad56, #ee9b40); 
+background: -ms-linear-gradient(top, #f2ad56, #ee9b40); 
+background: -o-linear-gradient(top, #f2ad56, #ee9b40);
+-ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f2ad56', endColorstr='#ee9b40')";
+filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f2ad56', endColorstr='#ee9b40'); 
+}
+
+#superfish-1 li.sf-item-1.menuparent a.sf-depth-1:hover, #superfish-1 li.sf-item-1.menuparent.sfHover a.sf-depth-1{
+background: #df7c17;
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#df7c17, to(#f2ad56)));
+background: -webkit-linear-gradient(top, #f2ad56, #df7c17); 
+background: -moz-linear-gradient(top, #f2ad56, #df7c17); 
+background: -ms-linear-gradient(top, #f2ad56, #df7c17); 
+background: -o-linear-gradient(top, #f2ad56, #df7c17);
+-ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f2ad56', endColorstr='#df7c17')";
+filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f2ad56', endColorstr='#df7c17'); 
+}
+
+#superfish-1 li.sf-item-1.sf-depth-1 ul {
+  border: 1px solid #bf5f02;
+  background: #ee9c42;
+}
+
+
+
+
+
+
+
+#superfish-1 li.sf-item-2 ul {
+  background: #e7e7e7;
+  border: 1px solid #b6b6b6;
+}
+
+#superfish-1 li.sf-item-1 li a {
+  background: #ee9c42 !important;
+
+}
+
+#superfish-1 li.sf-item-1 li a:hover {
+  background: #f5ae5e !important;
+}
+
+#superfish-1 li.sf-item-2 li a{
+  background: #e7e7e7 !important;
+}
+
+#superfish-1 li.sf-item-2 li a:hover {
+  background: #f4f4f4 !important;
+}
+
+#superfish-1 li ul  {
+  top: 35px;
+}
+
+#superfish-1 li ul ul {
+  top: -1px;
+}
+
+#superfish-1 li.menuparent li a{
+  border: none;
+}
+
+#superfish-1 li.sf-item-3.sf-depth-1 a:hover {
+background: #73d873;
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#73d873), to(#b3f3b3));
+background: -webkit-linear-gradient(top, #b3f3b3, #73d873); 
+background: -moz-linear-gradient(top, #b3f3b3, #73d873); 
+background: -ms-linear-gradient(top, #b3f3b3, #73d873); 
+background: -o-linear-gradient(top, #b3f3b3, #73d873);
+-ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#b3f3b3', endColorstr='#73d873')";
+filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#b3f3b3', endColorstr='#73d873'); 
+  border: 1px solid #49a749;
+}
+
+
+
+#breadcrumb {display: none;}
+
+.sidebar-first #messages {
+  width: 75%;
+  margin-left: 310px;
+}
