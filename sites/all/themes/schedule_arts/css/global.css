@@ -33,6 +33,8 @@ h1, h2, h3, h4, h5, h6 {
   font-family: helvetica, arial, sans-serif !important;
 }
 
+.front h1#page-title {display: none;}
+
 .region-sidebar-first h2.block-title, h1#page-title {
   background: #dfdfdf;
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#dfdfdf), to(#f3f3f3));
