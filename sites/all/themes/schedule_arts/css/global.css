@@ -275,3 +275,26 @@ table tr.even:hover td.active,
 table tr.odd:hover td.active {
 background: none !important;
 }
+
+/*page*/
+
+.region-content-inner h1 {
+  margin-bottom: 0px;
+}
+
+.region-content-inner .block-system-main {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #b8b8b8;
+  border-top: none;
+}
+
+.region-content-inner .block-system-main.block-without-title {
+  background: inherit;
+  padding: 0px;
+  border: none;
+}
+
+.region-content-inner .block-system-main ul {
+  margin-left: 20px;
+}
