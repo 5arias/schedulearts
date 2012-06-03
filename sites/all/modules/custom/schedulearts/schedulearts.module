@@ -101,10 +101,18 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
 
 function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   // tweaks to user-groups View
-
+	
   // make the search field bigger
   if($form_id == 'views_exposed_form') {
     $form['field_user_searchable_name_value']['#size'] = 60;
+		
+		//set select size to one
+		foreach ($form as $key => $element) {
+			if ($key != 'field_user_searchable_name_value' && isset($element['#type']) && $element['#type'] == 'select') {
+				$form[$key]['#size'] = 1;
+			}
+		}
+		
   }
   // Set the order of VBO options 
   if($form_id == 'views_form_user_groups_page') {
@@ -162,6 +170,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       drupal_set_message(t('Notice: Calls are designed to be added as a part of an Event, but no parent Event was detected.'), 'warning');
     }
   }
+	
 }
 
 /*
