@@ -250,3 +250,14 @@ filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr
 
 
 #breadcrumb {display: none;}
+
+
+
+/*calendar*/
+
+table.fc-header {
+  border: none;
+  margin-bottom: 0;
+  }
+
+table.fc-header h2 {margin-bottom: 0;}
