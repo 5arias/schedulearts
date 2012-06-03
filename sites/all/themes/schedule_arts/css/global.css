@@ -289,7 +289,7 @@ background: none !important;
   border-top: none;
 }
 
-.region-content-inner .block-system-main.block-without-title {
+.front .region-content-inner .block-system-main {
   background: inherit;
   padding: 0px;
   border: none;
