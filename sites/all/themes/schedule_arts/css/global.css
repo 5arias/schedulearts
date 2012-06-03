@@ -258,6 +258,10 @@ filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr
 table.fc-header {
   border: none;
   margin-bottom: 0;
-  }
+  background: none !important;
+}
 
-table.fc-header h2 {margin-bottom: 0;}
+table.fc-header h2 {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
