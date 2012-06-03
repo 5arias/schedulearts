@@ -265,3 +265,9 @@ table.fc-header h2 {
   font-size: 20px;
   margin-bottom: 5px;
 }
+
+table tr:hover td,
+table tr.even:hover td.active,
+table tr.odd:hover td.active {
+background: none !important;
+}
