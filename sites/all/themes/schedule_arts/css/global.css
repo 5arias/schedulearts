@@ -1,6 +1,6 @@
 /* This file will hold styles for the mobile version of your website (mobile first). */
 /* This also can include ANY global CSS that applies site-wide. Unless overwritten by a more specific style rule, CSS declarations in global.css will apply site-wide. */
-
+/*
 .grid-3 {
   width: 25%;
   max-width: 250px;
@@ -23,7 +23,7 @@
 .grid-12 {
   margin: 0 20px;
 }
-
+*/
 body {
   font-family: helvetica, arial, sans-serif !important;
   background: #f3f3f3;
@@ -248,8 +248,3 @@ filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr
 
 
 #breadcrumb {display: none;}
-
-.sidebar-first #messages {
-  width: 75%;
-  margin-left: 310px;
-}
