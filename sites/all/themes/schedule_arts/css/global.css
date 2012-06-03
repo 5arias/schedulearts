@@ -87,6 +87,10 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 10px;
 }
 
+.logo-img {
+  margin-right: 5px;
+}
+
 .block-user-menu {
   position: absolute;
   right: 0;
