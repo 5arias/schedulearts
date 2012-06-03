@@ -80,7 +80,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #ee9c42;
 }
 
-.zone-branding h1.site-name {
+.zone-branding .site-name {
   font-size: 24px;
   margin-top: 10px;
 }
