@@ -60,7 +60,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .region-sidebar-first .views-exposed-form .views-submit-button {
   clear: both;
+
 }
+
+.region-sidebar-first .views-exposed-form .form-submit {
+  margin: 5px 10px 0 0 !important;
+}
+
+.region-sidebar-first .views-exposed-widgets label {
+  float: left;
+  width: 60px;
+}
+
+.region-sidebar-first .views-exposed-widget {
+  padding-right: 0;
+}
+
+.region-sidebar-first .views-exposed-widgets .views-widget {
+  float: left;
+  width: 190px;
+}
+
+.region-sidebar-first .views-exposed-widgets .views-widget select {
+  width: 190px;
+  padding: 3px;
+}
+
 
 /* BRANDING */
 
@@ -303,10 +328,6 @@ background: none !important;
 
 .region-content-inner .block-system-main ul {
   margin-left: 20px;
-}
-
-select {
-  width: 170px;
 }
 
 
