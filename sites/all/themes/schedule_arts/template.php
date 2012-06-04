@@ -26,5 +26,9 @@ function schedule_arts_alpha_preprocess_html(&$variables) {
   else {
     $variables['attributes_array']['class'][] = 'no-sidebars';
   }
+	
+	if (overlay_get_mode() == 'child') {
+		drupal_add_css(path_to_theme() . '/css/overlay-child.css', array('group' => CSS_THEME, 'weight' => 115, 'browsers' => array(), 'preprocess' => FALSE));
+	}
 }
 ?>
