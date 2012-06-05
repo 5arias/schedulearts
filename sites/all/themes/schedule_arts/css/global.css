@@ -54,7 +54,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 12px 9px;
   background: #f9f9f9;
   border: 1px solid #b8b8b8;
-
+  border-top: none;
   margin-bottom:  10px;
 }
 
