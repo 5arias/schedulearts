@@ -35,4 +35,4 @@ table {
 
 /*overlay overrides*/
 #overlay-titlebar {display: none;}
-#section-header {display: none;}
+#overlay-content #section-header {display: none;}
