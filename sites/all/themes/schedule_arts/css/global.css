@@ -405,12 +405,24 @@ ul.tabs.primary li.active a.active {
 div.messages {
 -moz-border-radius: 4px;
 -webkit-border-radius: 4px;
-border-radius: 4px; 
+border-radius: 4px;
+margin: 0 0 10px;
 }
 
-div.status { border-color #82b968; }
-div.warning { border-color #debf62; }
-div.error { border-color #c74f4c; }
+div.status {
+  border-color #82b968;
+  background-image: url(../images/message-24-ok.png);
+}
+
+div.warning {
+  border-color #debf62;
+  background-image: url(../images/message-24-warning.png);  
+}
+
+div.error {
+  border-color #c74f4c;
+  background-image: url(../images/message-24-error.png);
+}
 
 div.status,
 table tr.ok { background-color: #c4e4a5 ; }
