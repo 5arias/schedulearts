@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
   -ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf')Ó;
   filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf');
   font-size: 16px;
-  padding: 3px 5px 1px;
+  padding: 3px 5px 1px 10px;
   border: 1px solid #b8b8b8;
   border-bottom: none;
   font-weight: normal;
@@ -422,6 +422,7 @@ div.warning {
 div.error {
   border-color #c74f4c;
   background-image: url(../images/message-24-error.png);
+  color: #fff;
 }
 
 div.status,
