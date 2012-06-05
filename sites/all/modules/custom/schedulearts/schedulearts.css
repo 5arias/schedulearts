@@ -31,3 +31,8 @@ table {
 #call-node-form .schedulearts-hidden-repeat #repeat-settings-fieldset {
   display: none !important;
 }
+
+
+/*overlay overrides*/
+#overlay-titlebar {display: none;}
+#section-header {display: none;}
