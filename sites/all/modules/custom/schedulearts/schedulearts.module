@@ -150,9 +150,11 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
 
       // Set the default repeat
-      $form['field_event_date']['und']['0']['show_repeat_settings']['#default_value'] = '1';
-      $form['field_event_date']['und']['0']['#default_value']['rrule'] = $parent_event->field_event_date['und']['0']['rrule'];
-      $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_repeat_disable';
+      if (!empty($parent_event->field_event_date[LANGUAGE_NONE]['0']['rrule'])) {
+        $form['field_event_date']['und']['0']['show_repeat_settings']['#default_value'] = '1';
+        $form['field_event_date']['und']['0']['#default_value']['rrule'] = $parent_event->field_event_date['und']['0']['rrule'];
+        $form['field_event_date']['#after_build'][] = 'schedulearts_call_date_repeat_disable';
+      }
 
       // Limit available options in the dropdowns with custom after_build and validation calls
       $min_date = new DateObject($parent_event->field_event_date['und']['0']['value']);
