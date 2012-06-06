@@ -34,5 +34,5 @@ table {
 
 
 /*overlay overrides*/
-#overlay-titlebar {display: none;}
+/*#overlay-titlebar {display: none;}*/
 #overlay-content #section-header {display: none;}
