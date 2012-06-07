@@ -24,6 +24,12 @@ function taxonomy_copy_rules_action_info() {
           'label' => 'Destination parent term',
         ),
       ),
+      'provides' => array(
+        'created_term' => array(
+          'type' => 'taxonomy_term',
+          'label' => t('Created term'),
+        ),
+      ),
     ),
   );
 }
