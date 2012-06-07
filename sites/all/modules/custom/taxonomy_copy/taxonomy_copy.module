@@ -1,0 +1,46 @@
+<?
+/**
+ * Copy taxonomy term to another VID and/or parent
+ */
+function _taxonomy_copy_copy_term($oldtid, $newvid, $newparent) {
+  $new_term = taxonomy_term_load($oldtid);
+  unset($new_term->tid);
+  unset($new_term->vocabulary_machine_name);
+  if (isset($new_term->original)) {
+    unset($new_term->original);
+  }
+  $new_term->parent = $newparent;
+  $new_term->vid = $newvid;
+  $new_term->weight = '0';
+  $status = taxonomy_term_save($new_term);
+  if ($status == '1') { 
+    $old_term = taxonomy_term_load($oldtid);
+    $children = taxonomy_get_tree($old_term->vid, $oldtid, '1');
+    foreach ($children as $child) {
+      _taxonomy_copy_copy_term($child->tid, $newvid, $new_term->tid);
+    }
+  }
+  else {
+   drupal_set_message(t('Term copy failed with status: %status', array('%status' => $status))); 
+   break;
+  }
+}
+
+function _taxonomy_copy_copy_vocab($oldvid, $newvid, $newparent) {
+  $top_tids = taxonomy_get_tree($oldvid, '0', '1');
+  foreach ($top_tids as $tid) {
+    _taxonomy_copy_copy_term($tid->tid, $newvid, $newparent);
+  }
+}
+
+/**
+ * Rules Action: Copy taxonomy term
+ */
+function taxonomy_copy_copy_term($oldterm, $newvocab, $newparentobj) {
+  $oldtid = $oldterm->tid;
+  $newvid = $newvocab->vid;
+  $newparent = $newparentobj->tid;
+  _taxonomy_copy_copy_term($oldtid, $newvid, $newparent);
+}
+
+?>
