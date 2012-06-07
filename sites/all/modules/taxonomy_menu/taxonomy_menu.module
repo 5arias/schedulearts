@@ -453,7 +453,7 @@ function _taxonomy_menu_taxonomy_termapi_helper($term, $operation) {
     taxonomy_menu_handler($operation, $item);
 
     // report status
-    drupal_set_message($message, 'status');
+    //drupal_set_message($message, 'status');
 
     // rebuild the menu
     menu_cache_clear($menu_name);
