@@ -196,7 +196,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     if ($new_opts) {
       $form['field_season']['und']['#options'] = $new_opts;
     }
-    $form_state['schedulearts_redirect'] = 'master-calendar';
+    //$form_state['schedulearts_redirect'] = 'master-calendar';
   }
   if (substr($form_id, -9) == 'node_form') {
     $form['actions']['submit']['#submit'][] = 'schedulearts_redirect_submit_handler';
