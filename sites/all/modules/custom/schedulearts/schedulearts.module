@@ -211,7 +211,8 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   }
 
   // Tweaks to the Event Type form
-  if ($form_id = 'colors_generate_settings_form') {
+  if ($form_id = 'colors_generate_settings_form' && $form['#vocabulary']->vid == '6') {
+    $form['relations']['#attributes']['class'][] = 'schedulearts-hidden';
     // TO DO: add a color picker to this edit form
   }
     
@@ -360,4 +361,27 @@ function schedulearts_init() {
     'weight' => 9999
   );
   drupal_add_css(drupal_get_path('module', 'schedulearts') . '/schedulearts.css', $options);
+}
+
+/*
+ * Implements hook_menu
+ * Improving the access callback requirements for taxonomy term add forms
+ */
+function schedulearts_menu() {
+  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add'] = array(
+    'access callback' => 'schedulearts_vocabulary_access',
+    'access arguments' => array(3),
+    'title' => 'Add term',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('taxonomy_form_term', array(), 3),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'taxonomy.admin.inc',
+    'file path' => 'modules/taxonomy',
+  );
+  return $items;
+}
+
+// Custom access callback for taxonomy term add form - checks that you can EDIT the vocab
+function schedulearts_vocabulary_access($vid) {
+  return user_access("edit terms in $vid->vid") || user_access('administer taxonomy');
 }
