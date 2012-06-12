@@ -23,6 +23,10 @@ function taxonomy_copy_rules_action_info() {
           'type' => 'taxonomy_term',
           'label' => 'Destination parent term',
         ),
+        'newname' => array(
+          'type' => 'text',
+          'label' => 'New term name',
+        ),
       ),
       'provides' => array(
         'created_term' => array(

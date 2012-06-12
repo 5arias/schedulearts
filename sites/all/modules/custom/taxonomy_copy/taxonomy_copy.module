@@ -2,7 +2,7 @@
 /**
  * Copy taxonomy term to another VID and/or parent. Trigger copy of children
  */
-function _taxonomy_copy_copy_term($oldtid, $newvid, $newparent) {
+function _taxonomy_copy_copy_term($oldtid, $newvid, $newparent, $newname) {
   $new_term = taxonomy_term_load($oldtid);
   if (isset($new_term->tid)) {
     unset($new_term->tid);
@@ -13,6 +13,7 @@ function _taxonomy_copy_copy_term($oldtid, $newvid, $newparent) {
   if (isset($new_term->original)) {
     unset($new_term->original);
   };
+  $new_term->name = $newname;
   $new_term->parent = $newparent;
   $new_term->vid = $newvid;
   $new_term->weight = '0';
@@ -79,11 +80,11 @@ function _taxonomy_copy_copy_vocab($oldvid, $newvid, $newparent) {
 /**
  * Rules Action wrapper: Copy taxonomy term
  */
-function taxonomy_copy_copy_term($oldterm, $newvocab, $newparentobj) {
+function taxonomy_copy_copy_term($oldterm, $newvocab, $newparentobj, $newname) {
   $oldtid = $oldterm->tid;
   $newvid = $newvocab->vid;
   $newparent = $newparentobj->tid;
-  $created_term = _taxonomy_copy_copy_term($oldtid, $newvid, $newparent);
+  $created_term = _taxonomy_copy_copy_term($oldtid, $newvid, $newparent, $newname);
   return array('created_term' => $created_term);
 }
 ?>
