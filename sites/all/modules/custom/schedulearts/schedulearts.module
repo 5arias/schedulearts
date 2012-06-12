@@ -176,14 +176,19 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   // Tweaks to the Add Production form
   if ($form_id == 'production_node_form') {
     // Limit available "group structures" to the top level of the vocabulary
-    $new_opts = '';
-    foreach ($form['field_group_structure']['und']['#options'] as $tid => $title) {
-      if (!taxonomy_get_parents($tid)) {
-        $new_opts[$tid] = $title;
+    if (isset($form['field_group_structure']['und']['#options'])) {
+      $new_opts = '';
+      foreach ($form['field_group_structure']['und']['#options'] as $tid => $title) {
+        if (!taxonomy_get_parents($tid)) {
+          $new_opts[$tid] = $title;
+        }
+      }
+      if ($new_opts) {
+        $form['field_group_structure']['und']['#options'] = $new_opts;
       }
     }
-    if ($new_opts) {
-      $form['field_group_structure']['und']['#options'] = $new_opts;
+    else {
+      drupal_set_message(t('WARNING: No standard Group structures detected. Groups will not be auto-populated for this Production.'), 'warning');
     }
 
     // Limit available "Seasons" to the top level of the vocabulary, too
