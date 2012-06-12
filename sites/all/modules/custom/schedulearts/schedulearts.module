@@ -201,13 +201,13 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     if ($new_opts) {
       $form['field_season']['und']['#options'] = $new_opts;
     }
-    //$form_state['schedulearts_redirect'] = 'master-calendar';
   }
 
   //Tweaks to the Add Master Calendar Event form
   if ($form_id == 'master_calendar_event_node_form') {
     $form['field_date']['#after_build'][] = 'schedulearts_mc_date_repeat_defaults';
     $form['field_prod_color']['#attributes']['class'][] = 'schedulearts-hidden';
+    $form_state['schedulearts_redirect'] = 'master-calendar';
   }
     
   // Add custom redirect to node forms
