@@ -13,9 +13,8 @@ function schedulearts_views_api() {
  * Implements hook_flag_link().
  *
  * When Flag uses a link type provided by this module, it will call this
- * implementation of hook_flag_link(). It returns a single link's attributes,
- * using the same structure as hook_link(). Note that "title" is provided by
- * the Flag configuration if not specified here.
+ * implementation of hook_flag_link(). 
+ * This implementation sends a schedule email in response to the schedule flag
  *
  * @param $flag
  *   The full flag object of for the flag link being generated.
