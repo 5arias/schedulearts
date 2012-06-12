@@ -209,7 +209,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     $form_state['schedulearts_redirect'] = 'master-calendar';
   }
   // Tweaks to the Event Type form
-  if ($form_id == 'taxonomy_form_term' && $form['#vocabulary']->vid == '6') {
+  if ($form_id == 'taxonomy_form_term' && ($form['#vocabulary']->vid == '6' || $form['#vocabulary']->vid == '4')) {
     $form['relations']['#attributes']['class'][] = 'schedulearts-hidden';
     // TO DO: add a color picker to this edit form
   }
