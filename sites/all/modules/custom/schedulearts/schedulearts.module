@@ -211,9 +211,11 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   }
 
   // Tweaks to the Event Type form
-  if ($form_id = 'colors_generate_settings_form' && $form['#vocabulary']->vid == '6') {
-    $form['relations']['#attributes']['class'][] = 'schedulearts-hidden';
-    // TO DO: add a color picker to this edit form
+  if ($form_id = 'colors_generate_settings_form') {
+    if ($form['#vocabulary']->vid == '6') {
+      $form['relations']['#attributes']['class'][] = 'schedulearts-hidden';
+      // TO DO: add a color picker to this edit form
+    }
   }
     
   // Add custom redirect to node forms
