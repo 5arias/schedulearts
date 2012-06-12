@@ -214,10 +214,23 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     // TO DO: add a color picker to this edit form
   }
 
+  // Tweaks to the Create Event form
+  if ($form_id == 'event_node_form') {
+    // TODO: Date single day
+    //array_unshift($form['#validate'], 'schedulearts_single_date_copy');
+  }
+
   // Add custom redirect to node forms
   if (substr($form_id, -9) == 'node_form') {
     $form['actions']['submit']['#submit'][] = 'schedulearts_redirect_submit_handler';
   }
+}
+
+/*
+ * Custom validation call to handle single day date fields
+ */
+function schedulearts_single_date_copy($form_element, &$form_state) {
+  // TODO: make this work
 }
 
 /*
