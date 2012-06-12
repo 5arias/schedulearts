@@ -69,7 +69,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .region-sidebar-first .views-exposed-widgets label {
   float: left;
-  width: 60px;
+  width: 75px;
 }
 
 .region-sidebar-first .views-exposed-widget {
@@ -78,11 +78,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .region-sidebar-first .views-exposed-widgets .views-widget {
   float: left;
-  width: 190px;
+  width: 185px;
 }
 
 .region-sidebar-first .views-exposed-widgets .views-widget select {
-  width: 190px;
+  width: 185px;
   padding: 3px;
 }
 
