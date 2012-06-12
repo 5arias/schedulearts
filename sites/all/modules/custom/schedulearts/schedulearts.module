@@ -209,6 +209,11 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     $form['field_prod_color']['#attributes']['class'][] = 'schedulearts-hidden';
     $form_state['schedulearts_redirect'] = 'master-calendar';
   }
+
+  // Tweaks to the Event Type form
+  if ($form_id = 'colors_generate_settings_form') {
+    // TO DO: add a color picker to this edit form
+  }
     
   // Add custom redirect to node forms
   if (substr($form_id, -9) == 'node_form') {
