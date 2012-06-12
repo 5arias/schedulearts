@@ -1,0 +1,122 @@
+<?php
+
+/** 
+ * Implements hook_menu
+ */
+function taxonomy_delete_link_menu() {
+  $items['taxonomy/term/%taxonomy_term/delete'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('taxonomy_delete_link_get_form', 2),
+    'access callback' => 'taxonomy_delete_link_access',
+    'access arguments' => array(2),
+    'weight' => '12',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+function taxonomy_delete_link_access($term) {
+  return user_access("delete terms from $term->vid") || user_access('administer taxonomy');
+}
+
+function taxonomy_delete_link_get_form($form, &$form_state, $edit = array(),$vocabulary = NULL) {
+  // During initial form build, add the term entity to the form state for use
+  // during form building and processing. During a rebuild, use what is in the
+  // form state.
+  if (!isset($form_state['term'])) {
+    $term = is_object($edit) ? $edit : (object) $edit;
+    if (!isset($vocabulary) && isset($term->vid)) {
+      $vocabulary = taxonomy_vocabulary_load($term->vid);
+    }
+    $defaults = array(
+      'name' => '',
+      'description' => '',
+      'format' => NULL,
+      'vocabulary_machine_name' => isset($vocabulary) ? $vocabulary->machine_name : NULL,
+      'tid' => NULL,
+      'weight' => 0,
+    );
+    foreach ($defaults as $key => $value) {
+      if (!isset($term->$key)) {
+        $term->$key = $value;
+      }
+    }
+    $form_state['term'] = $term;
+  }
+  else {
+    $term = $form_state['term'];
+    if (!isset($vocabulary) && isset($term->vid)) {
+      $vocabulary = taxonomy_vocabulary_load($term->vid);
+    }
+  }
+
+  $parent = array_keys(taxonomy_get_parents($term->tid));
+  $form['#term'] = (array) $term;
+  $form['#term']['parent'] = $parent;
+  $form['#vocabulary'] = $vocabulary;
+
+
+
+  return array_merge($form, taxonomy_term_delete_link_confirm_delete($form, $form_state, $term->tid));
+}
+
+function taxonomy_delete_link_get_form_submit($form, &$form_state) {
+  if ($form_state['triggering_element']['#value'] == t('Delete')) {
+    // Execute the term deletion.
+    if ($form_state['values']['delete'] === TRUE) {
+      return taxonomy_term_delete_link_confirm_delete_submit($form, $form_state);
+    }
+    // Rebuild the form to confirm term deletion.
+    $form_state['rebuild'] = TRUE;
+    $form_state['confirm_delete'] = TRUE;
+    return;
+  }
+}
+
+
+/**
+ * Form builder for the term delete form.
+ *
+ * @ingroup forms
+ * @see taxonomy_term_confirm_delete_submit()
+ */
+function taxonomy_term_delete_link_confirm_delete($form, &$form_state, $tid) {
+  $term = taxonomy_term_load($tid);
+
+  // Always provide entity id in the same form key as in the entity edit form.
+  $form['tid'] = array('#type' => 'value', '#value' => $tid);
+
+  $form['#term'] = $term;
+  $form['type'] = array('#type' => 'value', '#value' => 'term');
+  $form['name'] = array('#type' => 'value', '#value' => $term->name);
+  $form['vocabulary_machine_name'] = array('#type' => 'value', '#value' => $term->vocabulary_machine_name);
+  $form['delete'] = array('#type' => 'value', '#value' => TRUE);
+  return confirm_form($form,
+    t('Are you sure you want to delete %title?',
+    array('%title' => $term->name)),
+    '/',
+    t('Deleting a term will delete all its children if there are any. This action cannot be undone.'),
+    t('Delete'),
+    t('Cancel'));
+}
+
+/**
+ * Submit handler to delete a term after confirmation.
+ *
+ * @see taxonomy_term_confirm_delete()
+ */
+function taxonomy_term_delete_link_confirm_delete_submit($form, &$form_state) {
+  taxonomy_term_delete($form_state['values']['tid']);
+  taxonomy_check_vocabulary_hierarchy($form['#vocabulary'], $form_state['values']);
+  drupal_set_message(t('Deleted term %name.', array('%name' => $form_state['values']['name'])));
+  watchdog('taxonomy', 'Deleted term %name.', array('%name' => $form_state['values']['name']), WATCHDOG_NOTICE);
+  $form_state['redirect'] = 'admin/structure/taxonomy';
+  cache_clear_all();
+  return;
+}
+
+
+?>
+
+
