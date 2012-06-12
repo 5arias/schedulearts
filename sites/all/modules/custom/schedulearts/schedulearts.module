@@ -198,9 +198,26 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     }
     //$form_state['schedulearts_redirect'] = 'master-calendar';
   }
+
+  //Tweaks to the Add Master Calendar Event form
+  if ($form_id == 'master_calendar_event_node_form') {
+    $form['field_date']['#after_build'][] = 'schedulearts_mc_date_repeat_defaults';
+  }
+    
+  // Add custom redirect to node forms
   if (substr($form_id, -9) == 'node_form') {
     $form['actions']['submit']['#submit'][] = 'schedulearts_redirect_submit_handler';
   }
+}
+
+/*
+ * Custom form element after_build, manipulates date repeat defaults for MC Events
+ */
+function schedulearts_mc_date_repeat_defaults($form_element, &$form_state) {
+  $form_element['und']['0']['show_todate']['#title'] = t('Add End Date');
+  $form_element['und']['0']['show_todate']['#default_value'] = FALSE;
+  $form_element['und']['0']['show_todate']['#checked'] = FALSE;
+  return $form_element;
 }
 
 /* 
