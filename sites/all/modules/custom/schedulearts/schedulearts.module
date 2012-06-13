@@ -375,21 +375,17 @@ function schedulearts_init() {
 }
 
 /*
- * Implements hook_menu
- * Improving the access callback requirements for taxonomy term add forms
+ * Implements hook_menu_alter()
+ * Improving access callbacks for Taxonomy menu items. So "edit" is the only permission you need
  */
-function schedulearts_menu() {
-  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add'] = array(
-    'access callback' => 'schedulearts_vocabulary_access',
-    'access arguments' => array(3),
-    'title' => 'Add term',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('taxonomy_form_term', array(), 3),
-    'type' => MENU_LOCAL_ACTION,
-    'file' => 'taxonomy.admin.inc',
-    'file path' => 'modules/taxonomy',
-  );
-  return $items;
+function schedulearts_menu_alter(&$items) {
+  // Taxonomy Manager
+  $items['admin/structure/taxonomy_manager/voc/%taxonomy_vocabulary_machine_name']['access callback'] = 'schedulearts_vocabulary_access';
+  $items['admin/structure/taxonomy_manager/voc/%taxonomy_vocabulary_machine_name']['access arguments'] = array(4);
+
+  // Taxonomy add term forms
+  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access callback'] = 'schedulearts_vocabulary_access';
+  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access arguments'] = array(3);
 }
 
 // Custom access callback for taxonomy term add form - checks that you can EDIT the vocab
