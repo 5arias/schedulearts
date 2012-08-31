@@ -43,19 +43,22 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
       foreach ($users as $user) {
         $userfields = reset(entity_load('user', array($user->uid)));
         // Build the view
-        $allowed_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
         $view = views_get_view('taxonomy_term_calendar' , TRUE);
         $arg[] = $node->field_sched_date['und']['0'];
         $arg[] = $userfields->uid;
         $views_result = $view->preview('page_2', $arg);
+        // convert the view to text
+        $allowed_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
         $sched_view_output = drupal_html_to_text($views_result, $allowed_tags);
 
+        // Build the actual email
         $sched_from = variable_get('system_mail', 'info@schedulearts.com');
         $sched_to = $userfields->mail;
         $sched_to_name = $userfields->name;
         $sched_daterng = $node->field_sched_date['und']['0']['value'] . ' - ' . $node->field_sched_date['und']['0']['value2'];
         $sched_subj = 'Your personal schedule for ' . $sched_daterng;
         if ($node->body['und']) $sched_note = $node->body['und']['0']['value'];
+        // email body. Multiline quoted because I'm lazy. Indents get preserved into the email message!
         $sched_body = "Dear $sched_to_name,
       
   $sched_note 

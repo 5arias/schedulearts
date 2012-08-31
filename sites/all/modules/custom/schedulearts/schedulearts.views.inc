@@ -28,6 +28,7 @@ function schedulearts_views_query_alter(&$view, &$query) {
         // set UID filter to the user's UID
         if ($condition['field'] == 'field_data_field_event_individuals.field_event_individuals_target_id') {
           $condition['value']['0'] = $url_uid;
+          $condition['operator'] = '=';
         }
       }
     }
@@ -51,15 +52,18 @@ function schedulearts_views_query_alter(&$view, &$query) {
       foreach ($condition_group['conditions'] as &$condition) {
         if ($condition['field'] == 'field_data_field_event_groups_tax.field_event_groups_tax_tid') {
           $condition['value'] = $ugroups_array;
+          $condition['operator'] = 'IN';
         }
         // set UID filter to the user's UID
         if ($condition['field'] == 'field_data_field_event_individuals.field_event_individuals_target_id') {
           $condition['value']['0'] = $url_uid;
+          $condition['operator'] = '=';
         }
         // Set date range filter from argument
+        // note: you have to trim the time off the date field, because the field time format is different from the filter time format.
         if ($condition['field'] == 'DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') >= :node_date_filter AND DATE_FORMAT(field_data_field_event_date.field_event_date_value, \'%Y-%m-%d\') <= :node_date_filter1' && $view->args[0] !== 'none') {
-          $condition['value'][':node_date_filter'] = $daterange['value'];
-          $condition['value'][':node_date_filter1'] = $daterange['value2'];
+          $condition['value'][':node_date_filter'] = substr($daterange['value'], 0, -9);
+          $condition['value'][':node_date_filter1'] = substr($daterange['value2'], 0, -9);
         }
       }
     }
