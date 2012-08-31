@@ -23,6 +23,7 @@ function schedulearts_views_query_alter(&$view, &$query) {
       foreach ($condition_group['conditions'] as &$condition) {
         if ($condition['field'] == 'field_data_field_event_groups_tax.field_event_groups_tax_tid') {
           $condition['value'] = $ugroups_array;
+          $condition['operator'] = 'IN';
         }
         // set UID filter to the user's UID
         if ($condition['field'] == 'field_data_field_event_individuals.field_event_individuals_target_id') {
