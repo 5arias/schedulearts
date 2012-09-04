@@ -1,0 +1,5 @@
+name = Schedulearts print layout page
+description = Add a print layout to schedule pages.
+core = 7.x
+
+package = Other

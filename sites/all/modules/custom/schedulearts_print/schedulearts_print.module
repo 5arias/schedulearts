@@ -9,8 +9,8 @@
  */
 function schedulearts_print_permission() {
   return array(
-    'schedulearts print page' => array(
-      'title' => 'Access schedulearts print page',
+    'schedule print page' => array(
+      'title' => 'Access schedule print page',
     ),
   );
 }
@@ -24,7 +24,7 @@ function schedulearts_print_menu() {
   $items['schedule/%/print'] = array(
       'page callback' => 'schedulearts_print_page',
       'page arguments' => array(1),
-      'access arguments' => array('schedulearts print page'),
+      'access arguments' => array('schedule print page'),
       'type' => MENU_CALLBACK,
   );
   
