@@ -40,6 +40,7 @@ function schedulearts_print_menu() {
  *   An array keyed by the event nid.
  */
 function schedulearts_print_event_data_query($date) {
+  $data = array();
   $query = db_select('node', 'n');  
   
   $query->join('field_data_field_event_date', 'd', 'd.entity_id = n.nid');
@@ -64,7 +65,7 @@ function schedulearts_print_event_data_query($date) {
   $query->fields('cb', array('body_value'));
   $query->fields('cd', array('field_event_date_value', 'field_event_date_value2'));
 
-  $query->condition('d.field_event_date_value', $date, 'LIKE');
+  $query->condition('d.field_event_date_value', $date . '%', 'LIKE');
   $query->orderBy('d.field_event_date_value');
   
   $result = $query->execute();  
