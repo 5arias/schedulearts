@@ -453,3 +453,12 @@ textarea:focus {
   box-shadow: #f4a558 0 0 6px 0;
   z-index: 1;
 }
+
+
+/* events-schedule view */
+.view-events-schedule li.date, .view-events-schedule .views-field-field-event-date {width: 25%;}
+.view-events-schedule li.title, .view-events-schedule .views-field-field-event-individuals {width: 25%;}
+.view-events-schedule li.location, .view-events-schedule .views-field-body {width: 50%;}
+.view-events-schedule ul {list-style-type: none;}
+.view-events-schedule li {float: left;font-weight: bold;text-align: left;}
+.view-events-schedule .views-field-field-event-date

@@ -1,0 +1,5 @@
+name = Schedulearts print-view page
+description = Create schedulearts print-view page.
+core = 7.x
+
+package = Other
