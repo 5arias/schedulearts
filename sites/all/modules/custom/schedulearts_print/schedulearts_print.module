@@ -27,12 +27,15 @@ function schedulearts_print_menu() {
       'access arguments' => array('schedule print page'),
       'type' => MENU_CALLBACK,
   );
-  
+
   return $items;
 }
 
 /**
  * Return every call for a day grouped by events.
+ * 
+ * The query is a bit redundant because it contains event specific info for
+ * every call but at least it's only one query.
  * 
  * @param $date
  *   The date in Y-m-d format.
@@ -106,7 +109,9 @@ function schedulearts_print_page($date) {
         $output .= schedulearts_print_rehearsal_content($value['data']);
     }    
   }
-    
+
+  drupal_add_css(drupal_get_path('module', 'schedulearts_print') . "/css/schedulearts_print.css", array('preprocess' => FALSE));
+  
   return $output;
 }
 
@@ -129,10 +134,10 @@ function schedulearts_print_rehearsal_content($data) {
   $data_top = array_shift($data);
     
   $header = array(schedulearts_print_format_date($data_top->field_event_date_value) . ' - '
-                    . schedulearts_print_format_date($data_top->field_event_date_value2),
-                  $data_top->title,
-                  node_load($data_top->field_event_location_target_id)->title);
-  
+                                  . schedulearts_print_format_date($data_top->field_event_date_value2),
+                                  $data_top->title,
+                                  node_load($data_top->field_event_location_target_id)->title);
+ 
   // Put the called groups and individuals who have to be there from the start
   // into our array, and add the call description.
   if ($data_top->field_event_groups_tax_tid) {
@@ -168,30 +173,33 @@ function schedulearts_print_rehearsal_content($data) {
   
   // Output event description, if set.
   if (isset($data_top->body_value)) {
-    $rows[] = array('', $data_top->body_value, '');
+    $rows[] = array('data' => array('', "<span class='event-desc'>" . $data_top->body_value . "</span>", ''),
+                    'no_striping' => TRUE);
   }
   
   // Get the first call, because we treat it specially.
   // In this row we don't display the call's time.
   $top_call = array_shift($calls);
   $called = implode(', ', $top_call['add']);
-  $rows[] = array('', $called, $top_call['description']);
+  $rows[] = array('data' => array('', "<span class='space'><em>" . $called . "</em></span>", $top_call['description']),
+                  'no_striping' => TRUE);
   $called = '';
   
   // Process the rest.
   foreach ($calls as $time => $call) {
     if (isset($call['add'])) {
-      $called .= t('ADD: ') . implode(', ', $call['add']);
+      $called .= "<span class='prefix'>" . t('ADD: ') . "</span><em>" . implode(', ', $call['add']) . "</em>";
       // If there are ADDs and RELs at the same time, we put the RELs in a new row.
       if (isset($call['rel'])) {
         $called .= '<br />';
       }
     }
     if (isset($call['rel'])) {
-      $called .= t('REL: ') . implode(', ', $call['rel']);
+      $called .= "<span class='prefix'>" . t('REL: ') . "</span><em>" . implode(', ', $call['rel']) . "</em>";
     }
     $description = isset($call['description']) ? $call['description'] : '';
-    $rows[] = array(schedulearts_print_format_date($time), $called, $description);
+    $rows[] = array('data' => array(schedulearts_print_format_date($time), $called, $description),
+                    'no_striping' => TRUE);
     $called = '';
   }
   
@@ -216,20 +224,21 @@ function schedulearts_print_performance_content($data) {
                   $value->title,
                   node_load($value->field_event_location_target_id)->title);
       if (isset($value->body_value)) {
-        $rows[] = array('', $value->body_value, '');
+        $rows[] = array('data' => array('', "<span class='event-desc'>" . $value->body_value . "</span>", ''),
+                        'no_striping' => TRUE);
       }
     }
     if ($value->field_event_groups_tax_tid) {
-      $called[] = taxonomy_term_load($value->field_event_groups_tax_tid)->name;
+      $called[] = "<em>" . taxonomy_term_load($value->field_event_groups_tax_tid)->name . "</em>";
     }
     if ($value->field_event_individuals_target_id) {
-      $called[] = user_load($value->field_event_individuals_target_id)->name;
+      $called[] = "<em>" . user_load($value->field_event_individuals_target_id)->name . "</em>";
     }
     $description = isset($value->cb_body_value) ? $value->cb_body_value : '';
-    $rows[] = array(schedulearts_print_format_date($value->field_event_date_value),
-                      implode(', ', $called),
-                      $description,
-                    );
+    $rows[] = array('data' => array(schedulearts_print_format_date($value->field_event_date_value),
+                              implode(', ', $called),
+                              $description),
+                    'no_striping' => TRUE);
   }
   $output = theme('table',  array('header' => $header, 'rows' => $rows));
   
@@ -252,14 +261,15 @@ function schedulearts_print_meeting_content($data) {
                   $value->title,
                   node_load($value->field_event_location_target_id)->title);
       if (isset($value->body_value)) {
-        $rows[] = array('', $value->body_value, '');
+        $rows[] = array('data' => array('', "<span class='event-desc'>" . $value->body_value . "</span>", ''),
+                        'no_striping' => TRUE);
       }
     }
     if ($value->field_event_groups_tax_tid) {
-      $called[] = taxonomy_term_load($value->field_event_groups_tax_tid)->name;
+      $called[] = "<em>" . taxonomy_term_load($value->field_event_groups_tax_tid)->name . "</em>";
     }
     if ($value->field_event_individuals_target_id) {
-      $called[] = user_load($value->field_event_individuals_target_id)->name;
+      $called[] = "<em>" . user_load($value->field_event_individuals_target_id)->name . "</em>";
     }
     $description = isset($value->cb_body_value) ? $value->cb_body_value : '';
     $rows[] = array(schedulearts_print_format_date($value->field_event_date_value) . ' - '
@@ -279,12 +289,12 @@ function schedulearts_print_meeting_content($data) {
  * Change date format.
  * 
  * @param $date
- *   The date in Y-m-d H:i:s format.
+ *   The date in 'Y-m-d H:i:s' format.
  * @return
- *   The date in h:ia format.
+ *   The date in 'h:i A' format.
  **/
 function schedulearts_print_format_date($date) {
   $timestamp = strtotime($date);
-  $time = date('h:ia', $timestamp);  
+  $time = date('h:i A', $timestamp);  
   return $time;
 }

@@ -1,0 +1,46 @@
+.schedulearts-print {
+  line-height: 16px; font-size: 12px;
+}
+.schedulearts-print .print-content {
+  width: 595px; margin: 0 auto;
+}
+.schedulearts-print th:first-child {
+  width: 150px;
+}
+.schedulearts-print th:last-child {
+  width: 200;
+}
+.schedulearts-print th {
+  width: 245px;
+  border-bottom: none;
+  color: #000;
+  padding: 0px;
+}
+.schedulearts-print table {
+  border-collapse: inherit; margin-top: 10px;
+}
+.schedulearts-print td {
+  padding: 0px;
+}
+.schedulearts-print .print-site_name {
+  text-align: center;
+  font-size: 16px;
+  line-height: 16px;
+}
+.schedulearts-print .print-date {
+  text-align: center;
+  font-size: 16px;
+  line-height: 30px;
+}
+.schedulearts-print .event-desc {
+  margin-top: -5px;
+  margin-bottom: 10px;
+  display: block;
+}
+.schedulearts-print .prefix {
+  line-height: 25px;
+}
+.schedulearts-print .space {
+  margin-bottom: 10px;
+  display: block;
+}
