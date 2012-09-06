@@ -110,7 +110,7 @@ function schedulearts_print_page($date) {
     }    
   }
 
-  drupal_add_css(drupal_get_path('module', 'schedulearts_print') . "/css/schedulearts_print.css", array('preprocess' => FALSE));
+  drupal_add_css(drupal_get_path('module', 'schedulearts_print') . '/css/schedulearts_print.css', array('preprocess' => FALSE));
   
   return $output;
 }
@@ -173,7 +173,7 @@ function schedulearts_print_rehearsal_content($data) {
   
   // Output event description, if set.
   if (isset($data_top->body_value)) {
-    $rows[] = array('data' => array('', "<span class='event-desc'>" . $data_top->body_value . "</span>", ''),
+    $rows[] = array('data' => array('', '<span class="event-desc">' . $data_top->body_value . '</span>', ''),
                     'no_striping' => TRUE);
   }
   
@@ -181,21 +181,21 @@ function schedulearts_print_rehearsal_content($data) {
   // In this row we don't display the call's time.
   $top_call = array_shift($calls);
   $called = implode(', ', $top_call['add']);
-  $rows[] = array('data' => array('', "<span class='space'><em>" . $called . "</em></span>", $top_call['description']),
+  $rows[] = array('data' => array('', '<span class="space"><em>' . $called . '</em></span>', $top_call['description']),
                   'no_striping' => TRUE);
   $called = '';
   
   // Process the rest.
   foreach ($calls as $time => $call) {
     if (isset($call['add'])) {
-      $called .= "<span class='prefix'>" . t('ADD: ') . "</span><em>" . implode(', ', $call['add']) . "</em>";
+      $called .= '<span class="prefix">' . t('ADD: ') . '</span><em>' . implode(', ', $call['add']) . '</em>';
       // If there are ADDs and RELs at the same time, we put the RELs in a new row.
       if (isset($call['rel'])) {
         $called .= '<br />';
       }
     }
     if (isset($call['rel'])) {
-      $called .= "<span class='prefix'>" . t('REL: ') . "</span><em>" . implode(', ', $call['rel']) . "</em>";
+      $called .= '<span class="prefix">' . t('REL: ') . '</span><em>' . implode(', ', $call['rel']) . '</em>';
     }
     $description = isset($call['description']) ? $call['description'] : '';
     $rows[] = array('data' => array(schedulearts_print_format_date($time), $called, $description),
@@ -224,20 +224,20 @@ function schedulearts_print_performance_content($data) {
                   $value->title,
                   node_load($value->field_event_location_target_id)->title);
       if (isset($value->body_value)) {
-        $rows[] = array('data' => array('', "<span class='event-desc'>" . $value->body_value . "</span>", ''),
+        $rows[] = array('data' => array('', '<span class="event-desc">' . $value->body_value . '</span>', ''),
                         'no_striping' => TRUE);
       }
     }
     if ($value->field_event_groups_tax_tid) {
-      $called[] = "<em>" . taxonomy_term_load($value->field_event_groups_tax_tid)->name . "</em>";
+      $called[] = '<em>' . taxonomy_term_load($value->field_event_groups_tax_tid)->name . '</em>';
     }
     if ($value->field_event_individuals_target_id) {
-      $called[] = "<em>" . user_load($value->field_event_individuals_target_id)->name . "</em>";
+      $called[] = '<em>' . user_load($value->field_event_individuals_target_id)->name . '</em>';
     }
     $description = isset($value->cb_body_value) ? $value->cb_body_value : '';
     $rows[] = array('data' => array(schedulearts_print_format_date($value->field_event_date_value),
-                              implode(', ', $called),
-                              $description),
+                                    implode(', ', $called),
+                                    $description),
                     'no_striping' => TRUE);
   }
   $output = theme('table',  array('header' => $header, 'rows' => $rows));
@@ -261,22 +261,22 @@ function schedulearts_print_meeting_content($data) {
                   $value->title,
                   node_load($value->field_event_location_target_id)->title);
       if (isset($value->body_value)) {
-        $rows[] = array('data' => array('', "<span class='event-desc'>" . $value->body_value . "</span>", ''),
+        $rows[] = array('data' => array('', '<span class="event-desc">' . $value->body_value . '</span>', ''),
                         'no_striping' => TRUE);
       }
     }
     if ($value->field_event_groups_tax_tid) {
-      $called[] = "<em>" . taxonomy_term_load($value->field_event_groups_tax_tid)->name . "</em>";
+      $called[] = '<em>' . taxonomy_term_load($value->field_event_groups_tax_tid)->name . '</em>';
     }
     if ($value->field_event_individuals_target_id) {
-      $called[] = "<em>" . user_load($value->field_event_individuals_target_id)->name . "</em>";
+      $called[] = '<em>' . user_load($value->field_event_individuals_target_id)->name . '</em>';
     }
     $description = isset($value->cb_body_value) ? $value->cb_body_value : '';
-    $rows[] = array(schedulearts_print_format_date($value->field_event_date_value) . ' - '
-                        . schedulearts_print_format_date($value->field_event_date_value2),
-                      implode(', ', $called),
-                      $description,
-                    );
+    $rows[] = array('data' => array(schedulearts_print_format_date($value->field_event_date_value) . ' - '
+                                      . schedulearts_print_format_date($value->field_event_date_value2),
+                                    implode(', ', $called),
+                                    $description),
+                    'no_striping' => TRUE);
   }
   $output = theme('table',  array('header' => $header, 'rows' => $rows));
   
