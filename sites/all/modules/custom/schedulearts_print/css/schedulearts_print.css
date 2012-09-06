@@ -1,8 +1,10 @@
 .schedulearts-print {
-  line-height: 16px; font-size: 12px;
+  line-height: 16px;
+  font-size: 12px;
 }
 .schedulearts-print .print-content {
-  width: 595px; margin: 0 auto;
+  width: 595px;
+  margin: 0 auto;
 }
 .schedulearts-print th:first-child {
   width: 150px;
@@ -17,7 +19,8 @@
   padding: 0px;
 }
 .schedulearts-print table {
-  border-collapse: inherit; margin-top: 10px;
+  border-collapse:inherit;
+  margin-top: 10px;
 }
 .schedulearts-print td {
   padding: 0px;
