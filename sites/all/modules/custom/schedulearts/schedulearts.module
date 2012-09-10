@@ -60,17 +60,17 @@ function schedulearts_flag($action, $flag, $content_id, $account) {
         $sched_node = NULL; //Initialize schedule note variable, fill it with the node body if one is set.
         if (isset($node->body['und'])) $sched_note = $node->body['und']['0']['value'];
         // email body. Multiline quoted because I'm lazy. Indents get preserved into the email message!
+          
+         // When we debug the schedule printout in the mail, here's the relevant code to insert. Easy. 
+  //*** MY SCHEDULE FOR $sched_daterng ***
+  //$sched_view_output
         $sched_body = "Dear $sched_to_name,
       
   $sched_note 
 
-  Here is your schedule for the period $sched_daterng. You can see this in a friendlier format online at: 
+  Here is your schedule for the period $sched_daterng. You can see the schedule online at: 
           
         $GLOBALS[base_url]/user/$user->uid/mycal
-          
-          
-  *** MY SCHEDULE FOR $sched_daterng ***
-  $sched_view_output
 
   Thanks!";
 
