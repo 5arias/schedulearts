@@ -10,7 +10,7 @@ function schedulearts_views_query_alter(&$view, &$query) {
     $url_uid = arg(1);
     $userfields = user_load($url_uid);
     if (isset($userfields->field_user_groups['und'])) {
-      $ugroups = $userfields->field_user_groups['und']; 
+      $ugroups = $userfields->field_user_groups['und'];
       foreach ($ugroups as $ugroup) {
           $ugroups_array[$ugroup['tid']] = $ugroup['tid'];
       }
@@ -34,19 +34,13 @@ function schedulearts_views_query_alter(&$view, &$query) {
     }
   }
   if ($view->name == 'taxonomy_term_calendar' && $view->current_display == 'page_2') {
-    $daterange = $view->args[0]; // Date is argument 0
-    $url_uid = $view->args[1]; // UID is argument 1
-    // Set TID filters to the user's TIDs
+    // set TID filters to the user's TIDs
+    $url_uid = $view->args[1];
     $userfields = user_load($url_uid);
-    if (isset($userfields->field_user_groups['und'])) {
-      $ugroups = $userfields->field_user_groups['und']; 
-      foreach ($ugroups as $ugroup) {
+    $ugroups = $userfields->field_user_groups['und'];
+    $daterange = $view->args[0];
+    foreach ($ugroups as $ugroup) {
         $ugroups_array[$ugroup['tid']] = $ugroup['tid'];
-      }
-    }
-    else {
-      // If the user has no groups, set impossible TID '0' for the filter
-      $ugroups_array[] = '0';
     }
     foreach ($query->where as &$condition_group) {
       foreach ($condition_group['conditions'] as &$condition) {
