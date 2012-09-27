@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * 
+ * @author Kov‡cs Csaba - csaba.kovacs@cheppers.com
+ */
+ 
+/* ====================== */
+/* ==== DRUPAL HOOKS ==== */
+/* ====================== */
+/**
+ * Implementation of hook_menu().
+ *
+ * @return An array of menu items.
+ */
+function date_redirect_menu() {
+  $items = array();
+
+  $items['date-print'] = array(
+    'title' => 'Print',
+    'description' => 'Date popup redirect',
+    'page callback' => 'date_redirect_print',
+    'access arguments' => array('schedule print page'),
+    'menu_name' => 'user-menu',
+  );
+
+  return $items;
+}
+
+
+/* ====================== */
+/* == MODULE FUNCTIONS == */
+/* ====================== */
+
+function date_redirect_print() {
+  return '';
+}

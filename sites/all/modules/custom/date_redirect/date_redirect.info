@@ -1,0 +1,9 @@
+name = Date Redirect
+description = Drupal redirect with date popup api integration.
+dependencies[] = date_api
+dependencies[] = date_popup
+package = Other
+core = 7.x
+
+stylesheets[all][] = css/style.css
+scripts[] = js/script.js

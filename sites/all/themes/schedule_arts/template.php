@@ -31,4 +31,19 @@ function schedule_arts_alpha_preprocess_html(&$variables) {
 		drupal_add_css(path_to_theme() . '/css/overlay-child.css', array('group' => CSS_THEME, 'weight' => 115, 'browsers' => array(), 'preprocess' => FALSE));
 	}
 }
-?>
+
+
+/*
+ * Implementation of theme_preprocess_page().
+ */
+
+function schedule_arts_preprocess_page(&$variables) {
+  foreach ($variables['secondary_menu'] as $key => $item) {
+    if ($item['href'] == 'date-print') {
+      $variables['secondary_menu'][$key]['attributes']['class'] = 'date_select';
+    }
+  }
+   
+  drupal_add_library('system', 'ui.datepicker');
+  drupal_add_library('system', 'ui.position');
+}
