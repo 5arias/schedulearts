@@ -455,5 +455,5 @@ textarea:focus {
 }
 
 #ui-datepicker-div {
-  z-index: 5 !important;
+  z-index: 500 !important;
 }

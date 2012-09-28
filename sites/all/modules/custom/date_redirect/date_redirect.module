@@ -23,7 +23,7 @@ function date_redirect_menu() {
     'description' => 'Date popup redirect',
     'page callback' => 'date_redirect_print',
     'access arguments' => array('schedule print page'),
-    'menu_name' => 'user-menu',
+    'menu_name' => 'main-menu',
   );
 
   return $items;

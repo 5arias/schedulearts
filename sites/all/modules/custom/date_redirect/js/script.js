@@ -19,25 +19,21 @@ jQuery(document).ready(function($) {
             window.location.replace(Drupal.settings.date_redirect.base_url + '/print/schedule/' + dateText + '/print');
           }
         }).appendTo('#block-system-user-menu');
-
-        $("a.date-select").click(function(e) {
+        $('a.date-select').click(function(e) {
         e.preventDefault();
         if ($dp.datepicker('widget').is(':hidden')) {
           $dp.datepicker('option', 'dateFormat', 'yy-mm-dd');
           $dp.datepicker('show');
-          $dp.datepicker("widget").position({
-            my: 'right top',
-            at: 'right top',
+          $dp.datepicker('widget').position({
+            my: 'left bottom',
+            at: 'left bottom',
             of: this
           });
-
         }
         else {
           $dp.hide();
         }
-
       });
- 
     }
   }
 })(jQuery, Drupal, this, this.document);
