@@ -453,3 +453,7 @@ textarea:focus {
   box-shadow: #f4a558 0 0 6px 0;
   z-index: 1;
 }
+
+#ui-datepicker-div {
+  z-index: 5 !important;
+}

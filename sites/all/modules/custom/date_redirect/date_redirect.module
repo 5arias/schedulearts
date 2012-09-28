@@ -2,17 +2,18 @@
 
 /**
  * @file
+ * Add a Print menu item to the main navigation.
  * 
- * @author Kov‡cs Csaba - csaba.kovacs@cheppers.com
+ *
+ * @author Kov‡cs Csaba - csaba.kovacs@cheppers.com 
  */
  
 /* ====================== */
 /* ==== DRUPAL HOOKS ==== */
 /* ====================== */
+
 /**
  * Implementation of hook_menu().
- *
- * @return An array of menu items.
  */
 function date_redirect_menu() {
   $items = array();
@@ -28,6 +29,20 @@ function date_redirect_menu() {
   return $items;
 }
 
+/*
+ * Implementation of hook_init().
+ * 
+ * Only include js file where necessary, and pass the base url to it.
+ */
+function date_redirect_init() {
+  if (user_access('schedule print page')) {
+    global $base_url;
+    drupal_add_library('system', 'ui.datepicker');
+    drupal_add_library('system', 'ui.position');
+    drupal_add_js(array('date_redirect' => array('base_url' => $base_url)), 'setting');
+    drupal_add_js(drupal_get_path('module', 'date_redirect') . '/js/script.js', 'external');
+  }
+}
 
 /* ====================== */
 /* == MODULE FUNCTIONS == */
