@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
         var $dp = $('<input type="text" />').hide().datepicker({
           onSelect: function(dateText, inst) {
             $('#hidden-field').text(dateText);
-            window.location.replace(Drupal.settings.date_redirect.base_url + '/print/schedule/' + dateText + '/print');
+            window.open(Drupal.settings.date_redirect.base_url + '/print/schedule/' + dateText + '/print', '_blank');
           }
         }).appendTo('#block-system-user-menu');
         $('a.date-select').click(function(e) {
