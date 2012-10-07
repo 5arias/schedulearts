@@ -1,11 +1,11 @@
 
 /**
  * @file
- * A JavaScript file for the theme.
+ * Display the datepicker.
  */
 
 jQuery(document).ready(function($) {
-  $("#block-system-user-menu").append('<div id="hidden-field" style="display"></div>');
+  $("#block-system-user-menu").append('<div id="hidden-field"></div>');
 });
 
 (function ($, Drupal, window, document, undefined) {
@@ -25,8 +25,8 @@ jQuery(document).ready(function($) {
           $dp.datepicker('option', 'dateFormat', 'yy-mm-dd');
           $dp.datepicker('show');
           $dp.datepicker('widget').position({
-            my: 'left bottom',
-            at: 'left bottom',
+            my: 'center top',
+            at: 'center bottom',
             of: this
           });
         }
