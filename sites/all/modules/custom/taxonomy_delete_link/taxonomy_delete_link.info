@@ -1,6 +1,7 @@
 name = Taxonomy Delete Link
 description = Provides a delete link for taxonomy terms
 project = "taxonomy_delete_link"
+package = "Custom"
 dependencies[] = taxonomy
 version = "7.x-1.0"
 core = "7.x"

@@ -1,6 +1,7 @@
 name = Taxonomy Copy
 description = A Rules action for copying taxonomy and hierarchy
 project = "taxonomy_copy"
+package = "Custom"
 version = "7.x-1.x-dev"
 core = "7.x"
 dependencies[] = taxonomy
