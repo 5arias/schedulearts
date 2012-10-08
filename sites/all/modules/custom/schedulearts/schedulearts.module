@@ -141,6 +141,9 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       $parent_event_id = $form['#node']->field_call_parent_event['und']['0']['target_id'];
     }
 
+    // Set the form to redirect back to the parent Event on submit
+    $form_state['schedulearts_redirect'] = 'node/' . $parent_event_id;
+
     if (isset($parent_event_id)) {
       // Disable the parent event field
       $form['field_call_parent_event']['und']['#disabled'] = TRUE;
