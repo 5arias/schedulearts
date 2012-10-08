@@ -283,7 +283,7 @@ filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr
   border: none;
 }
 
-#superfish-1 li.sf-item-3.sf-depth-1 a:hover {
+#superfish-1 li.last.sf-depth-1 a:hover {
 background: #73d873;
 background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#73d873), to(#b3f3b3));
 background: -webkit-linear-gradient(top, #b3f3b3, #73d873); 
