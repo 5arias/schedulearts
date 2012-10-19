@@ -99,13 +99,13 @@ function schedulearts_print_page($date) {
   
   foreach ($data as $key => $value) {
     switch ($value['type']) {
-      case 'Meeting':
+      case 'Coaching':
         $output .= schedulearts_print_meeting_content($value['data']);
         break;
       case 'Performance':
         $output .= schedulearts_print_performance_content($value['data']);
         break;
-      case 'Rehearsal':
+      default:
         $output .= schedulearts_print_rehearsal_content($value['data']);
     }    
   }
