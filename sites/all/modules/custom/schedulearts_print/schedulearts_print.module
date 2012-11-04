@@ -72,11 +72,11 @@ function schedulearts_print_event_data_query($date) {
   $query->condition('d.field_event_date_value', $date . '%', 'LIKE');
   $query->condition('cd.field_event_date_value', $date . '%', 'LIKE');
   $query->orderBy('d.field_event_date_value');
+  $query->orderBy('cd.field_event_date_value');
   
   $result = $query->execute();  
 
   foreach ($result as $value) {
-    dpm($value);
     if (!isset($data[$value->nid])) {
       $data[$value->nid]['type'] = $value->name;
       $data[$value->nid]['data'] = array(
