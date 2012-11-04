@@ -309,6 +309,6 @@ function schedulearts_print_other_content($data, $type) {
  **/
 function schedulearts_print_format_date($date) {
   $timestamp = strtotime($date);
-  $time = date('h:i A', $timestamp);  
+  $time = date('g:i A', $timestamp);  
   return $time;
 }
