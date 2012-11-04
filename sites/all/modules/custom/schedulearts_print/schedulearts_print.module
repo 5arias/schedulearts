@@ -76,6 +76,7 @@ function schedulearts_print_event_data_query($date) {
   $result = $query->execute();  
 
   foreach ($result as $value) {
+    dpm($value);
     if (!isset($data[$value->nid])) {
       $data[$value->nid]['type'] = $value->name;
       $data[$value->nid]['data'] = array(
@@ -101,8 +102,8 @@ function schedulearts_print_event_data_query($date) {
       case 'Performance':
         if (!isset($data[$value->nid]['data']['calls'][$value->entity_id])) {
           $data[$value->nid]['data']['calls'][$value->entity_id] = array(
-                                                                        'date' => $value->field_event_date_value,
-                                                                        'date2' => $value->field_event_date_value2,
+                                                                        'date' => $value->cd_field_event_date_value,
+                                                                        'date2' => $value->cd_field_event_date_value2,
                                                                         );
         }
         if (isset($value->field_event_groups_tax_tid)) {
@@ -118,7 +119,7 @@ function schedulearts_print_event_data_query($date) {
     }
     
   }
-  
+
   return $data;
 }
 
@@ -288,6 +289,7 @@ function schedulearts_print_other_content($data, $type) {
       $time = schedulearts_print_format_date($call['date']);
     }
     $rows[] = array('data' => array($time, implode(', ', $called), $description), 'no_striping' => TRUE);
+    unset($called);
   }
   
   $output = theme('table',  array('header' => $header, 'rows' => $rows));
