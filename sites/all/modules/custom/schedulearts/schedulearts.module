@@ -216,9 +216,15 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     $form_state['schedulearts_redirect'] = 'master-calendar';
   }
   // Tweaks to the Event Type form
-  if ($form_id == 'taxonomy_form_term' && ($form['#vocabulary']->vid == '6' || $form['#vocabulary']->vid == '4')) {
-    $form['relations']['#attributes']['class'][] = 'schedulearts-hidden';
-    // TO DO: add a color picker to this edit form
+  if ($form_id == 'taxonomy_form_term') {
+    // preserve "Reserved" TIDs from deletion
+    $form['actions']['delete']['#access'] = schedulearts_reserved_term_access($form['tid']['#value'], $form['actions']['delete']['#access']);
+    //$form['actions']['delete']['access arguments'] = array($form['tid']['#value'], $form['actions']['delete']['#access']);
+
+    if ($form['#vocabulary']->vid == '6' || $form['#vocabulary']->vid == '4') {
+      $form['relations']['#attributes']['class'][] = 'schedulearts-hidden';
+      // TODO: add a color picker to this edit form
+    }
   }
 
   // Tweaks to the Create Event form
@@ -232,6 +238,36 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     $form['actions']['submit']['#submit'][] = 'schedulearts_redirect_submit_handler';
   }
 }
+
+/**
+ * Custom access callback for reserved TIDs
+ */
+function schedulearts_reserved_term_access($tid, $access=NULL) {
+  $reservedtids = variable_get('schedulearts_reserved_eventtypes', array());
+  // Sometimes TID is passed as a term object. We just want TID
+  if ($tid->tid) {
+    $tid = $tid->tid;
+  }
+  // Check our reserved TIDs
+  if (in_array($tid, $reservedtids)) {
+    return FALSE;
+  }
+  // If we haven't already denied access before or during this function, check for taxonomy_edit access
+  if ($access != FALSE) {
+    return taxonomy_term_edit_access($tid);;
+  }
+  return TRUE;
+}
+
+/**
+ * Custom access callback for deleting reserved TIDs
+ * (requires our custom taxonomy_delete_link module
+ */
+function schedulearts_reserved_term_delete_access($tid) {
+  $access = taxonomy_delete_link_access($tid);
+  return schedulearts_reserved_term_access($tid, $access);
+}
+
 
 /*
  * Custom validation call to handle single day date fields
@@ -381,9 +417,40 @@ function schedulearts_init() {
   drupal_add_css(drupal_get_path('module', 'schedulearts') . '/schedulearts.css', $options);
 }
 
+/**
+ * Implements hook_permission().
+ */
+function schedulearts_permission() {
+  return array(
+    'configure schedulearts admin settings' => array(
+      'title' => 'Configure Schedulearts admin settings',
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function schedulearts_menu() {
+  $items = array();
+
+  $items['admin/config/schedulearts'] = array(
+    'title' => t('ScheduleArts Custom settings'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('schedulearts_admin_settings_form'),
+    'access arguments' => array('configure schedulearts admin settings'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'schedulearts.admin.inc',
+  );
+
+  return $items;
+}
+
+
+
 /*
  * Implements hook_menu_alter()
- * Improving access callbacks for Taxonomy menu items. So "edit" is the only permission you need
+ * Improving access callbacks for Taxonomy vocabulary menu items. So "edit" is the only permission you need
  */
 function schedulearts_menu_alter(&$items) {
   // Taxonomy Manager
@@ -393,6 +460,14 @@ function schedulearts_menu_alter(&$items) {
   // Taxonomy add term forms
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access callback'] = 'schedulearts_vocabulary_access';
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access arguments'] = array(3);
+
+  // Taxonomy edit and delete term forms
+  $items['taxonomy/term/%taxonomy_term/edit']['access callback'] = 'schedulearts_reserved_term_access';
+  $items['taxonomy/term/%taxonomy_term/edit']['access arguments'] = array(2);
+
+  // Delete link - from taxonomy_delete_link module
+  $items['taxonomy/term/%taxonomy_term/delete']['access callback'] = 'schedulearts_reserved_term_delete_access';
+  $items['taxonomy/term/%taxonomy_term/delete']['access arguments'] = array(2);
 }
 
 // Custom access callback for taxonomy term add form - checks that you can EDIT the vocab
