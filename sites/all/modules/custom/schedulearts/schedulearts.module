@@ -152,8 +152,10 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       $parent_event = reset(entity_load('node', array($parent_event_id)));
 
       // Set the default dates
-      $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
-      $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
+      if (!isset($form['#node']->field_event_date['und']['0']['value'])) {
+        $form['field_event_date']['und']['0']['#default_value']['value'] = $parent_event->field_event_date['und']['0']['value'];
+        $form['field_event_date']['und']['0']['#default_value']['value2'] = $parent_event->field_event_date['und']['0']['value2'];
+      }
 
       // Set the default repeat
       if (!empty($parent_event->field_event_date[LANGUAGE_NONE]['0']['rrule'])) {
