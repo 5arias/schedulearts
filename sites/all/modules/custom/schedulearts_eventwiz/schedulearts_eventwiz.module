@@ -2,22 +2,43 @@
 
 //@file tweaks behavior on call and event creation forms for an easier workflow.
 
+/**
+ * Implements hook_form_alter()
+ */
 function schedulearts_eventwiz_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'call_node_form') {
+  switch ($form_id) {
+  case 'call_node_form':
     if (isset($form['actions']['addanother'])) {
       $form['actions']['addanother']['#submit'][] = 'schedulearts_eventwiz_addanother_submit_handler';
     }
+    break;
+  case 'event_node_form':
+    $form['actions']['addcall'] = array(
+      '#type' => 'submit',
+      '#value' => 'Save and add Calls',
+      '#weight' => -41,
+      '#submit' => array('node_form_submit', 'schedulearts_eventwiz_addcall_form_submit'),
+    );
+    break;
   }
 }
 
-
 /**
- * Submit handler for addanother submits on Wizard forms. Retains post information
+ * Submit handler for addanother submits on Call forms. Retains post information
  */
 function schedulearts_eventwiz_addanother_submit_handler($form, &$form_state) {
-  if ($form['actions']['addanother']) {
+  if (isset($form['actions']['addanother'])) {
     $form_state['redirect'] = array($form_state['redirect']);
     $form_state['redirect'][]['query']['edit']['field_call_parent_event']['und'] = $form_state['values']['field_call_parent_event']['und']['0']['target_id'];
   }
 }
        
+/**
+ * Submit handler for addcall submits on Event forms. Redirects user to add a relevant call.
+ */
+function schedulearts_eventwiz_addcall_form_submit($form, &$form_state) {
+  if (isset($form['actions']['addcall'])) {
+    $form_state['redirect'] = array('node/add/call');
+    $form_state['redirect'][]['query']['edit']['field_call_parent_event']['und'] = $form_state['values']['nid'];
+  }
+}
