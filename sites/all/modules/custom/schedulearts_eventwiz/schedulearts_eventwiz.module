@@ -42,3 +42,59 @@ function schedulearts_eventwiz_addcall_form_submit($form, &$form_state) {
     $form_state['redirect'][]['query']['edit']['field_call_parent_event']['und'] = $form_state['values']['nid'];
   }
 }
+
+/**
+ * Implements hook_block_info()
+ */
+function schedulearts_eventwiz_block_info() {
+  $blocks['add_calls'] = array(
+    'info' => t('Event > Add Calls button'),
+    'status' => TRUE,
+    'region' => 'content',
+    'weight' => -25,
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => 'events/*',
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ */
+function schedulearts_eventwiz_block_view($delta = '') {
+  switch ($delta) {
+  case 'add_calls':
+    $block['content'] = schedulearts_eventwiz_block_contents($delta);
+    return $block;
+    break;
+  }
+}
+
+/**
+ * The Add Calls button block, to be positioned on Events
+ */
+function schedulearts_eventwiz_block_contents($delta) {
+  switch ($delta) {
+  case 'add_calls':
+    if (user_access('call: create new content')) {
+      $current_nid = (arg(0) == 'node' && is_numeric(arg(1)) ? arg(1) : NULL);
+      return (drupal_get_form('schedulearts_eventwiz_block_addcall_form', $current_nid));
+    }
+  }
+}
+
+/**
+ * Defines the form for Add Calls button block
+ */
+function schedulearts_eventwiz_block_addcall_form($form_id, &$form_state, $current_nid) {
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Add Calls',
+  );
+  if (!empty($form_state['build_info']['args']['0'])) {
+    $current_nid = $form_state['build_info']['args']['0'];
+    $form['#action'] = url('node/add/call', array('query' => array('edit' => array('field_call_parent_event' => array('und' => $current_nid)))));
+  }
+  return $form;
+}
+
