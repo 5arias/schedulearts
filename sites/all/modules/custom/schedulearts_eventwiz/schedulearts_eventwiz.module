@@ -1,0 +1,23 @@
+<?php
+
+//@file tweaks behavior on call and event creation forms for an easier workflow.
+
+function schedulearts_eventwiz_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'call_node_form') {
+    if ($form['actions']['addanother']) {
+      $form['actions']['addanother']['#submit'][] = 'schedulearts_eventwiz_addanother_submit_handler';
+    }
+  }
+}
+
+
+/**
+ * Submit handler for addanother submits on Wizard forms. Retains post information
+ */
+function schedulearts_eventwiz_addanother_submit_handler($form, &$form_state) {
+  if ($form['actions']['addanother']) {
+    $form_state['redirect'] = array($form_state['redirect']);
+    $form_state['redirect'][]['query']['edit']['field_call_parent_event']['und'] = $form_state['values']['field_call_parent_event']['und']['0']['target_id'];
+  }
+}
+       
