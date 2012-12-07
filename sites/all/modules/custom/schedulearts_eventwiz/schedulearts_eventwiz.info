@@ -3,3 +3,4 @@ description = Schedulearts Event Wizard workflow
 version = "7.x-1.x-dev"
 core = "7.x"
 package = "Custom"
+dependencies[] = addanother
