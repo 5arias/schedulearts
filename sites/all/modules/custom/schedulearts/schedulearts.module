@@ -133,18 +133,18 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   // Tweaks to the Call people interface
   if ($form_id == 'call_node_form')  {
     // Set the parent event from POST or value in edited node
-    if (isset($_POST['edit'])){
-      $form['field_call_parent_event']['und']['#default_value']['0'] = $_POST['edit']['field_call_parent_event']['und'];
-      $parent_event_id = $_POST['edit']['field_call_parent_event']['und'];
+    if (isset($_POST['edit']) || isset($_GET['edit'])) {
+      $form['field_call_parent_event']['und']['#default_value']['0'] = (isset($_POST['edit']['field_call_parent_event']['und']) ? $_POST['edit']['field_call_parent_event']['und'] : $_GET['edit']['field_call_parent_event']['und']); 
+      $parent_event_id = $form['field_call_parent_event']['und']['#default_value']['0'];
     }
     elseif (isset($form['#node']->field_call_parent_event['und']['0']['target_id'])) {
       $parent_event_id = $form['#node']->field_call_parent_event['und']['0']['target_id'];
     }
 
-    // Set the form to redirect back to the parent Event on submit
-    $form_state['schedulearts_redirect'] = 'node/' . $parent_event_id;
-
     if (isset($parent_event_id)) {
+      // Set the form to redirect back to the parent Event on submit
+      $form_state['schedulearts_redirect'] = 'node/' . $parent_event_id;
+
       // Disable the parent event field
       $form['field_call_parent_event']['und']['#disabled'] = TRUE;
 
@@ -229,7 +229,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
     //array_unshift($form['#validate'], 'schedulearts_single_date_copy');
   }
 
-  // Add custom redirect to node forms
+  // Add custom submit handler to forms - handles redirects, because overlay breaks the destination param
   if (substr($form_id, -9) == 'node_form') {
     $form['actions']['submit']['#submit'][] = 'schedulearts_redirect_submit_handler';
   }
@@ -254,7 +254,7 @@ function schedulearts_mc_date_repeat_defaults($form_element, &$form_state) {
 
 /* 
  * Custom submit handler to redirect the user after submission, since Rules redirect
- * breaks with Overlay
+ * breaks with Overlay. 
  */
 function schedulearts_redirect_submit_handler($form, &$form_state) {
   if (isset($form_state['schedulearts_redirect'])) {
