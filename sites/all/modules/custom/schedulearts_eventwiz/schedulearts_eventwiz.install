@@ -1,0 +1,27 @@
+<?php
+
+// @file: install behaviors for the schedulearts eventwiz module
+
+/**
+ * Implements hook_install()
+ */
+function schedulearts_eventwiz_install() {
+  // Delete the older, db-coded Add Call block (bid = 1)in favor of the one provided by this module
+  $bid = '1';
+  db_delete('block_custom')
+    ->condition('bid', $bid)
+    ->execute();
+  db_delete('block')
+    ->condition('module', 'block')
+    ->condition('delta', $bid)
+    ->execute();
+  db_delete('block_role')
+    ->condition('module', 'block')
+    ->condition('delta', $bid)
+    ->execute();
+  cache_clear_all();
+}
+
+function schedulearts_eventwiz_uninstall() {
+  // Does nothing
+}
