@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Schedulearts Content Types and Taxonomy feature.
+ */
+
+include_once 'schedulearts_content_types_and_taxonomy.features.inc';
