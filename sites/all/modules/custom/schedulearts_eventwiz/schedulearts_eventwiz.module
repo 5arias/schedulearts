@@ -77,7 +77,7 @@ function schedulearts_eventwiz_block_view($delta = '') {
 function schedulearts_eventwiz_block_contents($delta) {
   switch ($delta) {
   case 'add_calls':
-    if (user_access('call: create new content')) {
+    if (user_access('create call content')) {
       $current_nid = (arg(0) == 'node' && is_numeric(arg(1)) ? arg(1) : NULL);
       return (drupal_get_form('schedulearts_eventwiz_block_addcall_form', $current_nid));
     }
