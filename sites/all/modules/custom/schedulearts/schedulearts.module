@@ -226,7 +226,6 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
 
   // Tweaks to the Create Event form
   if ($form_id == 'event_node_form') {
-    // TODO: Date single day
     array_unshift($form['#validate'], 'schedulearts_single_date_copy');
   }
 
@@ -239,13 +238,29 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
 /*
  * Custom validation call to handle single day date fields
  */
-function schedulearts_single_date_copy($form_element, &$form_state) {
-  // TODO: make this work
-  if (isset($form_state['values']['field_event_date']['und']['0']['value'])) {
+function schedulearts_field_widget_form_alter(&$element, &$form_state, $context) {
+  if ($element['#field_name'] == 'field_event_date') {
+    array_unshift($element['#element_validate'], 'schedulearts_date_copy_validate');
+  }
+}
+
+function schedulearts_date_copy_validate(&$element, &$form_state) {
+  if ($element['#field_name'] == 'field_event_date') {
     $date_date = substr($form_state['values']['field_event_date']['und']['0']['value'], 0, 10);
-    $date_time = substr($form_state['values']['field_event_date']['und']['0']['value2'], 11, 8);
+    $date_time = substr($form_state['values']['field_event_date']['und']['0']['value2'], 11, 5);
     // set the value of the to: date. Not using form_set_value because it's weird with nested values such as date fields
     $form_state['values']['field_event_date']['und']['0']['value2'] = $date_date . ' ' . $date_time;
+    $form_state['input']['field_event_date']['und']['0']['value2']['date'] = $form_state['input']['field_event_date']['und']['0']['value']['date'];
+  }
+}
+
+function schedulearts_single_date_copy($element, &$form_state) {
+  if (isset($form_state['values']['field_event_date']['und']['0']['value'])) {
+    $date_date = substr($form_state['values']['field_event_date']['und']['0']['value'], 0, 10);
+    $date_time = substr($form_state['values']['field_event_date']['und']['0']['value2'], 11, 5);
+    // set the value of the to: date. Not using form_set_value because it's weird with nested values such as date fields
+    $form_state['values']['field_event_date']['und']['0']['value2'] = $date_date . ' ' . $date_time;
+    $form_state['input']['field_event_date']['und']['0']['value2']['date'] = $form_state['input']['field_event_date']['und']['0']['value']['date'];
   }
 }
 
