@@ -378,21 +378,22 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
       ),
       'entity_type' => 'node',
       'field_name' => 'body',
-      'label' => 'Body',
-      'required' => FALSE,
+      'label' => 'Description',
+      'required' => 0,
       'settings' => array(
-        'display_summary' => TRUE,
-        'text_processing' => 1,
+        'display_summary' => 0,
+        'text_processing' => '0',
         'user_register_form' => FALSE,
       ),
       'widget' => array(
+        'active' => 1,
         'module' => 'text',
         'settings' => array(
-          'rows' => 20,
+          'rows' => '5',
           'summary_rows' => 5,
         ),
         'type' => 'text_textarea_with_summary',
-        'weight' => '2',
+        'weight' => '3',
       ),
     ),
   );
@@ -484,7 +485,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '6',
+        'weight' => '7',
       ),
     ),
   );
@@ -583,12 +584,16 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
           'input_format' => 'm/d/Y - g:i:sa',
           'input_format_custom' => '',
           'label_position' => 'above',
-          'repeat_collapsed' => 0,
-          'text_parts' => array(),
+          'repeat_collapsed' => 1,
+          'text_parts' => array(
+            0 => 'hour',
+            1 => 'minute',
+            2 => 'second',
+          ),
           'year_range' => '-3:+3',
         ),
         'type' => 'date_select',
-        'weight' => '5',
+        'weight' => '2',
       ),
     ),
   );
@@ -666,7 +671,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'module' => 'hs_taxonomy',
         'settings' => array(),
         'type' => 'taxonomy_hs',
-        'weight' => '3',
+        'weight' => '4',
       ),
     ),
   );
@@ -761,11 +766,14 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'active' => 1,
         'module' => 'entityreference_browser',
         'settings' => array(
+          'match_operator' => 'CONTAINS',
           'pass_argument' => 1,
+          'path' => '',
+          'size' => 60,
           'view' => 'user_groups|block_1',
         ),
         'type' => 'entityreference_browser',
-        'weight' => '4',
+        'weight' => '5',
       ),
     ),
   );
@@ -1262,7 +1270,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
           'year_range' => '-0:+3',
         ),
         'type' => 'date_popup',
-        'weight' => '3',
+        'weight' => '4',
       ),
     ),
   );
@@ -1354,7 +1362,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
           'view' => 'entity_reference_browser_default|default',
         ),
         'type' => 'options_select',
-        'weight' => '2',
+        'weight' => '3',
       ),
     ),
   );
@@ -1417,6 +1425,95 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
       'field_name' => 'field_event_type',
       'label' => 'Event Type',
       'required' => 1,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'options',
+        'settings' => array(),
+        'type' => 'options_select',
+        'weight' => '2',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-event-field_production'.
+  $fields['node-event-field_production'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_production',
+      'field_permissions' => array(
+        'type' => '0',
+      ),
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 1,
+            ),
+          ),
+          'sort' => array(
+            'direction' => 'ASC',
+            'field' => 'body:value',
+            'property' => 'nid',
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'production' => 'production',
+          ),
+        ),
+        'handler_submit' => 'Change handler',
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'event',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 8,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_production',
+      'label' => 'Production',
+      'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
       ),
