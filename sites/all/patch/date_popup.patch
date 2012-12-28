@@ -1,0 +1,14 @@
+diff --git a/date_popup/date_popup.js b/date_popup/date_popup.js
+index 1847f84..9a2c206 100644
+--- a/date_popup/date_popup.js
++++ b/date_popup/date_popup.js
+@@ -14,9 +14,7 @@ Drupal.behaviors.date_popup = {
+             $(this)
+               .datepicker(datePopup.settings)
+               .addClass('date-popup-init')
+-            $(this).click(function(){
+               $(this).focus();
+-            });
+             break;
+ 
+           case 'timeEntry':
