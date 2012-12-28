@@ -145,8 +145,9 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       // Set the form to redirect back to the parent Event on submit
       $form_state['schedulearts_redirect'] = 'node/' . $parent_event_id;
 
-      // Disable the parent event field
+      // Disable the parent event field, and hide it in CSS
       $form['field_call_parent_event']['und']['#disabled'] = TRUE;
+      $form['field_call_parent_event']['#attributes']['class'][] = 'schedulearts-hidden';
 
       // Get the parent event object
       $parent_event = reset(entity_load('node', array($parent_event_id)));
