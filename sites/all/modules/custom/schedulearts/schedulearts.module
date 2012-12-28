@@ -226,7 +226,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   // Tweaks to the Create Event form
   if ($form_id == 'event_node_form') {
     // TODO: Date single day
-    //array_unshift($form['#validate'], 'schedulearts_single_date_copy');
+    array_unshift($form['#validate'], 'schedulearts_single_date_copy');
   }
 
   // Add custom submit handler to forms - handles redirects, because overlay breaks the destination param
@@ -240,6 +240,12 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
  */
 function schedulearts_single_date_copy($form_element, &$form_state) {
   // TODO: make this work
+  if (isset($form_state['values']['field_event_date']['und']['0']['value'])) {
+    $date_date = substr($form_state['values']['field_event_date']['und']['0']['value'], 0, 10);
+    $date_time = substr($form_state['values']['field_event_date']['und']['0']['value2'], 11, 8);
+    // set the value of the to: date. Not using form_set_value because it's weird with nested values such as date fields
+    $form_state['values']['field_event_date']['und']['0']['value2'] = $date_date . ' ' . $date_time;
+  }
 }
 
 /*

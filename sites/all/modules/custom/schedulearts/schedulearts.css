@@ -22,6 +22,10 @@ table {
   display:none;
 }
 
+#event-node-form .form-item-field-event-date-und-0-value2-date {
+  display:none;
+}
+
 #call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-year,
 #call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-month,
 #call-node-form .schedulearts-hidden-date .form-item-field-event-date-und-0-value-day,
