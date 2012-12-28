@@ -1,0 +1,78 @@
+/* Date field inline corrections
+ */
+.field-name-field-event-date .form-item-field-event-date-und-0-value-time {
+  clear:both;
+}
+
+.field-name-field-event-date .form-item-field-event-date-und-0-value {
+  margin-bottom: 0;
+}
+
+.field-name-field-event-date .date-padding {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.field-name-field-event-date .form-item-field-event-date-und-0-value2 label {
+  display: none;
+}
+
+.field-name-field-event-date .form-item-field-event-date-und-0-value label span.form-required {
+  display: none;
+}
+
+/* Date field inline Repeat settings corrections - General */
+
+#edit-field-event-date #repeat-settings-fieldset .date-clear .date-clear .date-clear label {
+  width: auto;
+  position: relative;
+  text-align: left;
+}
+
+#edit-field-event-date #repeat-settings-fieldset .date-clear .date-clear .date-clear select {
+  margin-left: auto;
+}
+
+#edit-field-event-date #repeat-settings-fieldset .date-clear .date-clear .date-clear .container-inline {
+  margin-left: 5px;
+}
+
+#edit-field-event-date-und-0-rrule-range-of-repeat .container-inline {
+  margin-left: 5px;
+}
+
+/* Date field inline Repeat settings corrections - specific to each repeat possibility
+ */
+#edit-field-event-date #repeat-settings-fieldset .date-clear .date-clear span.field-prefix {
+  margin-left: 160px;
+}
+
+#edit-field-event-date #repeat-settings-fieldset .date-clear .date-clear input {
+  margin-left: 0;
+}
+
+#edit-field-event-date #repeat-settings-fieldset #edit-field-event-date-und-0-rrule-daily .container-inline {
+  margin-left: 5px;
+}
+
+#edit-field-event-date-und-0-rrule-range-of-repeat #edit-field-event-date-und-0-rrule-until-child {
+  vertical-align: -3em;
+}
+
+#edit-field-event-date-und-0-rrule-range-of-repeat #edit-field-event-date-und-0-rrule-until-child label {
+  display:none;
+}
+  
+#edit-field-event-date-und-0-rrule-range-of-repeat #edit-field-event-date-und-0-rrule-until-child input {
+  margin-left: 5px;
+}
+
+#edit-field-event-date-und-0-rrule-range-of-repeat #edit-field-event-date-und-0-rrule-until-child .description {
+  margin-left:5px;
+  width:auto;
+  max-width: 75% !important;
+}
+
+#edit-field-event-date-und-0-rrule-range-of-repeat .until {
+  margin-left: 5px;
+}

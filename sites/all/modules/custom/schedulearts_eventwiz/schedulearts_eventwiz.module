@@ -99,3 +99,15 @@ function schedulearts_eventwiz_block_addcall_form($form_id, &$form_state, $curre
   return $form;
 }
 
+/*
+ * Implements hook_init()
+ * Add my custom stylesheet to all themes
+ */
+function schedulearts_eventwiz_init() {
+  $options = array(
+    'group' => CSS_THEME,
+    'every_page' => TRUE,
+    'weight' => 9999
+  );
+  drupal_add_css(drupal_get_path('module', 'schedulearts_eventwiz') . '/schedulearts_eventwiz.css', $options);
+}
