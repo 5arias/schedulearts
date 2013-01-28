@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Schedulearts fields feature.
+ */
+
+include_once 'schedulearts_fields.features.inc';
