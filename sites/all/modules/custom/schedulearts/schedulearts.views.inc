@@ -5,7 +5,7 @@
  */
 
 function schedulearts_views_query_alter(&$view, &$query) {
-  if ($view->name == 'taxonomy_term_calendar' && $view->current_display == 'page_1') {
+  if (isset($view->name) && $view->name == 'taxonomy_term_calendar' && $view->current_display == 'page_1') {
     // set TID filters to the user's TIDs
     $url_uid = arg(1);
     $userfields = user_load($url_uid);
