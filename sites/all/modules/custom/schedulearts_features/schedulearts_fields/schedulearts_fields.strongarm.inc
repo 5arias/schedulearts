@@ -26,10 +26,10 @@ function schedulearts_fields_strongarm() {
     'extra_fields' => array(
       'form' => array(
         'account' => array(
-          'weight' => '0',
+          'weight' => '-20',
         ),
         'timezone' => array(
-          'weight' => '6',
+          'weight' => '4',
         ),
       ),
       'display' => array(
