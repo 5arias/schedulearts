@@ -617,7 +617,7 @@ function schedulearts_content_types_and_taxonomy_strongarm() {
           'weight' => '0',
         ),
         'path' => array(
-          'weight' => '6',
+          'weight' => '1',
         ),
       ),
       'display' => array(),
@@ -819,6 +819,69 @@ function schedulearts_content_types_and_taxonomy_strongarm() {
     ),
   );
   $export['field_bundle_settings_node__schedule'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_chk_rdio_enable';
+  $strongarm->value = 0;
+  $export['form_beautifier_chk_rdio_enable'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_ddcl_enable';
+  $strongarm->value = 0;
+  $export['form_beautifier_ddcl_enable'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_drpdwn_enable';
+  $strongarm->value = 0;
+  $export['form_beautifier_drpdwn_enable'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_focus_enable';
+  $strongarm->value = 0;
+  $export['form_beautifier_focus_enable'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_formalize_enable';
+  $strongarm->value = 0;
+  $export['form_beautifier_formalize_enable'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_infieldlabels_enable';
+  $strongarm->value = 0;
+  $export['form_beautifier_infieldlabels_enable'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_inlinelabels_enable';
+  $strongarm->value = 1;
+  $export['form_beautifier_inlinelabels_enable'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_inlinelabels_exclude';
+  $strongarm->value = '';
+  $export['form_beautifier_inlinelabels_exclude'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'form_beautifier_inlinelabels_include';
+  $strongarm->value = 'event_node_form';
+  $export['form_beautifier_inlinelabels_include'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
