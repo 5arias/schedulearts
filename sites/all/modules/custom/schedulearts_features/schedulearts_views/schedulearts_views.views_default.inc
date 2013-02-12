@@ -2076,8 +2076,10 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
     'multiple_number' => '',
     'multiple_from' => '',
     'multiple_to' => '',
-    'show_repeat_rule' => '',
+    'show_repeat_rule' => 'hide',
   );
+  $handler->display->display_options['fields']['field_event_date']['group_rows'] = FALSE;
+  $handler->display->display_options['fields']['field_event_date']['delta_offset'] = '0';
   /* Field: Content: Groups Called */
   $handler->display->display_options['fields']['field_event_groups_tax']['id'] = 'field_event_groups_tax';
   $handler->display->display_options['fields']['field_event_groups_tax']['table'] = 'field_data_field_event_groups_tax';
@@ -3862,7 +3864,7 @@ The actions available to you are:
   $handler->display->display_options['filters']['mail']['expose']['label'] = 'E-mail';
   $handler->display->display_options['filters']['mail']['expose']['operator'] = 'mail_op';
   $handler->display->display_options['filters']['mail']['expose']['identifier'] = 'mail';
-  /* Filter criterion: User: Organizational Role (field_user_fach) */
+  /* Filter criterion: Broken/missing handler */
   $handler->display->display_options['filters']['field_user_fach_value']['id'] = 'field_user_fach_value';
   $handler->display->display_options['filters']['field_user_fach_value']['table'] = 'field_data_field_user_fach';
   $handler->display->display_options['filters']['field_user_fach_value']['field'] = 'field_user_fach_value';
