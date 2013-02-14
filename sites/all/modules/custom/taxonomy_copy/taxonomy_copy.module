@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Copy taxonomy term to another VID and/or parent. Trigger copy of children
  */
@@ -28,7 +28,7 @@ function _taxonomy_copy_copy_term($oldtid, $newvid, $newparent, $newname) {
   }
   else {
    drupal_set_message(t('Term copy failed with status: %status', array('%status' => $status))); 
-   break;
+   // break;
   }
 }
 
@@ -62,7 +62,7 @@ function _taxonomy_copy_copy_term_children($oldtid, $newvid, $newparent) {
   else {
    drupal_set_message(t('Term copy failed with status: %status', array('%status' => $status))); 
    return FALSE;
-   break;
+   // break;
   }
 }
 
@@ -70,10 +70,11 @@ function _taxonomy_copy_copy_term_children($oldtid, $newvid, $newparent) {
  * Just in case: function to copy a vocabulary to a new term parent.
  * Vestigial, but may as well keep it around.
  */
+
 function _taxonomy_copy_copy_vocab($oldvid, $newvid, $newparent) {
   $top_tids = taxonomy_get_tree($oldvid, '0', '1');
   foreach ($top_tids as $tid) {
-    _taxonomy_copy_copy_term($tid->tid, $newvid, $newparent);
+    // _taxonomy_copy_copy_term($tid->tid, $newvid, $newparent);
   }
 }
 
@@ -87,4 +88,3 @@ function taxonomy_copy_copy_term($oldterm, $newvocab, $newparentobj, $newname) {
   $created_term = _taxonomy_copy_copy_term($oldtid, $newvid, $newparent, $newname);
   return array('created_term' => $created_term);
 }
-?>
