@@ -7,11 +7,6 @@
  */
 function schedulearts_eventwiz_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
-  case 'call_node_form':
-    if (isset($form['actions']['addanother'])) {
-      $form['actions']['addanother']['#submit'][] = 'schedulearts_eventwiz_addanother_submit_handler';
-    }
-    break;
   case 'event_node_form':
     $form['actions']['addcall'] = array(
       '#type' => 'submit',
@@ -24,7 +19,57 @@ function schedulearts_eventwiz_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Submit handler for addanother submits on Call forms. Retains post information
+ * Implements hook_form_FORM_ID_alter().
+ *   FORM_ID: call_node_form
+ */
+function  schedulearts_eventwiz_form_call_node_form_alter(&$form,&$form_state) {
+
+  $form['actions']['save_and_event'] = array(
+    '#type' => 'submit',
+    '#value' => 'Save and create new event',
+    '#weight' => -40,
+    '#submit' => array('node_form_submit', 'schedulearts_eventwiz_save_and_event_form_submit'),
+  );
+
+  if (isset($form['field_call_parent_event']) && isset($_GET['edit'])) {
+    // Load the rehearsal_calls view with parent event nid as argument.
+    $parent_nid = $_GET['edit']['field_call_parent_event']['und'];
+    $view = views_get_view('rehearsal_calls');
+    $view->set_display('block');
+    $view->set_arguments(array($parent_nid));
+    $view->pre_execute();
+    $view->execute();
+
+    // Attach the view to the form.
+    $form['calls_table'] = array(
+      '#type' => 'item',
+      '#markup' => $view->render(),
+      '#title' => t('Call Times'),
+    );
+    // Attach the edit even button to the form.
+    $form['actions']['edit_event'] = array(
+      '#type' => 'submit',
+      '#value' => t('Edit event'),
+      '#weight' => -41,
+      '#submit' => array('schedulearts_eventwiz_edit_event_form_submit'),
+    );
+  }
+  if (isset($form['actions']['addanother'])) {
+    $form['actions']['addanother']['#submit'][] = 'schedulearts_eventwiz_addanother_submit_handler';
+  }
+}
+
+/**
+ * Submit handler for save_and_event submits on Call forms. Redirects user to event add form.
+ */
+function schedulearts_eventwiz_save_and_event_form_submit(&$form, &$form_state) {
+  if (isset($form['actions']['save_and_event'])) {
+    $form_state['redirect'] = 'node/add/event';
+  }
+}
+
+/**
+ * Submit handler for addanother submits on Call forms. Retains post information.
  */
 function schedulearts_eventwiz_addanother_submit_handler($form, &$form_state) {
   if (isset($form['actions']['addanother'])) {
@@ -42,6 +87,17 @@ function schedulearts_eventwiz_addcall_form_submit($form, &$form_state) {
     $form_state['redirect'][]['query']['edit']['field_call_parent_event']['und'] = $form_state['values']['nid'];
   }
 }
+
+/**
+ * Submit handler for edit_event submits on Call forms. Redirects the user to relevant event edit form.
+ */
+function schedulearts_eventwiz_edit_event_form_submit(&$form, &$form_state) {
+  if (isset($form['actions']['edit_event']) && isset ($form['field_call_parent_event'][$form['field_call_parent_event']['#language']]['#default_value'])) {
+    $parent_nid = $form['field_call_parent_event'][$form['field_call_parent_event']['#language']]['#default_value'][0];
+    $form_state['redirect'] = 'node/' . $parent_nid . '/edit';
+  }
+}
+
 
 /**
  * Implements hook_block_info()
