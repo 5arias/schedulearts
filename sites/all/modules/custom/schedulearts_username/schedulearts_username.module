@@ -1,8 +1,7 @@
 <?php
 /**
- *
- * @file provides a menu callback for update username for user object
- * firstname lastname combination
+ * @file
+ * Provides a menu callback for update username for user object firstname lastname combination.
  */
 
 /**
@@ -24,41 +23,40 @@ function schedulearts_username_menu() {
   return $items;
 }
 
-
 /**
  * Updates all active usernames to firstname lastname combination
  *
  * @return string
  */
 function schedulearts_username_update() {
-  // select all active users
+  // Select all active users.
   $users = db_select('users', 'u')
     ->fields('u', array('uid'))
     ->condition('status', 0,'>')
     ->execute()
     ->fetchAll();
   foreach($users as $user) {
-    // prevent renaming the admin user
+    // Prevent renaming the admin user.
     if ($user->uid != 1) {
-      // load user account
+      // Load user account.
       $account = user_load($user->uid);
-      // wrap user account
+      // Wrap user account.
       $account_wrapper = entity_metadata_wrapper('user', $account);
 
-      // load first name
+      // Load first name.
       $account_fname = $account_wrapper->field_user_fname->value(array('sanitize' => TRUE));
-      // load last name
+      // Load last name.
       $account_lname = $account_wrapper->field_user_lname->value(array('sanitize' => TRUE));
-      // update username if first name or last name is not null
+      // Update username if first name or last name is not null.
       if ($account_fname != NULL || $account_lname != NULL) {
-        // create the name
-        $new_name = $account_fname . ' ' . $account_lname;
+        // Create the name.
+        $new_name = trim($account_fname) . ' ' . trim($account_lname);
         $account_wrapper->name->set($new_name);
 
-        // save entity
+        // Save entity.
         $account_wrapper->save();
       }
     }
   }
-  return 'The usernames have been updated!';
+  return t('The usernames have been updated.');
 }
