@@ -51,7 +51,7 @@ class views_handler_field extends views_handler {
    *
    * @var mixed
    */
-  var $original_value = NULL;
+  public $original_value = NULL;
 
   /**
    * @var array
@@ -378,6 +378,17 @@ class views_handler_field extends views_handler {
     }
   }
 
+  /**
+   * Determines if this field will be available as an option to group the result
+   * by in the style settings.
+   *
+   * @return bool
+   *  TRUE if this field handler is groupable, otherwise FALSE.
+   */
+  function use_string_group_by() {
+    return TRUE;
+  }
+
   function option_definition() {
     $options = parent::option_definition();
 
@@ -388,7 +399,7 @@ class views_handler_field extends views_handler {
         'alter_text' => array('default' => FALSE, 'bool' => TRUE),
         'text' => array('default' => '', 'translatable' => TRUE),
         'make_link' => array('default' => FALSE, 'bool' => TRUE),
-        'path' => array('default' => '', 'translatable' => TRUE),
+        'path' => array('default' => ''),
         'absolute' => array('default' => FALSE, 'bool' => TRUE),
         'external' => array('default' => FALSE, 'bool' => TRUE),
         'replace_spaces' => array('default' => FALSE, 'bool' => TRUE),
@@ -1021,6 +1032,10 @@ If you would like to have the characters \'[\' and \']\' please use the html ent
   function advanced_render($values) {
     if ($this->allow_advanced_render() && method_exists($this, 'render_item')) {
       $raw_items = $this->get_items($values);
+      // If there are no items, set the original value to NULL.
+      if (empty($raw_items)) {
+        $this->original_value = NULL;
+      }
     }
     else {
       $value = $this->render($values);
@@ -1161,7 +1176,7 @@ If you would like to have the characters \'[\' and \']\' please use the html ent
           $more_link_path = drupal_substr($more_link_path, drupal_strlen($base_path));
         }
 
-        $more_link = l($more_link_text, $more_link_path);
+        $more_link = l($more_link_text, $more_link_path, array('attributes' => array('class' => array('views-more-link'))));
 
         $suffix .= " " . $more_link;
       }
@@ -1382,13 +1397,8 @@ If you would like to have the characters \'[\' and \']\' please use the html ent
       $tokens['!' . $count] = isset($this->view->args[$count - 1]) ? strip_tags(decode_entities($this->view->args[$count - 1])) : '';
     }
 
-    // Add replacements for query string parameters.
-    foreach ($_GET as $param => $val) {
-      if (is_array($val)) {
-        $val = implode(', ', $val);
-      }
-      $tokens['%' . $param] = strip_tags(decode_entities($val));
-    }
+    // Get flattened set of tokens for any array depth in $_GET parameters.
+    $tokens += $this->get_token_values_recursive($_GET);
 
     // Now add replacements for our fields.
     foreach ($this->view->display_handler->get_handlers('field') as $field => $handler) {
@@ -1411,6 +1421,64 @@ If you would like to have the characters \'[\' and \']\' please use the html ent
     // Store the tokens for the row so we can reference them later if necessary.
     $this->view->style_plugin->render_tokens[$this->view->row_index] = $tokens;
     $this->last_tokens = $tokens;
+
+    return $tokens;
+  }
+
+  /**
+   * Recursive function to add replacements for nested query string parameters.
+   *
+   * E.g. if you pass in the following array:
+   *   array(
+   *     'foo' => array(
+   *       'a' => 'value',
+   *       'b' => 'value',
+   *     ),
+   *     'bar' => array(
+   *       'a' => 'value',
+   *       'b' => array(
+   *         'c' => value,
+   *       ),
+   *     ),
+   *   );
+   *
+   * Would yield the following array of tokens:
+   *   array(
+   *     '%foo_a' => 'value'
+   *     '%foo_b' => 'value'
+   *     '%bar_a' => 'value'
+   *     '%bar_b_c' => 'value'
+   *   );
+   *
+   * @param $array
+   *   An array of values.
+   *
+   * @param $parent_keys
+   *   An array of parent keys. This will represent the array depth.
+   *
+   * @return
+   *   An array of available tokens, with nested keys representative of the array structure.
+   */
+  function get_token_values_recursive(array $array, array $parent_keys = array()) {
+    $tokens = array();
+
+    foreach ($array as $param => $val) {
+      if (is_array($val)) {
+         // Copy parent_keys array, so we don't afect other elements of this iteration.
+         $child_parent_keys = $parent_keys;
+         $child_parent_keys[] = $param;
+         // Get the child tokens.
+         $child_tokens = $this->get_token_values_recursive($val, $child_parent_keys);
+         // Add them to the current tokens array.
+         $tokens += $child_tokens;
+      }
+      else {
+        // Create a token key based on array element structure.
+        $token_string = !empty($parent_keys) ? implode('_', $parent_keys) . '_' . $param : $param;
+        $tokens['%' . $token_string] = strip_tags(decode_entities($val));
+      }
+    }
+
     return $tokens;
   }
 

@@ -10,7 +10,7 @@
 function entityreference_browser_views_default_views() {
   $export = array();
 
-  $view = new view;
+  $view = new view();
   $view->name = 'entity_reference_browser_default';
   $view->description = '';
   $view->tag = 'entityreference';

@@ -1,0 +1,296 @@
+<?php
+/**
+ * @file
+ * The main functionalities are located here.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function entityreference_browser_theme() {
+  return array(
+    'entityreference_browser_list' => array(
+      'variables' => array('items' => array(), 'type' => 'ul', 'attributes' => array()),
+      'file' => 'entityreference_browser.theme.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function entityreference_browser_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'entityreference_browser') . '/views',
+  );
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function entityreference_browser_field_widget_info() {
+  $widgets['entityreference_browser'] = array(
+    'label' => t('Entity Reference Browser'),
+    'description' => t('An advanced, view-based widget.'),
+    'field types' => array('entityreference'),
+    'settings' => array(
+      'view' => '',
+      'pass_argument' => FALSE,
+    ),
+    'behaviors' => array(
+      'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+      'default value' => FIELD_BEHAVIOR_NONE,
+    ),
+  );
+
+  $widgets['node_reference_browser'] = array(
+    'label' => t('Node Reference Browser'),
+    'description' => t('An advanced, view-based widget for Node Reference fields'),
+    'field types' => array('node_reference'),
+    'settings' => array(
+      'view' => '',
+      'pass_argument' => FALSE,
+    ),
+    'behaviors' => array(
+      'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+      'default value' => FIELD_BEHAVIOR_NONE,
+    ),
+  );
+
+  return $widgets;
+}
+
+/**
+ * The module's exposed form plugin returns a form array instead of a string
+ * so that the form can be added to the widget.
+ * So $view->exposed_widgets is an array, and $vars['exposed'] is "Array".
+ */
+function entityreference_browser_preprocess_views_view(&$vars) {
+  if (is_array($vars['exposed'])) {
+    $vars['exposed'] = '';
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ * @todo flowplayer_formatter_video (if it's needed).
+ */
+function entityreference_browser_field_formatter_info() {
+  return array(
+    'entityreference_browser_formatter' => array(
+      'label' => t('Entityreference Browser Selector'),
+      'field types' => array('serial'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ * @todo support for other entity types besides files and nodes
+ */
+function entityreference_browser_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  switch ($display['type']) {
+    case 'entityreference_browser_formatter':
+      foreach ($items as $delta => $item) {
+        $entity_path = entity_uri($entity_type, $loaded_entity);
+        $output = '<input type="checkbox" /> ' . l($item['value'], $entity_path['path'], array('attributes' => array('data-id' => $item['value'])));
+        $element[$delta] = array('#markup' => $output);
+      }
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_settings_form().
+ */
+function entityreference_browser_field_widget_settings_form($field, $instance) {
+
+  $widget = $instance['widget'];
+  $settings = $widget['settings'];
+
+  if ($widget['type'] == 'entityreference_browser' || $widget['type'] == 'node_reference_browser') {
+    // Get a list of all views that contain a "Entityreference View Widget"
+    // display.
+    $options = array();
+    $displays = views_get_applicable_views('use ajax');
+    foreach ($displays as $data) {
+      list($view, $display_id) = $data;
+      $view_name = !empty($view->human_name) ? $view->human_name : $view->name;
+      $options[$view->name . '|' . $display_id] = check_plain($view_name . ' - ' . $display_id);
+    }
+
+    $element['view'] = array(
+      '#type' => 'select',
+      '#title' => t('View'),
+      '#description' => t('Specify the View to use for selecting items. Only views that have an "Entityreference View Widget" display are shown.'),
+      '#options' => $options,
+      '#default_value' => $settings['view'],
+      '#required' => TRUE,
+    );
+    $element['pass_argument'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Pass selected entity ids to View'),
+      '#description' => t('If enabled, the View will get all selected entity ids as the first argument. Useful for excluding already selected items.'),
+      '#default_value' => $settings['pass_argument'],
+    );
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function entityreference_browser_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+
+  $widget = $instance['widget'];
+  // The view hasn't been selected yet, abort.
+  if (empty($widget['settings']['view'])) {
+    return;
+  }
+
+  // If we have more than one element per page, this element-counter keeps them
+  // seperated
+  // @@TODO: Actually make this work!
+  static $ec = 1;
+
+  // Load the items for form rebuilds from the field state as they might not be
+  // in $form_state['values'] because of validation limitations. Also, they are
+  // only passed in as $items when editing existing entities.
+  $field_state = field_form_get_state($element['#field_parents'], $field['field_name'], $langcode, $form_state);
+  if (isset($field_state['items'])) {
+    $items = $field_state['items'];
+  }
+
+  $selected_entity_ids = array();
+  if ($widget['type'] == 'node_reference_browser') {
+    $entity_type = $element['#entity_type'];
+    foreach ($items as $item) {
+      $selected_entity_ids[] = $item['nid'];
+    }
+  }
+  else {
+    $entity_type = $field['settings']['target_type'];
+    foreach ($items as $item) {
+      $selected_entity_ids[] = $item['target_id'];
+    }
+  }
+
+  // First build the view used for selecting items.
+  $target_view = explode('|', $widget['settings']['view']);
+
+  $view = views_get_view($target_view[0]);
+  $view->set_display($target_view[1]);
+  $view->set_use_ajax(TRUE);
+
+  // Pass the selected entity ids as the first argument, if needed.
+  if (!empty($selected_entity_ids) && !empty($widget['settings']['pass_argument'])) {
+    $arguments = array();
+    $arguments[0] = implode(',', $selected_entity_ids);
+    $view->set_arguments($arguments);
+  }
+
+  $settings = array(
+    'entityreference_browser' => array(
+      'cardinality' => $field['cardinality'],
+    ),
+    'views' => array(
+      'ajax_path' => url('views/ajax'),
+      'ajaxViews' => array(
+        array(
+          'view_name' => $view->name,
+          'view_display_id' => $view->current_display,
+          'view_args' => check_plain(implode('/', $view->args)),
+          'view_path' => check_plain($_GET['q']),
+          'view_base_path' => $view->get_path(),
+          'view_dom_id' => $ec,
+          'pager_element' => isset($view->query->pager) ? $view->query->pager->get_pager_id() : 0,
+        ),
+      ),
+    ),
+  );
+  
+  // Note that the views ajax is getting manually placed here. This is to
+  // overcome a bug that happeens when the normal views_add_js('ajax_view');
+  // function is called. By using views_add_js the timing of the js files
+  // cause js undefined errors. But by manually doing exactly what that function
+  // does and putting it directly here the timing is fixed and the js works
+  // as it should.
+  drupal_add_js(drupal_get_path('module', 'views') . "/js/base.js");
+  drupal_add_library('system', 'drupal.ajax');
+  drupal_add_library('system', 'jquery.form');
+  // Load jQuery UI sortable.
+  drupal_add_library('system', 'ui.sortable');
+  drupal_add_js(drupal_get_path('module', 'views') . "/js/ajax_view.js", array('preprocess' => FALSE));
+
+  $selected_entities = entity_load($entity_type, $selected_entity_ids);
+
+  // Build HTML to represent selected items.
+  $entities_array = array();
+  foreach ($selected_entities as $id => $loaded_entity) {
+    $entity_path = entity_uri($entity_type, $loaded_entity);
+    $remove_item_link = l('[' . t('remove') . ']', $entity_path['path'], array('attributes' => array('class' => 'remove', 'data-id' => $id)));
+    $entities_array[] = array('data' => entity_label($entity_type, $loaded_entity) . ' ' . $remove_item_link, 'data-ec' => $ec, 'data-id' => $id);
+  }
+
+  $variables = array(
+    'items' => $entities_array,
+    'title'=> NULL,
+    'type' => 'ul',
+    'attributes' => array(
+      'data-ec' => $ec,
+      'class' => 'entityreference-browser entityreference-browser-selected'
+    )
+  );
+
+  $markup_selected  = '<div class="entityreference-browser-widget-left">';
+  $markup_selected .= theme('entityreference_browser_list', $variables);
+  $markup_selected .= '</div>';
+
+  $element += array(
+    '#type' => 'hidden',
+    '#default_value' => implode(',', $selected_entity_ids),
+    '#element_validate' => array('entityreference_browser_validate'),
+    '#prefix' => '<strong>' . $element['#title'] . '</strong><p>' . $element['#description'] . '</p>' ,
+    '#suffix' => '<div class="entityreference-browser-wrapper">' . $markup_selected . '<div class="entityreference-browser-view-widget"></div></div><div class="entityreference-browser-clear"></div>',
+    '#attached' => array(
+      'js' => array(drupal_get_path('module', 'entityreference_browser') . '/entityreference_browser.js'),
+      'css' => array(drupal_get_path('module', 'entityreference_browser') . '/entityreference_browser.css'),
+    ),
+    '#attributes' => array('class' => array('entityreference-browser-values')),
+  );
+
+  // Need to attach settings here so they survive properly across form builds
+  // and form errors.
+  $element['#attached']['js'][] = array(
+    'data' => $settings,
+    'type' => 'setting',
+  );
+
+  return $element;
+}
+
+/**
+ * Formats the value array properly
+ */
+function entityreference_browser_validate($element, &$form_state) {
+  $value = array();
+  if (!empty($element['#value'])) {
+    $ids = explode(',', $element['#value']);
+    $value = array();
+
+    foreach ($ids as $id) {
+      $value[] = array(
+        'target_id' => $id,
+      );
+    }
+  }
+
+  // Update the value of this element so the field can validate the product IDs.
+  form_set_value($element, $value, $form_state);
+}

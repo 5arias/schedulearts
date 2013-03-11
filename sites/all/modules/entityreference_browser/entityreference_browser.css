@@ -9,7 +9,6 @@
 
 .entityreference-browser-wrapper {
   height: 350px;
-  overflow: auto;
 }
 
 .entityreference-browser-widget-left {
@@ -43,6 +42,7 @@
 
 .entityreference-browser-view-widget {
   width: 100%;
+  border-left: 10px solid #edefeb;
 }
 
 .entityreference-browser-view-widget .view {
