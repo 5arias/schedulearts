@@ -2,18 +2,18 @@
 
 /**
  * @file
- * General administration functions.
+ * Administration functions for schedulearts_undeletables
  */
 
 /**
  * Admin settings form
  */
-function schedulearts_admin_settings_form($form, &$form_state) {
+function schedulearts_undeletables_admin_settings_form($form, &$form_state) {
   $form = array();
 
   $form['settings'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Common settings'),
+    '#title' => t('Undeletables'),
   );
   
   //Build the list of vocabulary options.
@@ -24,29 +24,29 @@ function schedulearts_admin_settings_form($form, &$form_state) {
     $vocabulary_options[$key] = $value;
   } 
 
-  $form['settings']['schedulearts_reserved_eventtypes_vocab'] = array(
+  $form['settings']['schedulearts_undeletables_reserved_eventtypes_vocab'] = array(
     '#type' => 'select',
     '#title' => t('Event types vocabulary'),
     '#description' => t('The vocabulary which contains event types. If you change this, make sure to save the form before setting "Reserved Event Types" below'),
     '#options' => $vocabulary_options,
-    '#default_value' => variable_get('schedulearts_reserved_eventtypes_vocab', '6'),
+    '#default_value' => variable_get('schedulearts_undeletables_reserved_eventtypes_vocab', '6'),
     '#required' => TRUE,
   );
 
   // Build the list of term options
-  $terms = taxonomy_get_tree(variable_get('schedulearts_reserved_eventtypes_vocab', '6'));
+  $terms = taxonomy_get_tree(variable_get('schedulearts_undeletables_reserved_eventtypes_vocab', '6'));
   foreach ($terms as $term) {
     $key = $term->tid;
     $value = $term->name;
     $term_options[$key] = $value;
   }
 
-  $form['settings']['schedulearts_reserved_eventtypes'] = array(
+  $form['settings']['schedulearts_undeletables_reserved_eventtypes'] = array(
     '#type' => 'select',
     '#title' => t('Reserved Event Types'),
     '#description' => t('These Event Types cannot be modified or deleted by anyone.'),
     '#options' => $term_options,
-    '#default_value' => variable_get('schedulearts_reserved_eventtypes'),
+    '#default_value' => variable_get('schedulearts_undeletables_reserved_eventtypes'),
     '#required' => TRUE,
     '#multiple' => TRUE,
     '#size' => 10,

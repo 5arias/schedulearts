@@ -1,0 +1,6 @@
+name = Undeletable Events 
+description = Delete protected event types
+project = "schedulearts"
+package = Custom
+version = "7.x-1.x-dev"
+core = "7.x"
