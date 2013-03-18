@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * @file
+ * Hooks provided by the overlay paths module.
+ */
+
+/**
+ * @addtogroup hooks
+ * @{
+ */
+
+/**
  * Define non-administrative overlay paths.
  *
  * Modules may specify whether or not the paths they define in hook_menu()
@@ -48,3 +58,7 @@ function hook_overlay_paths_alter(&$paths) {
   $paths['user/*'] = TRUE;
   $paths['user/*/edit'] = FALSE;
 }
+
+/**
+ * @} End of "addtogroup hooks".
+ */

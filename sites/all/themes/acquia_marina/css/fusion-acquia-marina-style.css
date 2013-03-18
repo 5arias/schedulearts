@@ -81,27 +81,11 @@ ol ol {
 }
 
 ul li {
-  background: url(../images/green-bullet.png) no-repeat 0 2px;
+  background: url(/skins/acquia_marina_default/images/green-bullet.png) no-repeat 0 2px;
   list-style: none;
   list-style-image: none;
   margin-bottom: 5px;
   padding: 0 0 0 15px;
-}
-
-/*remove bullet styles for menu, pager and other non-bulleted lists*/
-ul.menu li,
-ul.sf-menu li,
-ul.links li,
-ul.tabs li,
-ul.pager li,
-#admin-menu ul li,
-ul.horizontal-tabs-list li,
-ul.vertical-tabs-list li,
-#toolbar ul li,
-ul.contextual-links li,
-.item-list ul li {
-	background-image: none;
-	padding-left: 0;
 }
 
 blockquote p {
@@ -111,13 +95,13 @@ blockquote p {
 }
 
 blockquote {
-  background: url(../images/close-quote.png) no-repeat 100% 100%; /* LTR */
+  background: url(/skins/acquia_marina_default/images/close-quote.png) no-repeat 100% 100%; /* LTR */
   color: #5A6A78;
   margin: 10px 0;
 }
 
 blockquote p:first-child {
-  background: url(../images/open-quote.png) no-repeat 0 100%;  /* LTR */
+  background: url(/skins/acquia_marina_default/images/open-quote.png) no-repeat 0 100%;  /* LTR */
   padding: 0 0 0 20px;/* LTR */
 }
 
@@ -413,7 +397,7 @@ html {
   );
 }
 
-.ie6 .postscript-bottom-wrapper {
+.postscript-bottom-wrapper {
   height: 24px; /* Set heights rather than min-height as IE6 doesn't understand min-height */
 }
 
@@ -1123,17 +1107,16 @@ ul.sf-vertical li ul li ul {
   background: #FDFFEF;
   border-color: #266996;
   color: #27638C;
-  display: inline-block;
   font-weight: bold;
   font-size: 108.3%; /* 13px/12px */
-  line-height: 130%;
   padding: 5px 10px;
-  margin-bottom: 2px;
 }
 
 .inner ul.pager li.pager-current {
   background-color: #D9DBCD;
   color: #000;
+  display: block-inline;
+  padding: 5px 10px;
 }
 
 .ie6 .inner ul.pager li.pager-current,
@@ -1656,10 +1639,4 @@ div.poll div.bar div.foreground {
 .fusion-inline-menu ul.links li.last a:visited {
   padding-right: 0;
   border-right: none;
-}
-
-/*inline login*/
-html.js .fusion-horiz-login#block-user-login #user-login-form label {
-	position: absolute;
-	z-index: 999;
 }

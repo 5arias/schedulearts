@@ -177,12 +177,3 @@ if (module_exists('colorbox') && !function_exists('colorbox_fullcalendar_api')) 
     return fullcalendar_options_fullcalendar_api();
   }
 }
-
-/**
- * Add Overlay integration.
- */
-if (module_exists('overlay') && !function_exists('overlay_fullcalendar_api')) {
-  function overlay_fullcalendar_api() {
-    return fullcalendar_options_fullcalendar_api();
-  }
-}

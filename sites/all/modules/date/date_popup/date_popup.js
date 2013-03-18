@@ -14,7 +14,9 @@ Drupal.behaviors.date_popup = {
             $(this)
               .datepicker(datePopup.settings)
               .addClass('date-popup-init')
+            $(this).click(function(){
               $(this).focus();
+            });
             break;
 
           case 'timeEntry':
