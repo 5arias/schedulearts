@@ -1,14 +1,14 @@
 <?php
 /**
  * @file
- * Admimistrative functions for the Overlay paths - example module.
+ * Admimistrative functions for the Overlay paths ui module.
  */
 
 /**
- * Main administration form for Overlay Paths example module.
+ * Main administration form for Overlay Paths ui module.
  */
 function overlay_paths_admin_form($form, &$form_state) {
-  $paths = variable_get('overlay_paths_example_paths', _overlay_paths_example_default());
+  $paths = variable_get('overlay_paths_ui_paths', _overlay_paths_ui_default());
   $default = '';
   foreach ($paths as $path => $option) {
     $default .= $path;
@@ -20,15 +20,15 @@ function overlay_paths_admin_form($form, &$form_state) {
     }
     $default .= "\n";
   }
-  
-  $form['overlay_paths_example_paths'] = array(
+
+  $form['overlay_paths_ui_paths'] = array(
     '#type' => 'textarea',
     '#title' => t('Non-admin overlay paths'),
     '#description' => t("Specify non-admin pages that should appear in the overlay by using their paths. Enter one path per line. The '*' character is a wildcard. Example paths are blog for the blog page and blog/* for every personal blog. <front> is the front page. You may also use a '|' (pipe) character after the path to specify an option, either a CSS width, to specify a width for that path in the overlay, or FALSE to specify that that path shouldn't appear in the overlay. For example node/add|600px or user/register/step/2|FALSE"),
     '#default_value' => $default,
-    '#element_validate' => array('overlay_paths_admin_form_paths_element_validate'), 
+    '#element_validate' => array('overlay_paths_admin_form_paths_element_validate'),
   );
-  
+
   return system_settings_form($form);
 }
 

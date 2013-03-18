@@ -109,7 +109,7 @@ function overlay_paths_init() {
 function overlay_paths_is_overlay($path) {
   // returns TRUE if current path is returned by a hook_overlay_path, or
   // is an admin path that wasn't returned by a hook_overlay_path equal to FALSE
-  $return = drupal_match_path($path, overlay_paths_get_overlay_patterns()) || (path_is_admin($path) && !drupal_match_path($path, overlay_paths_get_overlay_patterns(FALSE)));
+  $return =  drupal_match_path($path, overlay_paths_get_overlay_patterns()) || drupal_match_path(drupal_get_path_alias($path), overlay_paths_get_overlay_patterns()) || (path_is_admin($path) && !drupal_match_path($path, overlay_paths_get_overlay_patterns(FALSE)));
   return $return;
 }
 
@@ -120,7 +120,7 @@ function overlay_paths_is_overlay($path) {
  * check to see if we're actually on one of the non-administrative overlay pages
  * too.
  *
- * @see system_custom_theme();
+ * @see system_custom_theme()
  */
 function overlay_paths_custom_theme() {
   if (user_access('view the administration theme') && path_is_admin(current_path())  && !drupal_match_path(current_path(), overlay_paths_get_overlay_patterns())) {
@@ -131,8 +131,8 @@ function overlay_paths_custom_theme() {
 /**
  * Implements hook_module_implements_alter().
  *
- * We're going to swap out system module's implementation of hook_custom_theme
- * and overlay's hook_init for our own.
+ * We're going to swap out system module's implementation of hook_custom_theme()
+ * and overlay's hook_init() for our own.
  */
 function overlay_paths_module_implements_alter(&$implementations, $hook) {
   switch ($hook) {

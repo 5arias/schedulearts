@@ -499,6 +499,13 @@ function path_is_admin($path) {
     $path_map['admin'][$path] = drupal_match_path($path, $patterns['admin']);
     $path_map['non_admin'][$path] = drupal_match_path($path, $patterns['non_admin']);
   }
+  // Check path for aliases.
+  $alias = drupal_get_path_alias($path);
+  if ($alias){
+    $patterns = path_get_admin_paths();
+    $path_map['admin'][$path] = drupal_match_path($alias, $patterns['admin']);
+    $path_map['non_admin'][$path] = drupal_match_path($alias, $patterns['non_admin']);	
+  }
   return $path_map['admin'][$path] && !$path_map['non_admin'][$path];
 }
 

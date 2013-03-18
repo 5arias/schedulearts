@@ -116,20 +116,20 @@ function entityreference_browser_field_widget_settings_form($field, $instance) {
   $settings = $widget['settings'];
 
   if ($widget['type'] == 'entityreference_browser' || $widget['type'] == 'node_reference_browser') {
-    // Get a list of all views that contain a "Entityreference View Widget"
-    // display.
+    // Get a list of all views that contain a "Entityreference Browser" display.
     $options = array();
     $displays = views_get_applicable_views('use ajax');
     foreach ($displays as $data) {
       list($view, $display_id) = $data;
-      $view_name = !empty($view->human_name) ? $view->human_name : $view->name;
-      $options[$view->name . '|' . $display_id] = check_plain($view_name . ' - ' . $display_id);
+      if ($view->tag == 'entityreference_browser') {
+        $view_name = !empty($view->human_name) ? $view->human_name : $view->name;
+        $options[$view->name . '|' . $display_id] = check_plain($view_name . ' - ' . $display_id);
+      }
     }
-
     $element['view'] = array(
       '#type' => 'select',
       '#title' => t('View'),
-      '#description' => t('Specify the View to use for selecting items. Only views that have an "Entityreference View Widget" display are shown.'),
+      '#description' => t('Specify the View to use for selecting items. Only views that have the "entityreference_browser" tag are shown.'),
       '#options' => $options,
       '#default_value' => $settings['view'],
       '#required' => TRUE,
@@ -159,7 +159,7 @@ function entityreference_browser_field_widget_form(&$form, &$form_state, $field,
   // If we have more than one element per page, this element-counter keeps them
   // seperated.
   static $ec = 1;
-  $element_id = drupal_html_id('entityreference-browser');
+  $element_id = drupal_html_id('entityreference-browser-'.$ec);
 
   // Load the items for form rebuilds from the field state as they might not be
   // in $form_state['values'] because of validation limitations. Also, they are
@@ -260,11 +260,13 @@ function entityreference_browser_field_widget_form(&$form, &$form_state, $field,
   $markup_selected  = '<div class="entityreference-browser-widget-left">';
   $markup_selected .= theme('entityreference_browser_list', $variables);
   $markup_selected .= '</div>';
+  
+  $required = !empty($element['#required']) ? theme('form_required_marker', $variables) : '';
 
   $element += array(
     '#type' => 'hidden',
     '#default_value' => implode(',', $selected_entity_ids),
-    '#prefix' => '<strong>' . $element['#title'] . '</strong><p>' . $element['#description'] . '</p>' ,
+    '#prefix' => '<strong>' . $element['#title'] . '</strong>&nbsp;' . $required . '<p>' . $element['#description'] . '</p>' ,
     '#suffix' => '<div id="' . $element_id . '" class="entityreference-browser-wrapper">' . $markup_selected . '<div class="entityreference-browser-view-widget"></div></div><div class="entityreference-browser-clear"></div>',
     '#attached' => array(
       'js' => array(drupal_get_path('module', 'entityreference_browser') . '/entityreference_browser.js'),

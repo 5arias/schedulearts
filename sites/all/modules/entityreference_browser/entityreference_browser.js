@@ -75,7 +75,7 @@
 
       var element = $(this).closest('div.entityreference-browser-wrapper'),
         entityId = $(this).attr('data-id'),
-        item = $('li[data-id="' + entityId + '"]'),
+        item = $('#' + element.attr('id') + ' li[data-id="' + entityId + '"]'),
         list = item.closest('[id^=entityreference-browser]');
 
       Drupal.detachBehaviors(item);
@@ -104,7 +104,7 @@
     },
 
     addItem: function(entityId, instance) {
-      var label = $('a[data-id="' + entityId + '"]').text(),
+      var label = $('#' + instance.attr('id') + ' a[data-id="' + entityId + '"]').text(),
         entityItemRemove = $('<a />').attr('href', Drupal.settings.basePath + 'node/' + entityId).attr('class', 'remove').attr('data-id', entityId).html('[' + Drupal.t('remove') + ']'),
         entityItem = $('<li />').attr('data-id', entityId).html(label + ' ').append(entityItemRemove);
 

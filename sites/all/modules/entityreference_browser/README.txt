@@ -26,7 +26,8 @@ Configure your Node fields:
 2.) Select the "Browser" widget type
 3.) Select a view, you can choose the default
     "Entity Reference Browser - Default (block_1)" or choose one that you have 
-    modified. 
+    modified. Note, only views with the 'entityreference_browser' tag will
+    appear in this list.
 4.) Save your widget settings
 
 Now go and add/edit a node and bask in the glory :)
