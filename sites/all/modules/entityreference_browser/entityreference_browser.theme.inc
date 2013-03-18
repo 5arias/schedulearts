@@ -1,4 +1,4 @@
-+<?php
+<?php
 /**
  * @file
  * All theme functions go here.
@@ -49,7 +49,11 @@ function theme_entityreference_browser_list($variables) {
       }
       if (count($children) > 0) {
         // Render nested list.
-        $data .= theme_item_list(array('items' => $children, 'title' => NULL, 'type' => $type, 'attributes' => $attributes));
+        $data .= theme_item_list(array(
+            'items' => $children,
+            'title' => NULL,
+            'type' => $type,
+            'attributes' => $attributes));
       }
       $output .= '<li' . drupal_attributes($attributes) . '>' . $data . "</li>\n";
     }

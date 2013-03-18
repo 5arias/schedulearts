@@ -44,7 +44,7 @@ INSTALLATION
     or "sites/default/".
 
  4. Install the Fusion Accelerator module:
-    http://drupal.org/project/fusion_accelerator
+    http://drupal.org/project/fusion_acclerator
     Accelerator makes Fusion even more powerful, giving you control over
     Fusion's layout and style options in Drupal's interface. Download and
     install this module like usual to get the most out of Fusion.

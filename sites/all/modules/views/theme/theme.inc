@@ -53,6 +53,8 @@ function template_preprocess_views_view(&$vars) {
   $vars['display_id'] = $view->current_display;
 
   // Basic classes
+  $vars['css_class'] = '';
+
   $vars['classes_array'] = array();
   $vars['classes_array'][] = 'view';
   $vars['classes_array'][] = 'view-' . drupal_clean_css_identifier($vars['name']);
@@ -70,7 +72,7 @@ function template_preprocess_views_view(&$vars) {
   $vars['header'] = $view->display_handler->render_area('header', $empty);
   $vars['footer'] = $view->display_handler->render_area('footer', $empty);
   if ($empty) {
-    $vars['empty'] = $view->display_handler->render_area('empty');
+    $vars['empty'] = $view->display_handler->render_area('empty', $empty);
   }
 
   $vars['exposed']    = !empty($view->exposed_widgets) ? $view->exposed_widgets : '';
@@ -618,6 +620,7 @@ function template_preprocess_views_view_table(&$vars) {
 
   $count = 0;
   foreach ($vars['rows'] as $num => $row) {
+    $vars['row_classes'][$num] = array();
     if ($row_class_special) {
       $vars['row_classes'][$num][] = ($count++ % 2 == 0) ? 'odd' : 'even';
     }
@@ -933,16 +936,23 @@ function template_preprocess_views_exposed_form(&$vars) {
     }
     $widget = new stdClass;
     // set up defaults so that there's always something there.
-    $widget->label = $widget->operator = $widget->widget = NULL;
+    $widget->label = $widget->operator = $widget->widget = $widget->description = NULL;
 
     $widget->id = isset($form[$info['value']]['#id']) ? $form[$info['value']]['#id'] : '';
+
     if (!empty($info['label'])) {
       $widget->label = check_plain($info['label']);
     }
     if (!empty($info['operator'])) {
       $widget->operator = drupal_render($form[$info['operator']]);
     }
+
     $widget->widget = drupal_render($form[$info['value']]);
+
+    if (!empty($info['description'])) {
+      $widget->description = check_plain($info['description']);
+    }
+
     $vars['widgets'][$id] = $widget;
   }
 

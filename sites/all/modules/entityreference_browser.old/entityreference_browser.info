@@ -1,0 +1,7 @@
+name = Entity Reference Browser
+description = Provides a Entity Browser widget to quickly find content and re-order it with drag/drop
+core = 7.x
+dependencies[] = entityreference
+dependencies[] = views
+
+files[] = views/entityreference_browser_field_picker.inc

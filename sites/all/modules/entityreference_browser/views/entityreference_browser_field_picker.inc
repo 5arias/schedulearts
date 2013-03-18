@@ -18,7 +18,7 @@ class entityreference_browser_field_picker extends views_handler_field {
   }
 
   function label() {
-    return t('Select Content');
+    return isset($this->options['label']) ? $this->options['label'] : t('Select Content');
   }
 
   function render($values) {
