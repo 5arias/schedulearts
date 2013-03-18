@@ -132,13 +132,14 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
 
   // Tweaks to the Call people interface
   if ($form_id == 'call_node_form')  {
-    // Set the parent event from POST or value in edited node
-    if (isset($_POST['edit']) || isset($_GET['edit'])) {
+    // If the call doesn't already have one, set the parent event from POST or
+    // value in edited node.
+    if (isset($form['#node']->field_call_parent_event['und']['0']['target_id'])) {
+      $parent_event_id = $form['#node']->field_call_parent_event['und']['0']['target_id'];
+    }
+    elseif (isset($_POST['edit']) || isset($_GET['edit'])) {
       $form['field_call_parent_event']['und']['#default_value']['0'] = (isset($_POST['edit']['field_call_parent_event']['und']) ? $_POST['edit']['field_call_parent_event']['und'] : $_GET['edit']['field_call_parent_event']['und']); 
       $parent_event_id = $form['field_call_parent_event']['und']['#default_value']['0'];
-    }
-    elseif (isset($form['#node']->field_call_parent_event['und']['0']['target_id'])) {
-      $parent_event_id = $form['#node']->field_call_parent_event['und']['0']['target_id'];
     }
 
     if (isset($parent_event_id)) {
