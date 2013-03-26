@@ -196,6 +196,7 @@ function entityreference_browser_field_widget_form(&$form, &$form_state, $field,
     $arguments[0] = implode(',', $selected_entity_ids);
     $view->set_arguments($arguments);
   }
+  dpm($view, 'view');
 
   $settings = array(
     'entityreference_browser' => array(
@@ -220,6 +221,7 @@ function entityreference_browser_field_widget_form(&$form, &$form_state, $field,
       ),
     ),
   );
+  dpm($settings, 'settings');
 
   // Note that the views ajax is getting manually placed here. This is to
   // overcome a bug that happeens when the normal views_add_js('ajax_view');

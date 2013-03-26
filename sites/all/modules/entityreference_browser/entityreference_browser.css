@@ -43,6 +43,7 @@
 .entityreference-browser-view-widget {
   width: 100%;
   border-left: 10px solid #edefeb;
+  height: 350px;
 }
 
 .entityreference-browser-view-widget .view {
