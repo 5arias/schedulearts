@@ -25,8 +25,6 @@
           data: viewInfo,
           success: function(response) {
             if (response[2] !== null) {
-              console.info(response);
-              console.info(response[2]);
               target.html(response[2].data);
             }
             // put a listener on the drag / drop UL item
