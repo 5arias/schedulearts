@@ -31,3 +31,17 @@ function schedule_arts_alpha_preprocess_html(&$variables) {
 		drupal_add_css(path_to_theme() . '/css/overlay-child.css', array('group' => CSS_THEME, 'weight' => 115, 'browsers' => array(), 'preprocess' => FALSE));
 	}
 }
+function schedulearts_preprocess_username(&$vars) {
+
+  // Update the username so it's the full name of the user.
+  $account = $vars['account'];
+
+  // Revise the name trimming done in template_preprocess_username.
+  $name = $vars['name_raw'] = format_username($account);
+  
+  // Don't trim the name at all
+
+  // Assign the altered name to $vars['name'].
+  $vars['name'] = check_plain($name);
+
+}
