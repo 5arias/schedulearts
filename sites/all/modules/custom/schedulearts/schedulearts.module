@@ -27,7 +27,7 @@ function schedulearts_views_api() {
  */
 function schedulearts_flag($action, $flag, $content_id, $account) {
   if ($action == 'flag' && $flag->name == 'schedule_approved') {
-    // Send email to group members
+    // Send email to group members.
     $node = node_load($content_id);
     if (isset($node->field_sched_groups['und'])) {
       foreach ($node->field_sched_groups['und'] as $term_entry ) {
@@ -425,4 +425,44 @@ function schedulearts_menu_alter(&$items) {
 // Custom access callback for taxonomy term add form - checks that you can EDIT the vocab
 function schedulearts_vocabulary_access($vid) {
   return user_access("edit terms in $vid->vid") || user_access('administer taxonomy');
+}
+
+
+/**
+ * Implements hook_colors_classes().
+ *
+ * Provides a custom class for the call entities to colorize the user's calendar entries.
+ *
+ * @param object $entity
+ *   The entity object.
+ */
+function schedulearts_colors_classes($entity) {
+  $class_names = array();
+  // Add classes only to the call content type.
+  if ($entity->type == 'call') {
+    // Get the parent event entity.
+    $parent_event = field_get_items('node', $entity, 'field_call_parent_event', $entity->language);
+    // Normally the number of parent is 1.
+    if (count($parent_event) == 1) {
+      $event = array_shift($parent_event);
+      if (isset($event['target_id'])) {
+        // Load the parent event entity.
+        $query = new EntityFieldQuery();
+        $query->entityCondition('entity_type', 'node')
+          ->propertyCondition('status', 1)
+          ->propertyCondition('nid', $event['target_id']);
+        $result = $query->execute();
+        if (isset($result['node'])) {
+          // Attach the event type taxonomy term to the entity.
+          field_attach_load('node', $result['node'], FIELD_LOAD_CURRENT, array('field_id' => 'field_event_type'));
+          $event_object = array_shift($result['node']);
+          // Get the value of event type.
+          $event_type = array_shift(field_get_items('node', $event_object, 'field_event_type'));
+          // Set the class name.
+          $class_names[] = 'colors-taxonomy-term-' . $event_type['tid'];
+        }
+      }
+    }
+  }
+  return $class_names;
 }
