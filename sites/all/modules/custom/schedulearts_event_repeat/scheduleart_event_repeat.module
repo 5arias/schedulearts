@@ -1,0 +1,31 @@
+<?php
+/**
+ * @file
+ * Contains delete behavior on repeating events.
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function scheduleart_event_repeat_form_event_node_form_alter(&$form, &$form_state, $form_id) {
+  $language = $form['field_event_date']['#language'];
+  if ($form['field_event_date'][$language][0]['show_repeat_settings']['#default_value'] == 1) {
+    $form['actions']['delete']['#value'] = t('Delete all in series');
+
+    $form['actions']['delete_one'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete One'),
+      '#weight' => 20,
+      '#submit' => array('scheduleart_event_repeat_delete_one_submit'),
+    );
+  }
+}
+
+
+/**
+ * Redirects the user to the node repeats page.
+ */
+function scheduleart_event_repeat_delete_one_submit($form, &$form_state) {
+  $form_state['redirect'] = '/node/' . $form_state['values']['nid'] . '/repeats';
+}
+
