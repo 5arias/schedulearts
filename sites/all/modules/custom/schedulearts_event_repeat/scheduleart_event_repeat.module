@@ -5,9 +5,31 @@
  */
 
 /**
+ * Implements hook_menu().
+ *
+ * Add extra menu item for batch delete repeating dates instance.
+ */
+function scheduleart_event_repeat_menu() {
+  $items['node/%node/date_repeat_instance_delete_from/%/%/%'] = array(
+    'type' => MENU_CALLBACK,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array(
+      'scheduleart_event_repeat_instance_delete_from_confirm',
+      1,
+      3,
+      4,
+      5,
+    ),
+    'access callback' => 'date_repeat_instance_access',
+    'access arguments' => array('delete', 1, 3, 4, 5),
+  );
+  return $items;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
-function scheduleart_event_repeat_form_event_node_form_alter(&$form, &$form_state, $form_id) {
+function scheduleart_event_repeat_form_event_node_form_alter(&$form, &$form_state) {
   $language = $form['field_event_date']['#language'];
   if ($form['field_event_date'][$language][0]['show_repeat_settings']['#default_value'] == 1) {
     $form['actions']['delete']['#value'] = t('Delete all in series');
@@ -21,11 +43,81 @@ function scheduleart_event_repeat_form_event_node_form_alter(&$form, &$form_stat
   }
 }
 
-
 /**
  * Redirects the user to the node repeats page.
  */
 function scheduleart_event_repeat_delete_one_submit($form, &$form_state) {
   $form_state['redirect'] = '/node/' . $form_state['values']['nid'] . '/repeats';
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function scheduleart_event_repeat_theme_registry_alter(&$theme_registry) {
+  if (isset($theme_registry['date_display_combination'])) {
+    $path = drupal_get_path('module', 'scheduleart_event_repeat');
+    $theme_registry['date_display_combination']['path'] = $path;
+    $theme_registry['date_display_combination']['theme_path'] = $path;
+    $theme_registry['date_display_combination']['function'] = '_scheduleart_event_repeat_date_repeat_instance_date_display_combination';
+  }
+}
+
+/**
+ * Override of Date's theme_date_display_combination() function.
+ */
+function _scheduleart_event_repeat_date_repeat_instance_date_display_combination($vars) {
+  return _scheduleart_event_repeat_instance_wrapper_theme('theme_date_display_combination', $vars);
+}
+
+/**
+ * Override the theme_date_repeat_instance_wrapper function.
+ */
+function _scheduleart_event_repeat_instance_wrapper_theme($function, $vars) {
+  // Render using Date's theme function.
+  module_load_include('theme', 'date', 'date');
+  $output = $function($vars);
+
+  // Add edit and delete links.
+  if (date_repeat_instance_access('update', $vars['entity'], $vars['field']['field_name'], $vars['langcode'], $vars['delta'])) {
+    $output .= ' - ' . l(t('edit'), "node/{$vars['entity']->nid}/date_repeat_instance_edit/{$vars['field']['field_name']}/{$vars['langcode']}/{$vars['delta']}");
+  }
+  if (date_repeat_instance_access('delete', $vars['entity'], $vars['field']['field_name'], $vars['langcode'], $vars['delta'])) {
+    $output .= ' - ' . l(t('delete'), "node/{$vars['entity']->nid}/date_repeat_instance_delete/{$vars['field']['field_name']}/{$vars['langcode']}/{$vars['delta']}", array('query' => drupal_get_destination()));
+    $output .= ' - ' . l(t('delete from this date'), "node/{$vars['entity']->nid}/date_repeat_instance_delete_from/{$vars['field']['field_name']}/{$vars['langcode']}/{$vars['delta']}", array('query' => drupal_get_destination()));
+  }
+
+  return '<div class="date-repeat-instance">' . $output . '</div>';
+}
+
+/**
+ * Confirmation that instances of repeating dates should be deleted.
+ */
+function scheduleart_event_repeat_instance_delete_from_confirm($form, $form_state, $node, $field, $langcode, $delta) {
+  $form['node'] = array('#type' => 'value', '#value' => $node);
+  $form['field'] = array('#type' => 'value', '#value' => $field);
+  $form['langcode'] = array('#type' => 'value', '#value' => $langcode);
+  $form['delta'] = array('#type' => 'value', '#value' => $delta);
+  $date = new DateObject($node->{$field}[$langcode][$delta]['value']);
+  $question = t('Are you sure you want to delete all repeating dates after !date?', array(
+    '!date' => $date->format(DATE_FORMAT_DATE),
+  ));
+  $path = isset($_GET['destination']) ? $_GET['destination'] : "node/$node->nid";
+  $form_state['redirect'] = $path;
+  return confirm_form($form, $question, $path, NULL, t('Delete'), t('Cancel'));
+}
+
+/**
+ * Confirmation submit handler which deletes the instance of a repeating date.
+ */
+function scheduleart_event_repeat_instance_delete_from_confirm_submit($form, &$form_state) {
+  extract($form_state['values']);
+  if ($confirm) {
+    $array_size = count($node->{$field}[$langcode]);
+    $i = $delta;
+    for ($i; $i < $array_size; $i++) {
+      date_repeat_instance_set_exception($node, $field, $langcode, $delta);
+    }
+  }
+  $form_state['redirect'] = "node/$node->nid";
 }
 
