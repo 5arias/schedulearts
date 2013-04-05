@@ -707,13 +707,10 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'handler_settings' => array(
           'behaviors' => array(
             'views-select-list' => array(
-              'status' => 1,
+              'status' => 0,
             ),
           ),
           'sort' => array(
-            'direction' => 'ASC',
-            'field' => 'field_user_groups:tid',
-            'property' => 'uid',
             'type' => 'none',
           ),
           'target_bundles' => array(),
@@ -766,11 +763,8 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'active' => 1,
         'module' => 'entityreference_browser',
         'settings' => array(
-          'match_operator' => 'CONTAINS',
-          'pass_argument' => 1,
-          'path' => '',
-          'size' => 60,
-          'view' => 'user_groups|block_1',
+          'pass_argument' => 0,
+          'view' => 'user_select|default',
         ),
         'type' => 'entityreference_browser',
         'weight' => '5',

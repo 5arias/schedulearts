@@ -13,41 +13,6 @@ function schedulearts_settings_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'admin_theme';
-  $strongarm->value = 'seven';
-  $export['admin_theme'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'admin_theme_admin_theme_batch';
-  $strongarm->value = 0;
-  $export['admin_theme_admin_theme_batch'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'admin_theme_admin_theme_devel';
-  $strongarm->value = 0;
-  $export['admin_theme_admin_theme_devel'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'admin_theme_path';
-  $strongarm->value = 'taxonomy/term/*/delete';
-  $export['admin_theme_path'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'admin_theme_path_disallow';
-  $strongarm->value = '';
-  $export['admin_theme_path_disallow'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
   $strongarm->name = 'date_api_use_iso8601';
   $strongarm->value = 0;
   $export['date_api_use_iso8601'] = $strongarm;
@@ -114,44 +79,6 @@ function schedulearts_settings_strongarm() {
   $strongarm->name = 'date_format_time_only';
   $strongarm->value = 'g:ia';
   $export['date_format_time_only'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'node_admin_theme';
-  $strongarm->value = 1;
-  $export['node_admin_theme'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'overlay_paths_example_paths';
-  $strongarm->value = array(
-    'events/*' => TRUE,
-    'calls/*' => TRUE,
-    'conflicts/*' => TRUE,
-    'schedules/*' => TRUE,
-    'master-calendar-events/*' => TRUE,
-    'productions/*' => TRUE,
-    'locations/*' => TRUE,
-  );
-  $export['overlay_paths_example_paths'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'overlay_paths_ui_paths';
-  $strongarm->value = array(
-    'events/*' => TRUE,
-    'calls/*' => TRUE,
-    'conflicts/*' => TRUE,
-    'schedules/*' => TRUE,
-    'master-calendar-events/*' => TRUE,
-    'productions/*' => TRUE,
-    'locations/*' => TRUE,
-    'taxonomy/term/*/delete' => TRUE,
-  );
-  $export['overlay_paths_ui_paths'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
