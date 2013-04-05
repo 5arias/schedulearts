@@ -1,0 +1,14 @@
+name = Schedulearts flags
+description = Flag configurations for Schedulearts
+core = 7.x
+package = Schedulearts
+version = 7.x-1.0
+project = schedulearts_flags
+dependencies[] = flag
+dependencies[] = flag
+features[features_api][] = api:1
+features[flag][] = conflict_approved
+features[flag][] = conflict_postponed
+features[flag][] = hard_conflict
+features[flag][] = schedule_approved
+project path = sites/all/modules/custom/schedulearts_features
