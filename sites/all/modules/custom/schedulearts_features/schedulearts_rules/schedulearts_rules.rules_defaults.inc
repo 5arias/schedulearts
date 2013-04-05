@@ -249,6 +249,11 @@ function schedulearts_rules_default_rules_configuration() {
                   "node" : [ "conflict-node" ],
                   "type" : { "value" : { "call" : "call" } }
                 }
+              },
+              { "NOT data_is" : {
+                  "data" : [ "saved-node:field-event-groups-tax" ],
+                  "value" : [ "conflict-node:field-event-groups-tax" ]
+                }
               }
             ],
             "DO" : [
@@ -365,10 +370,16 @@ function schedulearts_rules_default_rules_configuration() {
       "PLUGIN" : "rule",
       "ACTIVE" : false,
       "TAGS" : [ "conflict display" ],
-      "REQUIRES" : [ "rules", "flag", "php" ],
+      "REQUIRES" : [ "rules", "flag" ],
       "USES VARIABLES" : { "conflict_node" : { "label" : "conflict node", "type" : "node" } },
       "IF" : [
         { "entity_is_of_type" : { "entity" : [ "conflict-node" ], "type" : "node" } },
+        { "NOT flag_flagged_node" : {
+            "flag" : "hard_conflict",
+            "node" : [ "conflict-node" ],
+            "flagging_user" : "1"
+          }
+        },
         { "node_is_of_type" : {
             "node" : [ "conflict-node" ],
             "type" : { "value" : { "conflict" : "conflict" } }
@@ -387,20 +398,20 @@ function schedulearts_rules_default_rules_configuration() {
         { "NOT flag_flagged_node" : {
             "flag" : "conflict_approved",
             "node" : [ "conflict-node" ],
-            "user" : "1"
+            "flagging_user" : "1"
           }
         },
         { "NOT flag_flagged_node" : {
             "flag" : "conflict_postponed",
             "node" : [ "conflict-node" ],
-            "user" : "1"
+            "flagging_user" : "1"
           }
         }
       ],
       "DO" : [
         { "drupal_message" : {
             "message" : "\\u003Cstrong\\u003ECONFLICT:\\u003C\\/strong\\u003E \\u003C?php \\r\\nif(isset($conflict_node-\\u003Efield_conflict_usr[\\u0027und\\u0027])) { \\r\\n  $conflict_object = user_load($conflict_node-\\u003Efield_conflict_usr[\\u0027und\\u0027][\\u00270\\u0027][\\u0027target_id\\u0027]);\\r\\n  $conflict_fname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027);\\r\\n  $conflict_lname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027);\\r\\n  $conflict_fname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027, $conflict_fname_dirty[0]);\\r\\n  $conflict_lname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027, $conflict_lname_dirty[0]);\\r\\n  $conflict_name = $conflict_fname[\\u0027#markup\\u0027] . \\u0027 \\u0027 . $conflict_lname[\\u0027#markup\\u0027];\\r\\n  $conflict_path = entity_uri(\\u0027user\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nelseif(isset($conflict_node-\\u003Efield_conflict_group[\\u0027und\\u0027])) {\\r\\n  $conflict_object = taxonomy_term_load($conflict_node-\\u003Efield_conflict_group[\\u0027und\\u0027][\\u00270\\u0027][\\u0027tid\\u0027]);\\r\\n  $conflict_name = $conflict_object-\\u003Ename;\\r\\n  $conflict_path = entity_uri(\\u0027taxonomy_term\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nprint $conflict_object_link;\\r\\n?\\u003E is scheduled for \\u003Ca href=\\u0022[conflict-node:field-conflict-grp-call:url]\\u0022\\u003E[conflict-node:field-conflict-grp-call:title]\\u003C\\/a\\u003E and \\u003Ca href=\\u0022[conflict-node:field-conflict-ind-call:url]\\u0022\\u003E[conflict-node:field-conflict-ind-call:title]\\u003C\\/a\\u003E at the same time. \\u003Cspan class=\\u0022conflict-msg-buttons\\u0022\\u003E\\u003C?php print flag_create_link(\\u0027conflict_approved\\u0027, $conflict_node-\\u003Enid); ?\\u003E \\u003C?php print flag_create_link(\\u0027conflict_postponed\\u0027, $conflict_node-\\u003Enid); ?\\u003E\\u003C\\/span\\u003E\\r\\n",
-            "type" : "error",
+            "type" : "warning",
             "repeat" : 0
           }
         }
@@ -710,7 +721,7 @@ function schedulearts_rules_default_rules_configuration() {
         { "flag_flagged_node" : {
             "flag" : "conflict_postponed",
             "node" : [ "conflict-node" ],
-            "user" : "1"
+            "flagging_user" : "1"
           }
         }
       ],
