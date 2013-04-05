@@ -6,7 +6,6 @@ php = 5.2.4
 version = 7.x-1.0
 project = schedulearts_views
 dependencies[] = ctools
-dependencies[] = entityreference
 dependencies[] = entityreference_browser
 dependencies[] = feeds
 dependencies[] = fullcalendar
