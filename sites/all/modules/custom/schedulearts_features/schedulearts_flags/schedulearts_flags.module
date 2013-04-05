@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Schedulearts flags feature.
- */
-
-include_once 'schedulearts_flags.features.inc';
