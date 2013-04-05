@@ -169,7 +169,7 @@ function schedulearts_views_views_default_views() {
   $handler->display->display_options['fields']['tid']['alter']['alter_text'] = TRUE;
   $handler->display->display_options['fields']['tid']['alter']['text'] = 'delete';
   $handler->display->display_options['fields']['tid']['alter']['make_link'] = TRUE;
-  $handler->display->display_options['fields']['tid']['alter']['path'] = 'taxonomy/term/[tid]/delete?destination=content/event-types';
+  $handler->display->display_options['fields']['tid']['alter']['path'] = 'taxonomy/term/[tid]/delete';
   $handler->display->display_options['fields']['tid']['element_label_colon'] = FALSE;
   /* Filter criterion: Taxonomy vocabulary: Machine name */
   $handler->display->display_options['filters']['machine_name']['id'] = 'machine_name';
@@ -1049,9 +1049,44 @@ function schedulearts_views_views_default_views() {
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['path'] = 'pending-conflicts';
 
-  /* Display: UnApproved Unpostponed */
-  $handler = $view->new_display('page', 'UnApproved Unpostponed', 'page_1');
+  /* Display: UnApproved Unpostponed Soft */
+  $handler = $view->new_display('page', 'UnApproved Unpostponed Soft', 'page_1');
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['relationships'] = FALSE;
+  /* Relationship: Entity Reference: Referenced Entity */
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['id'] = 'field_conflict_grp_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['table'] = 'field_data_field_conflict_grp_call';
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['field'] = 'field_conflict_grp_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['label'] = 'Content entity from field_conflict_grp_call';
+  /* Relationship: Entity Reference: Referenced Entity */
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['id'] = 'field_conflict_ind_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['table'] = 'field_data_field_conflict_ind_call';
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['field'] = 'field_conflict_ind_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['label'] = 'Content entity from field_conflict_ind_call';
+  /* Relationship: Flags: conflict_approved */
+  $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel']['table'] = 'node';
+  $handler->display->display_options['relationships']['flag_content_rel']['field'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel']['label'] = 'approved';
+  $handler->display->display_options['relationships']['flag_content_rel']['required'] = 0;
+  $handler->display->display_options['relationships']['flag_content_rel']['flag'] = 'conflict_approved';
+  $handler->display->display_options['relationships']['flag_content_rel']['user_scope'] = 'any';
+  /* Relationship: Flags: conflict_postponed */
+  $handler->display->display_options['relationships']['flag_content_rel_1']['id'] = 'flag_content_rel_1';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['table'] = 'node';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['field'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['label'] = 'postponed';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['required'] = 0;
+  $handler->display->display_options['relationships']['flag_content_rel_1']['flag'] = 'conflict_postponed';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['user_scope'] = 'any';
+  /* Relationship: Flags: hard_conflict */
+  $handler->display->display_options['relationships']['flag_content_rel_2']['id'] = 'flag_content_rel_2';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['table'] = 'node';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['field'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['label'] = 'hard';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['required'] = 0;
+  $handler->display->display_options['relationships']['flag_content_rel_2']['flag'] = 'hard_conflict';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['user_scope'] = 'any';
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
   /* Filter criterion: Content: Published */
@@ -1087,7 +1122,94 @@ function schedulearts_views_views_default_views() {
   $handler->display->display_options['filters']['flagged_1']['field'] = 'flagged';
   $handler->display->display_options['filters']['flagged_1']['relationship'] = 'flag_content_rel_1';
   $handler->display->display_options['filters']['flagged_1']['value'] = '0';
-  $handler->display->display_options['path'] = 'unapproved-conflicts';
+  /* Filter criterion: Flags: Flagged */
+  $handler->display->display_options['filters']['flagged_2']['id'] = 'flagged_2';
+  $handler->display->display_options['filters']['flagged_2']['table'] = 'flag_content';
+  $handler->display->display_options['filters']['flagged_2']['field'] = 'flagged';
+  $handler->display->display_options['filters']['flagged_2']['relationship'] = 'flag_content_rel_2';
+  $handler->display->display_options['filters']['flagged_2']['value'] = '0';
+  $handler->display->display_options['path'] = 'unapproved-soft-conflicts';
+
+  /* Display: UnApproved Unpostponed Hard */
+  $handler = $view->new_display('page', 'UnApproved Unpostponed Hard', 'page_2');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['relationships'] = FALSE;
+  /* Relationship: Entity Reference: Referenced Entity */
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['id'] = 'field_conflict_grp_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['table'] = 'field_data_field_conflict_grp_call';
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['field'] = 'field_conflict_grp_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_grp_call_target_id']['label'] = 'Content entity from field_conflict_grp_call';
+  /* Relationship: Entity Reference: Referenced Entity */
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['id'] = 'field_conflict_ind_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['table'] = 'field_data_field_conflict_ind_call';
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['field'] = 'field_conflict_ind_call_target_id';
+  $handler->display->display_options['relationships']['field_conflict_ind_call_target_id']['label'] = 'Content entity from field_conflict_ind_call';
+  /* Relationship: Flags: conflict_approved */
+  $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel']['table'] = 'node';
+  $handler->display->display_options['relationships']['flag_content_rel']['field'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel']['label'] = 'approved';
+  $handler->display->display_options['relationships']['flag_content_rel']['required'] = 0;
+  $handler->display->display_options['relationships']['flag_content_rel']['flag'] = 'conflict_approved';
+  $handler->display->display_options['relationships']['flag_content_rel']['user_scope'] = 'any';
+  /* Relationship: Flags: conflict_postponed */
+  $handler->display->display_options['relationships']['flag_content_rel_1']['id'] = 'flag_content_rel_1';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['table'] = 'node';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['field'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['label'] = 'postponed';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['required'] = 0;
+  $handler->display->display_options['relationships']['flag_content_rel_1']['flag'] = 'conflict_postponed';
+  $handler->display->display_options['relationships']['flag_content_rel_1']['user_scope'] = 'any';
+  /* Relationship: Flags: hard_conflict */
+  $handler->display->display_options['relationships']['flag_content_rel_2']['id'] = 'flag_content_rel_2';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['table'] = 'node';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['field'] = 'flag_content_rel';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['label'] = 'hard';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['required'] = 0;
+  $handler->display->display_options['relationships']['flag_content_rel_2']['flag'] = 'hard_conflict';
+  $handler->display->display_options['relationships']['flag_content_rel_2']['user_scope'] = 'any';
+  $handler->display->display_options['defaults']['filter_groups'] = FALSE;
+  $handler->display->display_options['defaults']['filters'] = FALSE;
+  /* Filter criterion: Content: Published */
+  $handler->display->display_options['filters']['status']['id'] = 'status';
+  $handler->display->display_options['filters']['status']['table'] = 'node';
+  $handler->display->display_options['filters']['status']['field'] = 'status';
+  $handler->display->display_options['filters']['status']['value'] = 1;
+  $handler->display->display_options['filters']['status']['group'] = 1;
+  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+  /* Filter criterion: Content: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['value'] = array(
+    'conflict' => 'conflict',
+  );
+  /* Filter criterion: Content: Date/Time -  start date (field_event_date) */
+  $handler->display->display_options['filters']['field_event_date_value']['id'] = 'field_event_date_value';
+  $handler->display->display_options['filters']['field_event_date_value']['table'] = 'field_data_field_event_date';
+  $handler->display->display_options['filters']['field_event_date_value']['field'] = 'field_event_date_value';
+  $handler->display->display_options['filters']['field_event_date_value']['relationship'] = 'field_conflict_grp_call_target_id';
+  $handler->display->display_options['filters']['field_event_date_value']['operator'] = '>=';
+  $handler->display->display_options['filters']['field_event_date_value']['default_date'] = 'today';
+  /* Filter criterion: Flags: Flagged */
+  $handler->display->display_options['filters']['flagged']['id'] = 'flagged';
+  $handler->display->display_options['filters']['flagged']['table'] = 'flag_content';
+  $handler->display->display_options['filters']['flagged']['field'] = 'flagged';
+  $handler->display->display_options['filters']['flagged']['relationship'] = 'flag_content_rel';
+  $handler->display->display_options['filters']['flagged']['value'] = '0';
+  /* Filter criterion: Flags: Flagged */
+  $handler->display->display_options['filters']['flagged_1']['id'] = 'flagged_1';
+  $handler->display->display_options['filters']['flagged_1']['table'] = 'flag_content';
+  $handler->display->display_options['filters']['flagged_1']['field'] = 'flagged';
+  $handler->display->display_options['filters']['flagged_1']['relationship'] = 'flag_content_rel_1';
+  $handler->display->display_options['filters']['flagged_1']['value'] = '0';
+  /* Filter criterion: Flags: Flagged */
+  $handler->display->display_options['filters']['flagged_2']['id'] = 'flagged_2';
+  $handler->display->display_options['filters']['flagged_2']['table'] = 'flag_content';
+  $handler->display->display_options['filters']['flagged_2']['field'] = 'flagged';
+  $handler->display->display_options['filters']['flagged_2']['relationship'] = 'flag_content_rel_2';
+  $handler->display->display_options['filters']['flagged_2']['value'] = '1';
+  $handler->display->display_options['path'] = 'unapproved-hard-conflicts';
   $export['pending_conflicts'] = $view;
 
   $view = new view();
@@ -1772,30 +1894,7 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['title'] = 'Group calendar';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['cache']['type'] = 'views_content_cache';
-  $handler->display->display_options['cache']['results_min_lifespan'] = '-1';
-  $handler->display->display_options['cache']['results_max_lifespan'] = '21600';
-  $handler->display->display_options['cache']['output_min_lifespan'] = '-1';
-  $handler->display->display_options['cache']['output_max_lifespan'] = '21600';
-  $handler->display->display_options['cache']['keys'] = array(
-    'comment' => array(
-      'changed' => 0,
-    ),
-    'node' => array(
-      'call' => 'call',
-      'event' => 'event',
-      'announcement' => 0,
-      'page' => 0,
-      'conflict' => 0,
-      'location' => 0,
-      'master_calendar_event' => 0,
-      'production' => 0,
-      'schedule' => 0,
-    ),
-    'node_only' => array(
-      'node_changed' => 0,
-    ),
-  );
+  $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['query']['options']['query_comment'] = FALSE;
   $handler->display->display_options['exposed_form']['type'] = 'basic';
@@ -1986,6 +2085,31 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['defaults']['title'] = FALSE;
   $handler->display->display_options['title'] = 'Schedule Viewer';
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['defaults']['cache'] = FALSE;
+  $handler->display->display_options['cache']['type'] = 'views_content_cache';
+  $handler->display->display_options['cache']['results_min_lifespan'] = '-1';
+  $handler->display->display_options['cache']['results_max_lifespan'] = '21600';
+  $handler->display->display_options['cache']['output_min_lifespan'] = '-1';
+  $handler->display->display_options['cache']['output_max_lifespan'] = '21600';
+  $handler->display->display_options['cache']['keys'] = array(
+    'comment' => array(
+      'changed' => 0,
+    ),
+    'node' => array(
+      'event' => 'event',
+      'announcement' => 0,
+      'page' => 0,
+      'call' => 0,
+      'conflict' => 0,
+      'location' => 0,
+      'master_calendar_event' => 0,
+      'production' => 0,
+      'schedule' => 0,
+    ),
+    'node_only' => array(
+      'node_changed' => 0,
+    ),
+  );
   $handler->display->display_options['exposed_block'] = TRUE;
   $handler->display->display_options['defaults']['empty'] = FALSE;
   $handler->display->display_options['defaults']['relationships'] = FALSE;
@@ -2105,10 +2229,8 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
     'multiple_number' => '',
     'multiple_from' => '',
     'multiple_to' => '',
-    'show_repeat_rule' => 'hide',
+    'show_repeat_rule' => '',
   );
-  $handler->display->display_options['fields']['field_event_date']['group_rows'] = FALSE;
-  $handler->display->display_options['fields']['field_event_date']['delta_offset'] = '0';
   /* Field: Content: Groups Called */
   $handler->display->display_options['fields']['field_event_groups_tax']['id'] = 'field_event_groups_tax';
   $handler->display->display_options['fields']['field_event_groups_tax']['table'] = 'field_data_field_event_groups_tax';
@@ -2163,9 +2285,6 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['filters']['field_event_individuals_target_id']['id'] = 'field_event_individuals_target_id';
   $handler->display->display_options['filters']['field_event_individuals_target_id']['table'] = 'field_data_field_event_individuals';
   $handler->display->display_options['filters']['field_event_individuals_target_id']['field'] = 'field_event_individuals_target_id';
-  $handler->display->display_options['filters']['field_event_individuals_target_id']['value'] = array(
-    1 => '1',
-  );
   $handler->display->display_options['filters']['field_event_individuals_target_id']['group'] = 2;
   $handler->display->display_options['path'] = 'user/%/mycal';
   $handler->display->display_options['menu']['type'] = 'tab';
@@ -2323,9 +2442,6 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['filters']['field_event_individuals_target_id']['id'] = 'field_event_individuals_target_id';
   $handler->display->display_options['filters']['field_event_individuals_target_id']['table'] = 'field_data_field_event_individuals';
   $handler->display->display_options['filters']['field_event_individuals_target_id']['field'] = 'field_event_individuals_target_id';
-  $handler->display->display_options['filters']['field_event_individuals_target_id']['value'] = array(
-    1 => '1',
-  );
   $handler->display->display_options['filters']['field_event_individuals_target_id']['group'] = 2;
   $handler->display->display_options['path'] = 'mailcal/%';
   $handler->display->display_options['menu']['type'] = 'tab';
@@ -2632,6 +2748,7 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler = $view->new_display('block', 'Call Block', 'block_1');
   $handler->display->display_options['defaults']['title'] = FALSE;
   $handler->display->display_options['title'] = 'Excused';
+  $handler->display->display_options['defaults']['use_ajax'] = FALSE;
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['defaults']['style_plugin'] = FALSE;
   $handler->display->display_options['style_plugin'] = 'table';
@@ -3474,6 +3591,7 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['query']['options']['query_comment'] = FALSE;
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['exposed_form']['options']['reset_button'] = TRUE;
+  $handler->display->display_options['exposed_form']['options']['autosubmit'] = TRUE;
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '50';
   $handler->display->display_options['style_plugin'] = 'table';
@@ -3793,18 +3911,20 @@ The actions available to you are:
   $handler->display->display_options['fields']['entityreference_browser']['id'] = 'entityreference_browser';
   $handler->display->display_options['fields']['entityreference_browser']['table'] = 'users';
   $handler->display->display_options['fields']['entityreference_browser']['field'] = 'entityreference_browser';
-  $handler->display->display_options['fields']['entityreference_browser']['label'] = 'Select';
+  $handler->display->display_options['fields']['entityreference_browser']['label'] = 'Name';
   /* Field: User: First Name */
   $handler->display->display_options['fields']['field_user_fname']['id'] = 'field_user_fname';
   $handler->display->display_options['fields']['field_user_fname']['table'] = 'field_data_field_user_fname';
   $handler->display->display_options['fields']['field_user_fname']['field'] = 'field_user_fname';
   $handler->display->display_options['fields']['field_user_fname']['label'] = '';
+  $handler->display->display_options['fields']['field_user_fname']['exclude'] = TRUE;
   $handler->display->display_options['fields']['field_user_fname']['element_label_colon'] = FALSE;
   /* Field: User: Last Name */
   $handler->display->display_options['fields']['field_user_lname']['id'] = 'field_user_lname';
   $handler->display->display_options['fields']['field_user_lname']['table'] = 'field_data_field_user_lname';
   $handler->display->display_options['fields']['field_user_lname']['field'] = 'field_user_lname';
   $handler->display->display_options['fields']['field_user_lname']['label'] = 'Name';
+  $handler->display->display_options['fields']['field_user_lname']['exclude'] = TRUE;
   /* Field: User: Searchable name */
   $handler->display->display_options['fields']['field_user_searchable_name']['id'] = 'field_user_searchable_name';
   $handler->display->display_options['fields']['field_user_searchable_name']['table'] = 'field_data_field_user_searchable_name';
@@ -3847,7 +3967,7 @@ The actions available to you are:
   $view = new view();
   $view->name = 'user_select';
   $view->description = '';
-  $view->tag = 'default';
+  $view->tag = 'entityreference_browser';
   $view->base_table = 'users';
   $view->human_name = 'User select';
   $view->core = 7;
@@ -3863,30 +3983,36 @@ The actions available to you are:
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['style_plugin'] = 'default';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '0';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['style_plugin'] = 'grid';
+  $handler->display->display_options['style_options']['columns'] = '3';
   $handler->display->display_options['row_plugin'] = 'fields';
-  /* Field: User: Name */
-  $handler->display->display_options['fields']['name']['id'] = 'name';
-  $handler->display->display_options['fields']['name']['table'] = 'users';
-  $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['label'] = '';
-  $handler->display->display_options['fields']['name']['alter']['word_boundary'] = FALSE;
-  $handler->display->display_options['fields']['name']['alter']['ellipsis'] = FALSE;
+  /* Field: User: Picture */
+  $handler->display->display_options['fields']['picture']['id'] = 'picture';
+  $handler->display->display_options['fields']['picture']['table'] = 'users';
+  $handler->display->display_options['fields']['picture']['field'] = 'picture';
+  $handler->display->display_options['fields']['picture']['label'] = '';
+  $handler->display->display_options['fields']['picture']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['picture']['link_photo_to_profile'] = FALSE;
+  $handler->display->display_options['fields']['picture']['image_style'] = 'thumbnail';
+  /* Field: Entity Reference Browser: User */
+  $handler->display->display_options['fields']['entityreference_browser']['id'] = 'entityreference_browser';
+  $handler->display->display_options['fields']['entityreference_browser']['table'] = 'users';
+  $handler->display->display_options['fields']['entityreference_browser']['field'] = 'entityreference_browser';
+  $handler->display->display_options['fields']['entityreference_browser']['label'] = '';
+  $handler->display->display_options['fields']['entityreference_browser']['element_label_colon'] = FALSE;
+  /* Sort criterion: User: Last Name (field_user_lname) */
+  $handler->display->display_options['sorts']['field_user_lname_value']['id'] = 'field_user_lname_value';
+  $handler->display->display_options['sorts']['field_user_lname_value']['table'] = 'field_data_field_user_lname';
+  $handler->display->display_options['sorts']['field_user_lname_value']['field'] = 'field_user_lname_value';
   /* Sort criterion: User: Created date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'users';
   $handler->display->display_options['sorts']['created']['field'] = 'created';
   $handler->display->display_options['sorts']['created']['order'] = 'DESC';
-  /* Contextual filter: User: Uid */
-  $handler->display->display_options['arguments']['uid']['id'] = 'uid';
-  $handler->display->display_options['arguments']['uid']['table'] = 'users';
-  $handler->display->display_options['arguments']['uid']['field'] = 'uid';
-  $handler->display->display_options['arguments']['uid']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['uid']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['uid']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['uid']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['uid']['break_phrase'] = TRUE;
-  $handler->display->display_options['arguments']['uid']['not'] = TRUE;
   /* Filter criterion: User: Active */
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'users';
@@ -3946,6 +4072,26 @@ The actions available to you are:
 
   /* Display: Entity Reference View Widget */
   $handler = $view->new_display('entityreference_view_widget', 'Entity Reference View Widget', 'entityreference_view_widget_1');
+
+  /* Display: Entityreference block */
+  $handler = $view->new_display('block', 'Entityreference block', 'block_1');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+
+  /* Display: Entity Reference */
+  $handler = $view->new_display('entityreference', 'Entity Reference', 'entityreference_1');
+  $handler->display->display_options['defaults']['title'] = FALSE;
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
+  $handler->display->display_options['pager']['type'] = 'some';
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'entityreference_style';
+  $handler->display->display_options['style_options']['search_fields'] = array(
+    'entityreference_browser' => 'entityreference_browser',
+    'picture' => 0,
+  );
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['row_plugin'] = 'entityreference_fields';
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
   $export['user_select'] = $view;
 
   return $export;

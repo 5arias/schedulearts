@@ -8,7 +8,6 @@ project = schedulearts_settings
 dependencies[] = admin_theme
 dependencies[] = ctools
 dependencies[] = fe_block
-dependencies[] = overlay
 dependencies[] = overlay_paths
 dependencies[] = overlay_paths_ui
 dependencies[] = print
