@@ -8,6 +8,7 @@ project = schedulearts_views
 dependencies[] = ctools
 dependencies[] = entityreference_browser
 dependencies[] = feeds
+dependencies[] = fullcalendar
 dependencies[] = rules_scheduler
 dependencies[] = views
 dependencies[] = views_bulk_operations
