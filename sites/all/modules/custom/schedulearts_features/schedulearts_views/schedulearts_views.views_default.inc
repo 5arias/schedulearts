@@ -1894,7 +1894,30 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['title'] = 'Group calendar';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'views_content_cache';
+  $handler->display->display_options['cache']['results_min_lifespan'] = '-1';
+  $handler->display->display_options['cache']['results_max_lifespan'] = '21600';
+  $handler->display->display_options['cache']['output_min_lifespan'] = '-1';
+  $handler->display->display_options['cache']['output_max_lifespan'] = '21600';
+  $handler->display->display_options['cache']['keys'] = array(
+    'comment' => array(
+      'changed' => 0,
+    ),
+    'node' => array(
+      'call' => 'call',
+      'event' => 'event',
+      'announcement' => 0,
+      'page' => 0,
+      'conflict' => 0,
+      'location' => 0,
+      'master_calendar_event' => 0,
+      'production' => 0,
+      'schedule' => 0,
+    ),
+    'node_only' => array(
+      'node_changed' => 0,
+    ),
+  );
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['query']['options']['query_comment'] = FALSE;
   $handler->display->display_options['exposed_form']['type'] = 'basic';
@@ -2085,31 +2108,6 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['defaults']['title'] = FALSE;
   $handler->display->display_options['title'] = 'Schedule Viewer';
   $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
-  $handler->display->display_options['defaults']['cache'] = FALSE;
-  $handler->display->display_options['cache']['type'] = 'views_content_cache';
-  $handler->display->display_options['cache']['results_min_lifespan'] = '-1';
-  $handler->display->display_options['cache']['results_max_lifespan'] = '21600';
-  $handler->display->display_options['cache']['output_min_lifespan'] = '-1';
-  $handler->display->display_options['cache']['output_max_lifespan'] = '21600';
-  $handler->display->display_options['cache']['keys'] = array(
-    'comment' => array(
-      'changed' => 0,
-    ),
-    'node' => array(
-      'event' => 'event',
-      'announcement' => 0,
-      'page' => 0,
-      'call' => 0,
-      'conflict' => 0,
-      'location' => 0,
-      'master_calendar_event' => 0,
-      'production' => 0,
-      'schedule' => 0,
-    ),
-    'node_only' => array(
-      'node_changed' => 0,
-    ),
-  );
   $handler->display->display_options['exposed_block'] = TRUE;
   $handler->display->display_options['defaults']['empty'] = FALSE;
   $handler->display->display_options['defaults']['relationships'] = FALSE;
@@ -2229,8 +2227,10 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
     'multiple_number' => '',
     'multiple_from' => '',
     'multiple_to' => '',
-    'show_repeat_rule' => '',
+    'show_repeat_rule' => 'hide',
   );
+  $handler->display->display_options['fields']['field_event_date']['group_rows'] = FALSE;
+  $handler->display->display_options['fields']['field_event_date']['delta_offset'] = '0';
   /* Field: Content: Groups Called */
   $handler->display->display_options['fields']['field_event_groups_tax']['id'] = 'field_event_groups_tax';
   $handler->display->display_options['fields']['field_event_groups_tax']['table'] = 'field_data_field_event_groups_tax';
