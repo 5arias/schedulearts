@@ -111,6 +111,7 @@ function schedulearts_eventwiz_block_info() {
     'weight' => -25,
     'visibility' => BLOCK_VISIBILITY_LISTED,
     'pages' => 'events/*',
+    'cache' => DRUPAL_CACHE_PER_PAGE,
   );
   return $blocks;
 }

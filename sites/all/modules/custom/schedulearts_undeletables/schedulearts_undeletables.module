@@ -24,10 +24,13 @@ function schedulearts_undeletables_reserved_term_access($tid, $access=NULL) {
   $reservedtids = variable_get('schedulearts_undeletables_reserved_eventtypes', array());
   // Sometimes TID is passed as a term object. We just want TID
   if ($tid->tid) {
-    $tid = $tid->tid;
+    $tid_number = $tid->tid;
+  }
+  else {
+    $tid_number = $tid;
   }
   // Check our reserved TIDs
-  if (in_array($tid, $reservedtids)) {
+  if (in_array($tid_number, $reservedtids)) {
     return FALSE;
   }
   // If we haven't already denied access before or during this function, check for taxonomy_edit access
