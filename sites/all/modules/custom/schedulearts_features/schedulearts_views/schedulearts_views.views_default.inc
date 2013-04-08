@@ -3987,17 +3987,39 @@ The actions available to you are:
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['pager']['options']['quantity'] = '9';
-  $handler->display->display_options['style_plugin'] = 'grid';
-  $handler->display->display_options['style_options']['columns'] = '3';
-  $handler->display->display_options['row_plugin'] = 'fields';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'picture' => 'picture',
+    'entityreference_browser' => 'entityreference_browser',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'picture' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'entityreference_browser' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+  );
   /* Field: User: Picture */
   $handler->display->display_options['fields']['picture']['id'] = 'picture';
   $handler->display->display_options['fields']['picture']['table'] = 'users';
   $handler->display->display_options['fields']['picture']['field'] = 'picture';
   $handler->display->display_options['fields']['picture']['label'] = '';
+  $handler->display->display_options['fields']['picture']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['picture']['alter']['text'] = '<a href="/user/[uid]" class="picker" data-id="[uid]">[picture]</a>';
+  $handler->display->display_options['fields']['picture']['alter']['strip_tags'] = TRUE;
+  $handler->display->display_options['fields']['picture']['alter']['preserve_tags'] = '<img>';
   $handler->display->display_options['fields']['picture']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['picture']['link_photo_to_profile'] = FALSE;
-  $handler->display->display_options['fields']['picture']['image_style'] = 'thumbnail';
+  $handler->display->display_options['fields']['picture']['image_style'] = 'user_avatar';
+  $handler->display->display_options['fields']['picture']['imagecache_preset'] = 'user_avatar';
   /* Field: Entity Reference Browser: User */
   $handler->display->display_options['fields']['entityreference_browser']['id'] = 'entityreference_browser';
   $handler->display->display_options['fields']['entityreference_browser']['table'] = 'users';
@@ -4030,15 +4052,6 @@ The actions available to you are:
   $handler->display->display_options['filters']['mail']['expose']['label'] = 'E-mail';
   $handler->display->display_options['filters']['mail']['expose']['operator'] = 'mail_op';
   $handler->display->display_options['filters']['mail']['expose']['identifier'] = 'mail';
-  /* Filter criterion: User: Organizational Role (field_user_fach) */
-  $handler->display->display_options['filters']['field_user_fach_value']['id'] = 'field_user_fach_value';
-  $handler->display->display_options['filters']['field_user_fach_value']['table'] = 'field_data_field_user_fach';
-  $handler->display->display_options['filters']['field_user_fach_value']['field'] = 'field_user_fach_value';
-  $handler->display->display_options['filters']['field_user_fach_value']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['field_user_fach_value']['expose']['operator_id'] = 'field_user_fach_value_op';
-  $handler->display->display_options['filters']['field_user_fach_value']['expose']['label'] = 'Fach (field_user_fach)';
-  $handler->display->display_options['filters']['field_user_fach_value']['expose']['operator'] = 'field_user_fach_value_op';
-  $handler->display->display_options['filters']['field_user_fach_value']['expose']['identifier'] = 'field_user_fach_value';
   /* Filter criterion: User: First Name (field_user_fname) */
   $handler->display->display_options['filters']['field_user_fname_value']['id'] = 'field_user_fname_value';
   $handler->display->display_options['filters']['field_user_fname_value']['table'] = 'field_data_field_user_fname';
@@ -4091,6 +4104,12 @@ The actions available to you are:
   $handler->display->display_options['defaults']['style_options'] = FALSE;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['row_plugin'] = 'entityreference_fields';
+  $handler->display->display_options['row_options']['inline'] = array(
+    'picture' => 'picture',
+    'entityreference_browser' => 'entityreference_browser',
+  );
+  $handler->display->display_options['row_options']['separator'] = '  ';
+  $handler->display->display_options['row_options']['default_field_elements'] = FALSE;
   $handler->display->display_options['defaults']['row_options'] = FALSE;
   $export['user_select'] = $view;
 
