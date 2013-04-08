@@ -45,3 +45,15 @@ function schedulearts_preprocess_username(&$vars) {
   $vars['name'] = check_plain($name);
 
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function schedule_arts_form_user_login_alter(&$form, &$form_state) {
+  // Alter the username title.
+  $form['name']['#title'] = t('Email');
+
+  // Unset the description strings.
+  unset($form['name']['#description']);
+  unset($form['pass']['#description']);
+}
