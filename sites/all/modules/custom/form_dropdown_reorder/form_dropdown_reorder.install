@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * Implements hook_schema()
+ */
+function form_dropdown_reorder_schema() {
+  return array(
+    'form_dropdown_reorder' => array(
+      'description' => 'A table defining all dropdown boxes which are reordered by the module.',
+      'fields' => array(
+        'fdrid' => array(
+          'description' => 'Primary key',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'form_id' => array(
+          'description' => 'The Form ID where the weighting is used.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+        'form_element' => array(
+          'description' => 'The ID of the select element where the weighting is used.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+        'append' => array(
+          'description' => 'If true, append the weightless elements in an arbitrary order, otherwise prepend.',
+          'type' => 'int',
+          'size' => 'tiny',
+          'unsigned' => TRUE,
+        ),
+      ),
+      'primary key' => array('fdrid'),
+      'unique keys' => array(
+        'id_element' => array('form_id', 'form_element'),
+      ),
+    ),
+    'form_dropdown_reorder_weights' => array(
+      'description' => 'The table containing key -> weight pairings for form element options.',
+      'fields' => array(
+        'fwid' => array(
+          'description' => 'Primary key.',
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'fdrid' => array(
+          'description' => 'The form element this association belongs to',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'mkey' => array(
+          'description' => 'The key of the option.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ),
+        'weight' => array(
+          'description' => 'The weight of the option.',
+          'type' => 'int',
+          'not null' => TRUE,
+        ),
+      ),
+      'primary key' => array('fwid'),
+      'unique keys' => array(
+        'fdr_key' => array('fdrid', 'key'),
+      ),
+    ),
+  );
+}

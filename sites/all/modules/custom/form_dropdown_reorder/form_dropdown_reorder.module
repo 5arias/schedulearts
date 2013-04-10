@@ -1,0 +1,114 @@
+<?php
+
+/**
+ * Implements hook_permission()
+ */
+function form_dropdown_reorder_permission() {
+  return array(
+    'reorder form dropdowns' => array(
+      'title' => t('Reorder Form Dropdown Boxes'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu()
+ */
+function form_dropdown_reorder_menu() {
+  return array(
+    'admin/config/user-interface/form-dropdown-reorder' => array(
+      'title' => 'Reorder Dropdown Boxes',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('form_dropdown_reorder_list_form'),
+      'file' => 'form_dropdown_reorder.admin.inc',
+      'access arguments' => array('reorder form dropdowns'),
+      'type' => MENU_NORMAL_ITEM,
+    ),
+    'admin/config/user-interface/form-dropdown-reorder/%form_dropdown_reorder' => array(
+      'title' => 'Editing Reorder',
+      'page callback' => 'form_dropdown_reorder_view',
+      'page arguments' => array(4),
+      'file' => 'form_dropdown_reorder.admin.inc',
+      'access arguments' => array('reorder form dropdowns'),
+      'type' => MENU_CALLBACK,
+    ),
+    'admin/config/user-interface/form-dropdown-reorder/%form_dropdown_reorder/remove/%' => array(
+      'title' => 'Delete Option',
+      'page callback' => 'form_dropdown_reorder_remove_option',
+      'page arguments' => array(4, 6),
+      'file' => 'form_dropdown_reorder.admin.inc',
+      'access arguments' => array('reorder form dropdowns'),
+      'type' => MENU_CALLBACK,
+    ),
+    'admin/config/user-interface/form-dropdown-reorder/delete/%form_dropdown_reorder' => array(
+      'title' => 'Deleting Reorder',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('form_dropdown_reorder_confirm_delete', 4),
+      'file' => 'form_dropdown_reorder.admin.inc',
+      'access arguments' => array('reorder form dropdowns'),
+      'type' => MENU_CALLBACK,
+    ),
+  );
+}
+
+/**
+ * Loads the form dropdown reordering with the specified ID.
+ * @param $fdrid int
+ *  The ID of the reordering.
+ * @return mixed
+ *  The database row that contains the primary data for the reordering, or FALSE if not found.
+ */
+function form_dropdown_reorder_load($fdrid) {
+  return db_select('form_dropdown_reorder', 'f')
+    ->fields('f')
+    ->condition('fdrid', $fdrid)
+    ->execute()
+    ->fetchAssoc();
+}
+
+function form_dropdown_reorder_theme($existing, $type, $theme, $path) {
+  return array(
+    'form_dropdown_reorder_manage' => array(
+      'variables' => array(
+        'form' => NULL,
+        'reorder' => NULL,
+      ),
+      'file' => 'form_dropdown_reorder.admin.inc',
+    ),
+  );
+}
+
+function form_dropdown_reorder_form_alter(&$form, &$form_state, $form_id) {
+  $res = db_select('form_dropdown_reorder', 'f')
+    ->fields('f')
+    ->condition('form_id', $form_id)
+    ->execute();
+  while ($row = $res->fetchAssoc()) {
+    $weights = db_select('form_dropdown_reorder_weights', 'f')
+      ->fields('f')
+      ->condition('fdrid', $row['fdrid'])
+      ->execute();
+    $warr = array();
+    while ($wt = $weights->fetchAssoc()) {
+      $warr[$wt['mkey']] = $wt['weight'];
+    }
+    asort($warr);
+    $el = $row['form_element'];
+    if (isset($form[$el])) {
+      $opts = $form[$el]['#options'];
+      $newopts = array();
+      foreach ($warr as $key => $weight) {
+        if (isset($opts[$key])) {
+          $newopts[$key] = $opts[$key];
+        }
+      }
+      $opts = array_diff_key($opts, $newopts);
+      if ($row['append']) {
+        $newopts += $opts;
+      } else {
+        $newopts = $opts + $newopts;
+      }
+      $form[$el]['#options'] = $newopts;
+    }
+  }
+}
