@@ -763,7 +763,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'active' => 1,
         'module' => 'entityreference_browser',
         'settings' => array(
-          'pass_argument' => 0,
+          'pass_argument' => 1,
           'view' => 'user_select|default',
         ),
         'type' => 'entityreference_browser',
