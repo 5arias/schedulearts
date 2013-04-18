@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function schedulearts_clone_events_menu() {
+  $items['schedulearts_clone/clone/%'] = array(
+    'title' => 'My blog',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('schedulearts_clone_events_clone_method_selector_form', 2),
+    'access callback' => 'user_access',
+    'access arguments' => array('clone event'),
+    'file' => 'schedulearts_clone_events.pages.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function schedulearts_clone_events_block_info() {
+  // Our "Add Calls" button
+  $blocks['clone_event'] = array(
+    'info' => t('Event > Clone Event'),
+    'status' => TRUE,
+    'region' => 'content',
+    'weight' => -24,
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => 'events/*',
+    'cache' => DRUPAL_CACHE_PER_PAGE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function schedulearts_clone_events_block_view($delta) {
+  switch ($delta) {
+  case 'clone_event':
+    if (user_access('clone event')) {
+      $nid = (arg(0) == 'node' && is_numeric(arg(1)) ? arg(1) : NULL);
+      $form_state = array();
+      form_load_include($form_state, 'inc', 'schedulearts_clone_events', 'schedulearts_clone_events.pages');
+      $block['content'] = drupal_get_form('schedulearts_clone_events_block_clone_form', $nid);
+    }
+  }
+  return $block;
+}
