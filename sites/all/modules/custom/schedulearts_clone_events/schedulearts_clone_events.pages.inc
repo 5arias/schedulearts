@@ -20,6 +20,7 @@ function schedulearts_clone_events_block_clone_form($form, &$form_state, $nid) {
  */
 function schedulearts_clone_events_clone_method_selector_form($form, &$form_state, $nid) {
   $options = array(0 => t('Just once'), 1 => t('multiple times on a schedule'));
+  $form['#validate'][] = 'schedulearts_clone_events_clone_method_selector_form_validate';
   $form['method'] = array(
     '#type' => 'radios',
     '#title' => t('I would like to duplicate this event:'),
@@ -69,13 +70,39 @@ function schedulearts_clone_events_clone_method_selector_form($form, &$form_stat
   return $form;
 }
 
+/**
+ * Validate callback for schedulearts_clone_events_clone_method_selector_form.
+ */
+function schedulearts_clone_events_clone_method_selector_form_validate($form, &$form_state) {
+  if (!_schedulearts_clone_events_is_repeat_range_valid($form_state['input']['repeat_settings']['repeat'])) {
+    form_set_error('repeat_settings][repeat', t('DEBUG: Count/Until error'));
+  }
+}
+
+/**
+ * Submit callback for schedulearts_clone_events_clone_method_selector_form.
+ * @todo Report Date module issue to drupal.org.
+ */
 function schedulearts_clone_events_clone_method_selector_form_submit($form, &$form_state) {
   if ($form_state['values']['method'] == 0) {
     // Prepopulate with node_clone.
     drupal_goto('node/ ' . (int)$form_state['values']['nid']. ' /clone');
   }
   else {
-    $dates = date_repeat_calc($form_state['values']['repeat_settings']['repeat'], $form_state['values']['repeat_settings']['start_date'], NULL);
+    // Without setting the end date, Date module throws a fatal even if "Until" field is set in the rule.
+    $end_date = ($form_state['input']['repeat_settings']['repeat']['until_child']['datetime']['date']) ?
+      $form_state['input']['repeat_settings']['repeat']['until_child']['datetime']['date'] : NULL;
+    $dates = date_repeat_calc($form_state['values']['repeat_settings']['repeat'], $form_state['values']['repeat_settings']['start_date'], strtotime($end_date));
     drupal_set_message('Not implemented yet.');
   }
+}
+
+/**
+ * If both repeat count and repeat until date is empty, the repeat range is invalid.
+ *
+ * @param $repeat Array Input values of the repeat block of a date repeat form.
+ * @return bool
+ */
+function _schedulearts_clone_events_is_repeat_range_valid($repeat) {
+  return ($repeat['count_child'] || $repeat['until_child']['datetime']['date']);
 }
