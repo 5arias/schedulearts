@@ -132,7 +132,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       );
     } else {
       if ($form_state['operation']->operationId == 'rules_component::rules_send_bulk_e_mail') {
-        $form['description']['#markup'] = preg_replace('/You selected the following ([a-zA-Z0-9]+ )?items?/', 'The following people will be sent a Welcome Email', $form['description']['#markup']);
+        $form['description']['#markup'] = preg_replace('@You selected the following +(\<strong\>)? *([a-zA-Z0-9]+ )?items? *(\</strong\>)?@', 'The following people will be sent a Welcome Email', $form['description']['#markup']);
         $form['actions']['submit']['#value'] = 'Send Welcome Email';
       }
     }
