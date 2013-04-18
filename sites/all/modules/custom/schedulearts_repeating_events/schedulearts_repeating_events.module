@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function schedulearts_repeating_events_menu() {
+  $items['schedulearts_repeating/multiplicate/%'] = array(
+    'title' => 'My blog',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('schedulearts_repeating_events_multiplicate_method_selector_form', 2),
+    'access callback' => 'user_access',
+    'access arguments' => array('multiplicate event'),
+    'file' => 'schedulearts_repeating_events.pages.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function schedulearts_repeating_events_block_info() {
+  // Our "Add Calls" button
+  $blocks['multiplicate_event'] = array(
+    'info' => t('Event > Multiplicate Event'),
+    'status' => TRUE,
+    'region' => 'content',
+    'weight' => -24,
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => 'events/*',
+    'cache' => DRUPAL_CACHE_PER_PAGE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function schedulearts_repeating_events_block_view($delta) {
+  switch ($delta) {
+  case 'multiplicate_event':
+    if (user_access('multiplicate event')) {
+      $nid = (arg(0) == 'node' && is_numeric(arg(1)) ? arg(1) : NULL);
+      $form_state = array();
+      form_load_include($form_state, 'inc', 'schedulearts_repeating_events', 'schedulearts_repeating_events.pages');
+      $block['content'] = drupal_get_form('schedulearts_repeating_events_block_multiplicate_form', $nid);
+    }
+  }
+  return $block;
+}

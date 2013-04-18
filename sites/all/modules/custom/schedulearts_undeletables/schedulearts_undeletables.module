@@ -18,12 +18,22 @@ function schedulearts_undeletables_form_taxonomy_form_term_alter(&$form, &$form_
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function schedulearts_undeletables_views_api() {
+  return array(
+    'api' => 3,
+    'template path' => drupal_get_path('module', 'schedulearts_undeletables'),
+  );
+}
+
+/**
  * Custom access callback for reserved TIDs
  */
 function schedulearts_undeletables_reserved_term_access($tid, $access=NULL) {
   $reservedtids = variable_get('schedulearts_undeletables_reserved_eventtypes', array());
   // Sometimes TID is passed as a term object. We just want TID
-  if ($tid->tid) {
+  if (is_object($tid)) {
     $tid_number = $tid->tid;
   }
   else {
