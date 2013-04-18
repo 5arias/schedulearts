@@ -132,6 +132,7 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
       );
     } else {
       watchdog('debug-schedulearts', print_r($form, true));
+      watchdog('debug-schedulearts', print_r($form_state, true));
     }
   }
 
