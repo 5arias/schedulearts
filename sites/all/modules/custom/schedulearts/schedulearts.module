@@ -119,16 +119,23 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
   }
   // Set the order of VBO options
   if($form_id == 'views_form_user_groups_page') {
-    $form['select']['operation']['#options'] = array(
-      '0' => '- Choose an operation -',
-      'action::views_bulk_operations_modify_action' => 'Add to Groups',
-      'rules_component::rules_promote_to_company_administrator' => 'Promote to company admin',
-      'rules_component::rules_demote_from_company_administrator' => 'Demote from company admin',
-      'rules_component::rules_send_bulk_e_mail' => 'Send e-mail',
-      'action::user_block_user_action' => 'De-Activate',
-      'rules_component::rules_unblock_a_user' => 'Activate',
-      'action::views_bulk_operations_delete_item' => 'Delete',
-    );
+    if (isset($form['select']) && isset($form['select']['operation'])) {
+      $form['select']['operation']['#options'] = array(
+        '0' => '- Choose an operation -',
+        'action::views_bulk_operations_modify_action' => 'Add to Groups',
+        'rules_component::rules_promote_to_company_administrator' => 'Promote to company admin',
+        'rules_component::rules_demote_from_company_administrator' => 'Demote from company admin',
+        'rules_component::rules_send_bulk_e_mail' => 'Send Welcome E-mail',
+        'action::user_block_user_action' => 'De-Activate',
+        'rules_component::rules_unblock_a_user' => 'Activate',
+        'action::views_bulk_operations_delete_item' => 'Delete',
+      );
+    } else {
+      if ($form_state['operation']->operationId == 'rules_component::rules_send_bulk_e_mail') {
+        $form['description']['#markup'] = preg_replace('@You selected the following +(\<strong\>)? *([a-zA-Z0-9]+ )?items? *(\</strong\>)?@', 'The following people will be sent a Welcome Email', $form['description']['#markup']);
+        $form['actions']['submit']['#value'] = 'Send Welcome Email';
+      }
+    }
   }
 
   // Tweaks to the Call people interface
