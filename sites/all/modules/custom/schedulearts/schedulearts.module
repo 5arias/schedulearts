@@ -131,8 +131,10 @@ function schedulearts_form_alter(&$form, &$form_state, $form_id) {
         'action::views_bulk_operations_delete_item' => 'Delete',
       );
     } else {
-      watchdog('debug-schedulearts', print_r($form, true));
-      watchdog('debug-schedulearts', print_r($form_state, true));
+      if ($form_state['operation']->operationid == 'rules_component::rules_send_bulk_e_mail') {
+        $form['description']['#markup'] = str_replace('You selected the following item', 'The following people will be sent a Welcome Email', $form['description']['#markup']);
+        $form['actions']['submit']['#value'] = 'Send Welcome Email';
+      }
     }
   }
 
