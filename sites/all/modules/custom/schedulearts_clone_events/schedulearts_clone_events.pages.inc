@@ -74,8 +74,10 @@ function schedulearts_clone_events_clone_method_selector_form($form, &$form_stat
  * Validate callback for schedulearts_clone_events_clone_method_selector_form.
  */
 function schedulearts_clone_events_clone_method_selector_form_validate($form, &$form_state) {
-  if (!_schedulearts_clone_events_is_repeat_range_valid($form_state['input']['repeat_settings']['repeat'])) {
-    form_set_error('repeat_settings][repeat', t('DEBUG: Count/Until error'));
+  if ($form_state['values']['method'] == 1) {
+    if (!_schedulearts_clone_events_is_repeat_range_valid($form_state['input']['repeat_settings']['repeat'])) {
+      form_set_error('repeat_settings][repeat', t('DEBUG: Count/Until error'));
+    }
   }
 }
 
