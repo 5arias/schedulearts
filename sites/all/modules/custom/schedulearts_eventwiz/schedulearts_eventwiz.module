@@ -8,7 +8,7 @@
 function schedulearts_eventwiz_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
   case 'event_node_form':
-    if ($form['nid']['#value']) {
+    if (!$form['nid']['#value']) {
       $form['actions']['addcall'] = array(
         '#type' => 'submit',
         '#value' => 'Save and add Calls',
