@@ -49,6 +49,19 @@ function schedulearts_clone_events_block_view($delta) {
 }
 
 /**
+ * Implements hook_permission().
+ *
+ */
+function schedulearts_clone_events_permission() {
+  return array(
+    'clone event' => array(
+      'title' => t('Use schedulearts event clone functionality'),
+      'description' => t('Clone events using schedulart\'s UI.'),
+    ),
+  );
+}
+
+/**
  * Create clones of an event in the specified dates.
  *
  * @param int $nid ID of the original node.
@@ -76,7 +89,7 @@ function schedulearts_clone_events_mass_clone_events($nid, $dates) {
  */
 function schedulearts_clone_events_clone_event($original_node, $date, $no = '') {
   module_load_include('inc', 'clone', 'clone.pages');
-  if (isset($original_node->nid) && clone_is_permitted($original_node->type)) {
+  if (isset($original_node->nid) && user_access('clone event')) {
     $node = clone $original_node;
     $node->nid = NULL;
     $node->vid = NULL;
