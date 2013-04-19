@@ -92,9 +92,9 @@ function schedulearts_clone_events_clone_method_selector_form_submit($form, &$fo
     // Without setting the end date, Date module throws a fatal even if "Until" field is set in the rule.
     $end_date = ($form_state['input']['repeat_settings']['repeat']['until_child']['datetime']['date']) ?
     $form_state['input']['repeat_settings']['repeat']['until_child']['datetime']['date'] : NULL;
-    $dates = date_repeat_calc($form_state['values']['repeat_settings']['repeat'], $form_state['values']['repeat_settings']['start_date'], strtotime($end_date));
+    $dates = date_repeat_calc($form_state['values']['repeat_settings']['repeat'], $form_state['values']['repeat_settings']['start_date'], $end_date);
     schedulearts_clone_events_mass_clone_events($form_state['values']['nid'], $dates);
-
+    dpm($dates);
   }
 }
 
