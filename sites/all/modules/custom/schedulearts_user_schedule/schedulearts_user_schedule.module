@@ -59,9 +59,9 @@ function schedulearts_user_schedule_render($uid, $node) {
   $views_result = $view->preview('page_2', $arg);
   // convert the view to text
   $allowed_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
-  $sched_view_output = drupal_html_to_text($views_result, $allowed_tags);
+  //$sched_view_output = drupal_html_to_text($views_result, $allowed_tags);
 
-  return $sched_view_output;
+  return '<pre>'. print_r($node, true) . '</pre>';
 }
 
 /**
