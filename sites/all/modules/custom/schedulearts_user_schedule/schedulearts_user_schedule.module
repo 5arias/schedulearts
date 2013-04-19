@@ -59,7 +59,7 @@ function schedulearts_user_schedule_render($uid, $node) {
   $day = 60 * 60 * 24;
   $date = $date_from;
   while ($date <= $date_until) {
-    $output .= '<div>' . schedulearts_print_page(date('Y-m-d', $date)) . '</div>';
+    $output .= '<div>' . schedulearts_user_schedule_print_date(date('Y-m-d', $date), $uid) . '</div>';
     $date += $day;
   }
   $output .= '<p>' . t('Thanks!') . '</p>';
