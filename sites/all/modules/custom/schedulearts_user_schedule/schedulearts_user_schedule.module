@@ -58,7 +58,7 @@ function schedulearts_user_schedule_render($uid, $node) {
   // Print the days.
   $day = 60 * 60 * 24;
   $date = $date_from;
-  while ($date < $date_until) {
+  while ($date <= $date_until) {
     $daypath = 'schedule/' . date('Y-m-d', $date) . '/print';
     $query = $_GET;
     unset($query['q']);
