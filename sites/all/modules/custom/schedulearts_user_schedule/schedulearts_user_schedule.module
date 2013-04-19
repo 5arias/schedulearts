@@ -58,16 +58,18 @@ function schedulearts_user_schedule_render($uid, $node) {
   // Print the days.
   $day = 60 * 60 * 24;
   $date = $date_from;
-  //while ($date < $date_until) {
+  while ($date < $date_until) {
     $daypath = 'schedule/' . date('Y-m-d', $date) . '/print';
-    $print = print_controller($daypath, $_GET['q'], NULL, PRINT_HTML_FORMAT);
+    $query = $_GET;
+    unset($query['q']);
+    $print = print_controller($daypath, $_GET, NULL, PRINT_HTML_FORMAT);
     if ($print !== FALSE) {
       $node = $print['node'];
       $html = theme('print', array('print' => $print, 'type' => PRINT_HTML_FORMAT, 'node' => $node));
       $output .= '<div>' . $html . '</div>';
     }
     $date += $day;
-  //}
+  }
 
   return $output;
 }
