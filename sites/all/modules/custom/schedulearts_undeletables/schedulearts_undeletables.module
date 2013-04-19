@@ -6,7 +6,7 @@
  * permission.
  */
 
-/* 
+/*
  * Implements hook_form_ID_alter()
  * Tweaks to the Event Type form.
  */
@@ -100,4 +100,18 @@ function schedulearts_undeletables_menu_alter(&$items) {
   // Delete link - from taxonomy_delete_link module
   $items['taxonomy/term/%taxonomy_term/delete']['access callback'] = 'schedulearts_undeletables_reserved_term_delete_access';
   $items['taxonomy/term/%taxonomy_term/delete']['access arguments'] = array(2);
+}
+
+/**
+ * Implements hook_taxonomy_term_delete().
+ */
+function schedulearts_undeletables_taxonomy_term_delete() {
+  drupal_goto('content/event-types');
+}
+
+/**
+ * Implements hook_taxonomy_term_update().
+ */
+function schedulearts_undeletables_taxonomy_term_update() {
+  drupal_goto('content/event-types');
 }
