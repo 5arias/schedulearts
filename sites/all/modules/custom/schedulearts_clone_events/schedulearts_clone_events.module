@@ -16,6 +16,13 @@ function schedulearts_clone_events_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function schedulearts_clone_events_menu_alter(&$items) {
+  $items['node/%node/clone']['type'] = MENU_CALLBACK;
+}
+
+/**
  * Implements hook_block_info().
  */
 function schedulearts_clone_events_block_info() {
