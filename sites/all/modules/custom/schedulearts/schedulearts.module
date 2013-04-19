@@ -341,7 +341,20 @@ function schedulearts_menu_alter(&$items) {
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access arguments'] = array(3);
 
   // Event tabs.
-  $items['node/%node/repeats']['title'] = 'Repeat all events';
+  $items['node/%node/repeats']['title'] = 'Edit single event';
+  unset($items['node/%node/edit']['title']);
+  $items['node/%node/edit']['title callback'] = 'schedulearts_tab_title';
+  $items['node/%node/edit']['title arguments'] = array(1);
+}
+
+/*
+ * Rename 'Edit' tabs of events.
+ */
+function schedulearts_tab_title($node) {
+  if ($node->type == 'event') {
+    return t('Edit all events');
+  }
+  return t('Edit');
 }
 
 // Custom access callback for taxonomy term add form - checks that you can EDIT the vocab
