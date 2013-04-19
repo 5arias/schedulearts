@@ -47,3 +47,78 @@ function schedulearts_clone_events_block_view($delta) {
   }
   return $block;
 }
+
+/**
+ * Create clones of an event in the specified dates.
+ *
+ * @param int $nid ID of the original node.
+ * @param string $dates Dates of the new events.
+ */
+function schedulearts_clone_events_mass_clone_events($nid, $dates) {
+  $no = 1;
+  $node = node_load($nid);
+  foreach ($dates as $date) {
+    schedulearts_clone_events_clone_event($node, $date, $no);
+    $no++;
+  }
+}
+
+/**
+ * Creates a clone of an event.
+ *
+ * @param int $nid Id of the original node
+ * @param string $date Start date of the new event.
+ * @param int/string $no Postfix of the title.
+ * @return type
+ * @internal We can't use clone_node_save() because it does not change the event
+ *   date, and clone_node_alter does not have information about the list of the
+ *   new dates.
+ */
+function schedulearts_clone_events_clone_event($original_node, $date, $no = '') {
+  module_load_include('inc', 'clone', 'clone.pages');
+  if (isset($original_node->nid) && clone_is_permitted($original_node->type)) {
+    $node = clone $original_node;
+    $node->nid = NULL;
+    $node->vid = NULL;
+    $node->tnid = NULL;
+
+    $node->name = isset($user->name) ? $user->name : NULL;
+    $node->uid = $GLOBALS['user']->uid;
+    $node->created = NULL;
+    $node->menu = clone_node_clone_menu_link($original_node);
+    $node->path = NULL;
+    $node->files = array();
+    $node->title = $node->title;
+
+    $node->field_event_date[LANGUAGE_NONE][0]['value2'] = _schedulearts_clone_events_calculate_end_date(
+      $node->field_event_date[LANGUAGE_NONE][0]['value'],
+      $node->field_event_date[LANGUAGE_NONE][0]['value2'],
+      $date
+    );
+
+    $node->field_event_date[LANGUAGE_NONE][0]['value'] = $date;
+    node_save($node);
+  }
+  if (!$node->nid) {
+    drupal_set_message(t('Could not clone !title', array('!title' => $node->title)), 'error');
+  }
+  else {
+    drupal_set_message(t('!title has been scheduled for !start_date', array(
+      '!title' => $node->title,
+      '!start_date' => $date)), 'status');
+  }
+  return $node->nid;
+}
+
+/**
+ * Calculates the end of an event.
+ *
+ * @param string $original_start_date Start date of the original event.
+ * @param string $original_end_date End date of the original event.
+ * @param string $new_start_date Start date of the new event.
+ * @return string End date of the new event.
+ * @todo Make it use the DATE API to prevent any potential issues with timezones.
+ */
+function _schedulearts_clone_events_calculate_end_date($original_start_date, $original_end_date, $new_start_date) {
+  return date('Y-m-d H:i:s', strtotime($new_start_date) + (strtotime($original_end_date) - strtotime($original_start_date)));
+}
