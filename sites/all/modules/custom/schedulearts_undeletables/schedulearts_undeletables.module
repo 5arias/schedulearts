@@ -105,13 +105,13 @@ function schedulearts_undeletables_menu_alter(&$items) {
 /**
  * Implements hook_taxonomy_term_delete().
  */
-function schedulearts_undeletables_taxonomy_term_delete() {
+function schedulearts_undeletables_taxonomy_term_delete($term) {
   drupal_goto('content/event-types');
 }
 
 /**
  * Implements hook_taxonomy_term_update().
  */
-function schedulearts_undeletables_taxonomy_term_update() {
+function schedulearts_undeletables_taxonomy_term_update($term) {
   drupal_goto('content/event-types');
 }
