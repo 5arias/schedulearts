@@ -340,7 +340,7 @@ function schedulearts_menu_alter(&$items) {
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access callback'] = 'schedulearts_vocabulary_access';
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access arguments'] = array(3);
 
-  // Event edit tabs.
+  // Event tabs.
   $items['node/%node/repeats']['title'] = 'Repeat all events';
 }
 
