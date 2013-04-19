@@ -411,3 +411,191 @@ function schedulearts_user_schedule_flag_link($action, $flag, $content_id, $acco
     }
   }
 }
+
+/**
+ * From this part on, it is a direct copy of schedulearts_print.module's parts.
+ * It is ugly, yes, but we're on a schedule (pun intended) and this is the most straightforward solutino
+ * for getting the output desired right now.
+ */
+
+/**
+ * Menu callback; Output the schedule tables.
+ *
+ * @param $date
+ *   The date in Y-m-d format.
+ * @param $uid
+ *   The user whose calls should be listed.
+ * @return string
+ *   The rendered page.
+ */
+function schedulearts_user_schedule_print_date($date, $uid) {
+  // Get the data.
+  module_load_include('module', 'schedulearts_print', 'schedulearts_print');
+  $data = schedulearts_print_event_data_query($date);
+
+  $output = '';
+
+  /*foreach ($data as $value) {
+    if ($value['type'] == 'Rehearsal') {
+      $output .= schedulearts_user_schedule_print_rehearsal_content($value['data']);
+    }
+    else {
+      $output .= schedulearts_user_schedule_print_other_content($value['data'], $value['type']);
+    }
+  }
+
+  drupal_add_css(drupal_get_path('module', 'schedulearts_print') . '/css/schedulearts_print.css', array('preprocess' => FALSE));*/
+
+  return print_r($data, true);
+}
+
+/**
+ * Process rehearsal calls.
+ *
+ * Basically what we do here is output the header and the first row with the
+ * event's description, then construct an array where the keys are the call
+ * times, and each element can have a description, a sub-array of ADD names, and
+ * a sub-array of REL names, and then output this array line by line.
+ *
+ * @param $data
+ *   The array of calls.
+ * @return
+ *   The rendered table.
+ */
+function schedulearts_user_schedule_print_rehearsal_content($data) {
+  $render = array();
+  if (!isset($data['calls']))
+    return array();
+  foreach ($data['calls'] as $time => $call) {
+    $header = array(
+      schedulearts_print_format_date($data['date']) . ' - ' . schedulearts_print_format_date($data['date2']),
+      $data['title'],
+      node_load($data['location'])->title
+    );
+    /* EVENT DESCRIPTION BEGIN */
+    if (isset($data['body'])) {
+      $rows[] = array('data' => array('', '<span class="event-desc">' . $data['body'] . '</span>', ''), 'no_striping' => TRUE);
+    }
+    /* EVENT DESCRIPTION END */
+    if (isset($call['add'])) {
+      if (isset($call['add']['groups'])) {
+        $groups = taxonomy_term_load_multiple($call['add']['groups']);
+        foreach ($groups as $group) {
+          $add[] = $group->name;
+        }
+      }
+      if (isset($call['add']['individuals'])) {
+        $individuals = user_load_multiple($call['add']['individuals']);
+        foreach ($individuals as $individual) {
+          $add[] = $individual->name;
+        }
+      }
+      $description = isset($call['description']) ? $call['description'] : '';
+      $add = implode(', ', $add);
+      if ($time == $data['date']) {
+        $rows[] = array('data' => array('', '<span class="space"><em>' . $add . '</em></span>', $description), 'no_striping' => TRUE);
+      }
+      else {
+        $called = '<span class="prefix">' . t('ADD: ') . '</span><em>' . $add . '</em>';
+        // If there are ADDs and RELs at the same time, we put the RELs in a new row.
+        if (isset($call['rel'])) {
+          if (isset($call['rel']['groups'])) {
+            $groups = taxonomy_term_load_multiple($call['rel']['groups']);
+            foreach ($groups as $group) {
+              $rel[] = $group->name;
+            }
+          }
+          if (isset($call['rel']['individuals'])) {
+            $individuals = user_load_multiple($call['rel']['individuals']);
+            foreach ($individuals as $individual) {
+              $rel[] = $individual->name;
+            }
+          }
+          $rel = implode(', ', $rel);
+          $called .= '<br /><span class="prefix">' . t('REL: ') . '</span><em>' . $rel . '</em>';
+        }
+        $rows[] = array('data' => array(schedulearts_print_format_date($time), $called, $description), 'no_striping' => TRUE);
+      }
+    }
+    if (isset($call['rel']) && $time != $data['date2']) {
+      if (isset($call['rel']['groups'])) {
+        $groups = taxonomy_term_load_multiple($call['rel']['groups']);
+        foreach ($groups as $group) {
+          $rel[] = $group->name;
+        }
+      }
+      if (isset($call['rel']['individuals'])) {
+        $individuals = user_load_multiple($call['rel']['individuals']);
+        foreach ($individuals as $individual) {
+          $rel[] = $individual->name;
+        }
+      }
+      $description = isset($call['description']) ? $call['description'] : '';
+      $rel = implode(', ', $rel);
+      $rows[] = array('data' => array(
+        schedulearts_print_format_date($time),
+        '<span class="prefix">' . t('REL: ') . '</span><em>' . $rel . '</em>',
+        $description
+      ),
+                      'no_striping' => TRUE);
+    }
+  }
+
+  $output = theme('table',  array('header' => $header, 'rows' => $rows));
+
+  return $output;
+}
+
+/**
+ * Process performance and coaching calls.
+ *
+ * @param $data
+ *   The array of calls.
+ * @param $type
+ *   'Coaching' or 'Performance'.
+ * @return
+ *   The rendered table.
+ */
+function schedulearts_user_schedule_print_other_content($data, $type) {
+  if ($type == 'Coaching') {
+    $time = schedulearts_print_format_date($data['date']) . ' - ' . schedulearts_print_format_date($data['date2']);
+  }
+  else {
+    $time = schedulearts_print_format_date($data['date']);
+  }
+  $header = array(
+    schedulearts_print_format_date($data['date']) . ' - ' . schedulearts_print_format_date($data['date2']),
+    $data['title'],
+    node_load($data['location'])->title
+  );
+  if (isset($data['body'])) {
+    $rows[] = array('data' => array('', '<span class="event-desc">' . $data['body'] . '</span>', ''), 'no_striping' => TRUE);
+  }
+  foreach ($data['calls'] as $call) {
+    if (isset($call['groups'])) {
+      $groups = taxonomy_term_load_multiple($call['groups']);
+      foreach ($groups as $group) {
+        $called[] = '<em>' . $group->name . '</em>';
+      }
+    }
+    if (isset($call['individuals'])) {
+      $individuals = user_load_multiple($call['individuals']);
+      foreach ($individuals as $individual) {
+        $called[] = '<em>' . $individual->name . '</em>';
+      }
+    }
+    $description = isset($call['body']) ? $call['body'] : '';
+    if ($type == 'Coaching') {
+      $time = schedulearts_print_format_date($call['date']) . ' - ' . schedulearts_print_format_date($call['date2']);
+    }
+    else {
+      $time = schedulearts_print_format_date($call['date']);
+    }
+    $rows[] = array('data' => array($time, implode(', ', $called), $description), 'no_striping' => TRUE);
+    unset($called);
+  }
+
+  $output = theme('table',  array('header' => $header, 'rows' => $rows));
+
+  return $output;
+}
