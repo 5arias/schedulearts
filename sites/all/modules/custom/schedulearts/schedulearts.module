@@ -339,6 +339,9 @@ function schedulearts_menu_alter(&$items) {
   // Taxonomy add term forms
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access callback'] = 'schedulearts_vocabulary_access';
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access arguments'] = array(3);
+
+  // Event edit tabs.
+  $items['node/%node/repeats']['title'] = 'Repeat all events';
 }
 
 // Custom access callback for taxonomy term add form - checks that you can EDIT the vocab
