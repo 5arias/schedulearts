@@ -53,24 +53,16 @@ function schedulearts_user_schedule_render($uid, $node) {
     )
   );
 
-  module_load_include('inc', 'print', 'print.pages');
+  module_load_include('module', 'schedulearts_print', 'schedulearts_print');
 
   // Print the days.
   $day = 60 * 60 * 24;
   $date = $date_from;
   while ($date <= $date_until) {
-    $daypath = 'schedule/' . date('Y-m-d', $date) . '/print';
-    $query = $_GET;
-    unset($query['q']);
-    $print = print_controller($daypath, $_GET, NULL, PRINT_HTML_FORMAT);
-    if ($print !== FALSE) {
-      $node = $print['node'];
-      $html = theme('print', array('print' => $print, 'type' => PRINT_HTML_FORMAT, 'node' => $node));
-      $output .= '<div>' . $html . '</div>';
-    }
+    $output .= '<div>' . schedulearts_print_page(date('Y-m-d', $date)) . '</div>';
     $date += $day;
   }
-
+  $output .= '<p>' . t('Thanks!') . '</p>';
   return $output;
 }
 
@@ -156,7 +148,6 @@ function theme_schedulearts_user_schedule_body($data) {
   ) . '</p>';
 
   $output .= theme_schedulearts_user_schedule_table_render($data['uid'], $data['date_from'], $data['date_until']);
-  $output .= '<p>' . t('Thanks!') . '</p>';
   return $output;
 }
 
