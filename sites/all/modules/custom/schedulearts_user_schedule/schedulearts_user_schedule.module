@@ -446,7 +446,7 @@ function schedulearts_user_schedule_print_date($date, $uid) {
 
   drupal_add_css(drupal_get_path('module', 'schedulearts_print') . '/css/schedulearts_print.css', array('preprocess' => FALSE));*/
 
-  return print_r($data, true);
+  return '<pre>'.print_r($data, true).'</pre>';
 }
 
 /**
