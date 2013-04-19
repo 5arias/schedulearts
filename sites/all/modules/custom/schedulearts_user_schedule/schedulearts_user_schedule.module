@@ -23,20 +23,20 @@ function schedulearts_user_schedule_menu() {
  * @param $uid
  *   The user id.
  * @param $node
- *   The schedule node
+ *   The schedule node.
  * @return string
- *   The HTML output of the user's schedule for the date range of the p
+ *   The HTML output of the user's schedule for the date range of the node.
  */
 function schedulearts_user_schedule_render($uid, $node) {
   $output = '';
-  //$account_name = _schedulearts_user_schedule_get_user_name($uid);
+  $account_name = _schedulearts_user_schedule_get_user_name($uid);
   // Set the start date for current date.
-  //$date_from = time();
+  $date_from = strtotime($node->field_sched_date['und'][0]['value']);
   // Set the end date for one week from current date.
-  //$date_until = strtotime("+1 week");
+  $date_until = strtotime($node->field_sched_date['und'][0]['value2']);
 
   // Get the output for subject.
-  /*$output .= theme('schedulearts_user_schedule_subject',
+  $output .= theme('schedulearts_user_schedule_subject',
     array(
       'username' => $account_name,
       'date_from' => $date_from,
@@ -51,17 +51,25 @@ function schedulearts_user_schedule_render($uid, $node) {
       'date_from' => $date_from,
       'date_until' => $date_until,
     )
-  );*/
+  );
 
-  $view = views_get_view('taxonomy_term_calendar' , TRUE);
-  $arg[] = $node->field_sched_date['und']['0'];
-  $arg[] = $uid;
-  $views_result = $view->preview('page_2', $arg);
-  // convert the view to text
-  $allowed_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
-  //$sched_view_output = drupal_html_to_text($views_result, $allowed_tags);
+  module_load_include('inc', 'print', 'print.pages');
 
-  return '<pre>'. print_r($node, true) . '</pre>';
+  // Print the days.
+  $day = 60 * 60 * 24;
+  $date = $date_from;
+  while ($date < $date_until) {
+    $daypath = 'schedule/' . date('Y-m-d', $date) . '/print';
+    $print = print_controller($daypath, $_GET['q'], NULL, PRINT_HTML_FORMAT);
+    if ($print !== FALSE) {
+      $node = $print['node'];
+      $html = theme('print', array('print' => $print, 'type' => PRINT_HTML_FORMAT, 'node' => $node));
+      $output .= '<div>' . $html . '</div>';
+    }
+    $date += $day;
+  }
+
+  return $output;
 }
 
 /**
