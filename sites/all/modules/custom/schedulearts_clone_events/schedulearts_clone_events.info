@@ -1,0 +1,8 @@
+name = Schedule Arts Clone events
+description = Adds extra functionalities for cloning events for Schedule Arts project.
+project = "schedulearts"
+version = "7.x-1.x-dev"
+core = "7.x"
+package = "Custom"
+dependencies[] = date_repeat
+dependencies[] = clone
