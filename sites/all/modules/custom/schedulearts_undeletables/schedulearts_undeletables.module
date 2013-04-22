@@ -22,20 +22,24 @@ function schedulearts_undeletables_form_taxonomy_form_term_alter(&$form, &$form_
  */
 function schedulearts_undeletables_reserved_term_access($tid, $access=NULL) {
   $reservedtids = variable_get('schedulearts_undeletables_reserved_eventtypes', array());
-  // Sometimes TID is passed as a term object. We just want TID
+  // Sometimes TID is passed as a term object. We want TID and its object
+  // in separate, easy to distinguish variables.
   if ($tid->tid) {
     $tid_number = $tid->tid;
+    $tid_object = $tid;
   }
   else {
     $tid_number = $tid;
+    $tid_object = taxonomy_term_load($tid_number);
   }
   // Check our reserved TIDs
   if (in_array($tid_number, $reservedtids)) {
     return FALSE;
   }
-  // If we haven't already denied access before or during this function, check for taxonomy_edit access
+  // If we haven't already denied access before or during this function,
+  // check for taxonomy_edit access. 
   if ($access != FALSE) {
-    return taxonomy_term_edit_access($tid);;
+    return taxonomy_term_edit_access($tid_object);
   }
   return TRUE;
 }
