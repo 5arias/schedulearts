@@ -1,0 +1,7 @@
+name = "Form Dropdown Reorder"
+description = "A module that allows the reordering of dropdown box elements."
+core = 7.x
+package = Custom
+configure = admin/config/user-interface/form-dropdown-reorder
+
+
