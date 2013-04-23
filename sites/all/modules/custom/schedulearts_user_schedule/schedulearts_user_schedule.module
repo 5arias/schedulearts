@@ -137,6 +137,9 @@ function schedulearts_user_schedule_print_date($date, $account) {
   $day = 60 * 60 * 24;
   $date_until = $date + $day;
   $calls = _schedulearts_user_schedule_get_calls($date, $date_until, $account);
+  foreach($calls as $call) {
+    $event = entity_load_single('node', $call[])
+  }
 }
 
 /**
@@ -154,6 +157,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $date_from = date('Y-m-d G:i:s', $date_from);
   $date_until = date('Y-m-d G:i:s', $date_until);
   $query = db_select('node', 'n');
+  $query->distinct();
   // Add relevant tables to the node table.
   $query->leftJoin('field_data_field_event_groups_tax', 'feg', 'feg.entity_id = n.nid');
   $query->leftJoin('field_data_field_event_individuals', 'fei', 'fei.entity_id = n.nid');
@@ -186,11 +190,10 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->orderBy('edv.field_event_date_value', 'asc');
 
   $result = $query->execute()->fetchAll();
-var_dump($result);
   // Attach relevant fields from parent event entity.
   foreach ($result as $key => $row) {
     $event_id = $row->call_parent_event;
-    $event_entity = array_shift(entity_load('node', array($event_id)));
+    $event_entity = entity_load_single('node', $event_id);
     $event_entity_wrapper = entity_metadata_wrapper('node', $event_entity);
 
     $event_body = $event_entity_wrapper->body->value();
@@ -200,7 +203,7 @@ var_dump($result);
     $event->event_body = $event_body['value'];
     $event->event_location = $event_location->title;
 
-    $result[$key] = (object) array_merge((array) $row, (array) $event);
+    $result[$key] = array('call' => $row, 'event' => $event);
   }
   return $result;
 }
