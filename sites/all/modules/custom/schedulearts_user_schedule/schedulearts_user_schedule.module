@@ -136,7 +136,7 @@ function theme_schedulearts_user_schedule_body($variables) {
 function schedulearts_user_schedule_print_date($date, $account) {
   $day = 60 * 60 * 24;
   $date_until = $date + $day;
-  $schedule_calls = _schedulearts_user_schedule_get_calls($date_from, $date_until);
+  $schedule_calls = _schedulearts_user_schedule_get_calls($date, $date_until);
   $output[] = $output .= '<h2>' . date('l n/j/Y', $date) . '</h2>';
      
   $output[] = theme('schedule_arts_user_schedule_table_render', 
