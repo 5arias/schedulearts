@@ -248,11 +248,11 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   foreach ($result as $key => $row) {
     // Extract attached groups and individuals‘ data.
     $call =node_load($row->call_nid);
-    $persons = field_get_items('node', $call, 'field_event_individuals');
+    $persons = (array) field_get_items('node', $call, 'field_event_individuals');
     foreach($persons as $person) {
       $row->call_individuals[] = $person['target_id'];
     }
-    $groups = field_get_items('node', $call, 'field_event_groups_tax');
+    $groups = (array) field_get_items('node', $call, 'field_event_groups_tax');
     foreach($groups as $group) {
       $row->call_groups[] = $group['tid'];
     }
