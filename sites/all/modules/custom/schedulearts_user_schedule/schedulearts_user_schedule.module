@@ -175,7 +175,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->condition('edv.field_event_date_value', $date_from, '>');
   $query->condition('edv.field_event_date_value', $date_until, '<');
   // Select only for a given user.
-  if ($account) {
+/**  if ($account) {
     $account_groups = _schedulearts_user_schedule_get_user_groups($account); 
     $where_string = "fei.field_event_individuals_target_id = {$account->uid}";
     if (!empty($account_groups)) {
@@ -183,11 +183,12 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
     }
     $query->where($where_string);
   }
+  */
 
   $query->orderBy('edv.field_event_date_value', 'asc');
 
   $result = $query->execute()->fetchAll();
-
+var_dump($result);die();
   // Attach relevant fields from parent event entity.
   foreach ($result as $key => $row) {
     $event_id = $row->call_parent_event;
