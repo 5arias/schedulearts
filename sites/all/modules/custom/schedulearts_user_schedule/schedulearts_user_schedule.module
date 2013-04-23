@@ -136,10 +136,49 @@ function theme_schedulearts_user_schedule_body($variables) {
 function schedulearts_user_schedule_print_date($date, $account) {
   $day = 60 * 60 * 24;
   $date_until = $date + $day;
-  $calls = _schedulearts_user_schedule_get_calls($date, $date_until, $account);
-  foreach($calls as $call) {
-    $event = entity_load_single('node', $call[])
+  $schedule_calls = _schedulearts_user_schedule_get_calls($date_from, $date_until);
+  $output[] = $output .= '<h2>' . date('l n/j/Y', $date) . '</h2>';
+     
+  $output[] = theme('schedule_arts_user_schedule_table_render', 
+    array('account' => $account, 'calls' => $schedule_calls));
+
+}
+
+/**
+ * The theme function for the table of selected calls.
+ *
+ * @param $uid
+ *   The user id.
+ * @param $date_from
+ *   The selected calls start date.
+ * @param $date_until
+ *   The selected calls end date.
+ * @return string
+ *   The HTML output of the selected calls table.
+ */
+function theme_schedulearts_user_schedule_table_render($variables) {
+  $output = '';
+  // Render the HTML for each group.
+  foreach ($calls as $data) {
+    $call = $data['call'];
+    $event = $data['event'];
+      $time_range = date('G:i', strtotime($call->date_from)) 
+        . ' - ' . date('G:i', strtotime($call->date_until));
+      $first_col = '<h3>' . $time_range . '</h3>';
+
+      $second_col = '<h3>' . check_plain($call->call_title) . '</h3>';
+      $second_col .= '<p>' . check_plain($call->call_body) . '</p>';
+      $second_col .= '<p>' . check_plain($event->event_body) . '</p>';
+      $second_col .= '<p>' . check_plain(_schedulearts_user_schedule_get_term_name($call->call_group)) . '</p>';
+      $second_col .= '<p>' . check_plain(_schedulearts_user_schedule_get_user_name($call->call_individual)) . '</p>';
+
+      $third_col = '<h3>' . check_plain($event->event_location) . '</h3>';
+
+      $rows[] = array($first_col, $second_col, $third_col);
   }
+  // Render the table of calls.
+  $output .= theme('table', array('rows' => $rows));
+  return $output;
 }
 
 /**
