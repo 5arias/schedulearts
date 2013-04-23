@@ -44,7 +44,7 @@ function schedulearts_user_schedule_render($account, $node) {
   $output['body'] = theme('schedulearts_user_schedule_body', 
     array('account' => $account, 'date_from' => $date_from, 'date_until' => $date_until));
 
-  $output['author_comment'] = field_view_value('node', $node, 'body', $body);
+  $output['author_comment'] = drupal_render(field_view_value('node', $node, 'body', $body));
 
   // Print the days.
   $day = 60 * 60 * 24;
@@ -138,9 +138,11 @@ function schedulearts_user_schedule_print_date($date, $account) {
   $date_until = $date + $day;
   $schedule_calls = _schedulearts_user_schedule_get_calls($date, $date_until);
   $output = array();
-  $output[] = '<h2>' . date('l n/j/Y', $date) . '</h2>';   
-  $output[] = theme('schedule_arts_user_schedule_table_render', 
-    array('account' => $account, 'calls' => $schedule_calls));
+  if (!empty($schedule_calls)){
+    $output[] = '<h2>' . date('l n/j/Y', $date) . '</h2>';   
+    $output[] = theme('schedule_arts_user_schedule_table_render', 
+      array('account' => $account, 'calls' => $schedule_calls));
+  }
   return implode("\n", $output);
 }
 
