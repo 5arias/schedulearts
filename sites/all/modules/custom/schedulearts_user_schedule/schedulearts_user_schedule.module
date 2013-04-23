@@ -154,7 +154,6 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   // Convert the date format to DATATIME format.
   $date_from = date('Y-m-d G:i:s', $date_from);
   $date_until = date('Y-m-d G:i:s', $date_until);
-var_dump($date_from); var_dump($date_until); die();
   $query = db_select('node', 'n');
   // Add relevant tables to the node table.
   $query->leftJoin('field_data_field_event_groups_tax', 'feg', 'feg.entity_id = n.nid');
