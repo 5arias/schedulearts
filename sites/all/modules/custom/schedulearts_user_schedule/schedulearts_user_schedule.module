@@ -167,15 +167,24 @@ function theme_schedulearts_user_schedule_table_render($variables) {
   foreach ($variables['calls'] as $data) {
     $call = $data['call'];
     $event = $data['event'];
-      $time_range = date('G:i', strtotime($call->date_from)) 
-        . ' - ' . date('G:i', strtotime($call->date_until));
+      $time_range = date('G:i', strtotime($call->call_date_from)) 
+        . ' - ' . date('G:i', strtotime($call->call_date_until));
       $first_col = '<h3>' . $time_range . '</h3>';
 
       $second_col = '<h3>' . check_plain($call->call_title) . '</h3>';
       $second_col .= '<p>' . check_plain($call->call_body) . '</p>';
       $second_col .= '<p>' . check_plain($event->event_body) . '</p>';
-      $second_col .= '<p>' . check_plain(_schedulearts_user_schedule_get_term_name($call->call_group)) . '</p>';
-      $second_col .= '<p>' . check_plain(_schedulearts_user_schedule_get_user_name($call->call_individual)) . '</p>';
+      $call_groups = array();
+      foreach($call->call_groups as $group) {
+        $call_groups[] = check_plain(_schedulearts_user_schedule_get_term_name($group));
+      }
+      $call_individuals = array();
+      foreach($call->call_individuals as $person) {
+        $call_individuals[] = check_plain(_schedulearts_user_schedule_get_user_name($person));
+      }
+
+      $second_col .= '<p>' . implode(', ', $call_groups) . '</p>';
+      $second_col .= '<p>' . implode(', ', $call_individuals) . '</p>';
 
       $third_col = '<h3>' . check_plain($event->event_location) . '</h3>';
 
@@ -210,6 +219,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->leftJoin('field_data_field_call_parent_event', 'cpe', 'cpe.entity_id = n.nid');
   $query->leftjoin('node', 'en', 'cpe.entity_id = en.nid');
   // Add relevant fields.
+  $query->addField('n', 'nid', 'call_nid');
   $query->addField('n', 'title', 'call_title');
   //$query->addField('feg', 'field_event_groups_tax_tid', 'call_group');
   //$query->addField('fei', 'field_event_individuals_target_id', 'call_individual');
@@ -236,6 +246,16 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $result = $query->execute()->fetchAll();
   // Attach relevant fields from parent event entity.
   foreach ($result as $key => $row) {
+    // Extract attached groups and individuals‘ data.
+    $persons = field_get_items('node', $row->call_nid, 'field_event_individuals');
+    foreach($persons as $person) {
+      $row->call_individuals[] = $person['target_id'];
+    }
+    $groups = field_get_items('node', $row->call_nid, 'field_event_groups_tax');
+    foreach($groups as $group) {
+      $row->call_groups[] = $group['tid'];
+    }
+    // Extract parent event data.
     $event_id = $row->call_parent_event;
     $event_entity = entity_load_single('node', $event_id);
     $event_entity_wrapper = entity_metadata_wrapper('node', $event_entity);
