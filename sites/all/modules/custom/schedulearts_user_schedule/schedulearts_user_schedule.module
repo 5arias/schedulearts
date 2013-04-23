@@ -56,7 +56,7 @@ function schedulearts_user_schedule_render($account, $node) {
     $date += $day;
   }
 
-  return implode($output, "\n");
+  return implode("\n", $output);
 }
 /**
  * IMplements hook_theme().
