@@ -137,7 +137,6 @@ function schedulearts_user_schedule_print_date($date, $account) {
   $day = 60 * 60 * 24;
   $date_until = $date + $day;
   $calls = _schedulearts_user_schedule_get_calls($date, $date_until, $account);
-  var_dump($calls);
 }
 
 /**
@@ -188,7 +187,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->orderBy('edv.field_event_date_value', 'asc');
 
   $result = $query->execute()->fetchAll();
-var_dump($result);die();
+var_dump($result);
   // Attach relevant fields from parent event entity.
   foreach ($result as $key => $row) {
     $event_id = $row->call_parent_event;
