@@ -180,8 +180,8 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
     if (!empty($account_groups)) {
       $or_statement->condition('feg.field_event_groups_tax_tid', $account_groups);
     }
-*/    $query->condition('feg.field_event_groups_tax_tid', $account_groups);
-  }
+    $query->condition('feg.field_event_groups_tax_tid', $account_groups);
+*/  }
 
   $query->orderBy('edv.field_event_date_value', 'asc');
 
