@@ -25,7 +25,7 @@ function schedulearts_user_schedule_menu() {
  * The node that defines the range and groups of the schedule. 
  */
 function schedulearts_user_schedule_render($account, $node) {
-  if ($node->type !== 'schedule') {
+  if ($node->type !== 'schedule' || !$account) {
     return '';
   }
   $schedule_date = reset(field_get_items('node',$node,'field_sched_date'));
