@@ -24,7 +24,7 @@ function schedulearts_user_schedule_menu() {
  * @param stdClass $node
  * The node that defines the range and groups of the schedule. 
  */
-function schedulearts_user_schedule_render($account, $node) {
+function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE) {
   if ($node->type !== 'schedule' || !$account) {
     return '';
   }
@@ -56,7 +56,13 @@ function schedulearts_user_schedule_render($account, $node) {
     $date += $day;
   }
 
-  return implode("\n", $output);
+  if (!$mail_layout){
+    return implode("\n", $output);
+  }
+  else {
+    $return = array('subject' => array_shift($output), , 'body' => $output);
+    return $return;
+  }
 }
 /**
  * IMplements hook_theme().
