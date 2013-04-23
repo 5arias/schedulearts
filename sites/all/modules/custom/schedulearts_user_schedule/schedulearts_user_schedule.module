@@ -31,6 +31,7 @@ function schedulearts_user_schedule_render($account, $node) {
   $schedule_date = reset(field_get_items('node',$node,'field_sched_date'));
   $date_from = strtotime($schedule_date['value']);
   $date_until = strtotime($schedule_date['value2']);
+  var_dump($account); die();
 
   // Get the output for subject.
   $output['subject'] = theme('schedulearts_user_schedule_subject',
