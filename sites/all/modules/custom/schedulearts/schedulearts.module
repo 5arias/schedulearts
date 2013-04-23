@@ -325,7 +325,7 @@ function schedulearts_init() {
     'weight' => 9999
   );
   drupal_add_css(drupal_get_path('module', 'schedulearts') . '/schedulearts.css', $options);
-  drupal_add_js(drupal_get_path('module', 'schedulearts') . '/schedulearts_navigator.js', 'module');
+  drupal_add_js(drupal_get_path('module', 'schedulearts') . '/schedulearts_navigator.js');
 }
 
 /*
