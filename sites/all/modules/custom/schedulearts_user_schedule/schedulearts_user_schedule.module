@@ -131,7 +131,7 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
     return implode("\n", $output);
   }
   else {
-    $return = array('subject' => array_shift($output), , 'body' => $output);
+    $return = array('subject' => array_shift($output), 'body' => $output);
     return $return;
   }
 }
