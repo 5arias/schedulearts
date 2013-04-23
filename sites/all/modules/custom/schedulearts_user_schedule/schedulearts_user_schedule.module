@@ -178,7 +178,11 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   // Select only for a given user.
   if ($account) {
     $account_groups = _schedulearts_user_schedule_get_user_groups($account->uid); 
-    $query->where("call_individual = {$account->uid} or call_group IN (".implode($account_groups, ',').")");
+    $where_string = "call_individual = {$account->uid}";
+    if (!empty($account_groups)) {
+      $where_string .= " or call_group IN (".implode($account_groups, ',').")"; 
+    }
+    $query->where($where_string);
   }
 
   $query->orderBy('edv.field_event_date_value', 'asc');
