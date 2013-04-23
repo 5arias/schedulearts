@@ -69,6 +69,9 @@ function schedulearts_user_schedule_theme() {
     'schedulearts_user_schedule_body' => array(
       'variables' => array('account' => NULL, 'date_from' => 0, 'date_until' => 0),
     ),
+    'schedulearts_user_schedule_table_render' => array(
+      'variables' => array('calls' => array()),
+    ),
   );
 }
 
