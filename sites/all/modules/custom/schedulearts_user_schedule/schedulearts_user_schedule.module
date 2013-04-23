@@ -144,7 +144,7 @@ function schedulearts_user_schedule_print_date($date, $account) {
   if (!empty($schedule_calls)){
     $output[] = '<h2>' . date('l n/j/Y', $date) . '</h2>';   
     $output[] = theme('schedulearts_user_schedule_table_render', 
-      array('account' => $account, 'calls' => $schedule_calls));
+      array('calls' => $schedule_calls));
   }
   return implode("\n", $output);
 }
@@ -164,7 +164,7 @@ function schedulearts_user_schedule_print_date($date, $account) {
 function theme_schedulearts_user_schedule_table_render($variables) {
   $output = '';
   // Render the HTML for each group.
-  foreach ($calls as $data) {
+  foreach ($variables['calls'] as $data) {
     $call = $data['call'];
     $event = $data['event'];
       $time_range = date('G:i', strtotime($call->date_from)) 
