@@ -29,5 +29,193 @@ function schedulearts_user_schedule_render($account, $node) {
     return '';
   }
   $schedule_date = reset(field_get_items('node',$node,'field_sched_date'));
-  var_dump($schedule_date); die();
+  $date_from = strtotime($schedule_date['value']);
+  $date_until = strtotime($schedule_date['value2']);
+
+  // Get the output for subject.
+  $output['subject'] = theme('schedulearts_user_schedule_subject',
+    array(
+      'username' => $account->name,
+      'date_from' => $date_from,
+      'date_until' => $date_until,
+    )
+  );
+  $body = reset(field_get_items('node', $node, 'body'));
+  $output['body'] = theme('schedulearts_user_schedule_body', 
+    array('account' => $account, 'date_from' => $date_from, 'date_until' => $date_until));
+
+  $output['author_comment'] = field_view_value('node', $node, 'body', $body);
+
+  // Print the days.
+  $day = 60 * 60 * 24;
+  $date = $date_from;
+  while ($date <= $date_until) {
+    $output["date_{$date}"] = '<div>'
+      . schedulearts_user_schedule_print_date($date, $account) 
+      . '</div>';
+    $date += $day;
+  }
+
+  return implode($output, "\n");
+}
+/**
+ * IMplements hook_theme().
+ */
+function schedulearts_user_schedule_theme() {
+  return array(
+    'schedulearts_user_schedule_subject' => array(
+      'variables' => array('username' => '', 'date_from' => 0, 'date_until' => 0);
+    ),
+    'schedulearts_user_schedule_body' => array(
+      'variables' => array('account' => NULL, 'date_from' => 0, 'date_until' => 0);
+    ),
+  );
+}
+
+/**
+ * Theme function for subject.
+ *
+ * @param $data
+ *   Array containing:
+ *    username - username,
+ *    date_from - the selected calls start date,
+ *    date_until - the selected calls end date.
+ * @return string
+ *   The output string for subject.
+ */
+function theme_schedulearts_user_schedule_subject($variables) {
+  $date_from_formatted = date('l n/j/Y', $variables['date_from']);
+  $date_until_formatted = date('l n/j/Y', $variables['date_until']);
+  return t("@username 's personal schedule for @date_from_formatted to @date_until_formatted",
+    array(
+      '@username' => $variables['username'],
+      '@date_from_formatted' => $date_from_formatted,
+      '@date_until_formatted' => $date_until_formatted,
+    )
+  );
+}
+/**
+ * Theme function for body.
+ *
+ * @param $data
+ *   Array containing:
+ *    uid - user ID
+ *    username - username,
+ *    date_from - the selected calls start date,
+ *    date_until - the selected calls end date.
+ * @return string
+ *   The output string for body.
+ */
+function theme_schedulearts_user_schedule_body($variables) {
+  global $base_url;
+  $output = '';
+  $date_from_formatted = date('l n/j/Y', $variables['date_from']);
+  $date_until_formatted = date('l n/j/Y', $variables['date_until']);
+  $output .= '<h2>' . t('Dear @name_full,', array('@name_full' => $variables['account']->name)) . '</h2>';
+  $mycalendar_path = url("user/{$variables['account']->uid}/mycal", array('absolute' => TRUE));
+  $mycalendar_link = l($mycalendar_path, $mycalendar_path);
+  $output .= '<p>' . t('Below is your schedule for @date_from_formatted to @date_until_formatted. You can also view your schedule online at !mycalendar_link', array(
+      '@date_from_formatted' => $date_from_formatted,
+      '@date_until_formatted' => $date_until_formatted,
+      '!mycalendar_link' => $mycalendar_link,
+    )
+  ) . '</p>';
+  return $output;
+}
+
+/**
+ * Menu callback; Output the schedule tables.
+ *
+ * @param $date
+ *   The date in Y-m-d format.
+ * @param $uid
+ *   The user whose calls should be listed.
+ * @return string
+ *   The rendered page.
+ */
+function schedulearts_user_schedule_print_date($date, $account) {
+  $day = 60 * 60 * 24;
+  $date_until = $date + $day;
+  $calls = _schedulearts_user_schedule_get_calls($date, $date_until, $account);
+  var_dump($call);
+}
+
+/**
+ * Fetch all calls for given date interval.
+ *
+ * @param $date_from
+ *   The selected interval start date.
+ * @param $date_until
+ *   The selected interval end date.
+ * @return mixed
+ *   Returns an array with all calls for selected date interval.
+ */
+function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account = NULL) {
+  // Convert the date format to DATATIME format.
+  $date_from = date('Y-m-d G:i:s', $date_from);
+  $date_until = date('Y-m-d G:i:s', $date_until);
+
+  $query = db_select('node', 'n');
+  // Add relevant tables to the node table.
+  $query->leftJoin('field_data_field_event_groups_tax', 'feg', 'feg.entity_id = n.nid');
+  $query->leftJoin('field_data_field_event_individuals', 'fei', 'fei.entity_id = n.nid');
+  $query->leftJoin('field_data_field_event_date', 'edv', 'edv.entity_id = n.nid');
+  $query->leftJoin('field_data_body', 'cb', 'cb.entity_id = n.nid');
+  $query->leftJoin('field_data_field_call_parent_event', 'cpe', 'cpe.entity_id = n.nid');
+  $query->leftjoin('node', 'en', 'cpe.entity_id = en.nid');
+  // Add relevant fields.
+  $query->addField('n', 'title', 'call_title');
+  $query->addField('feg', 'field_event_groups_tax_tid', 'call_group');
+  $query->addField('fei', 'field_event_individuals_target_id', 'call_individual');
+  $query->addField('edv', 'field_event_date_value', 'call_date_from');
+  $query->addField('edv', 'field_event_date_value2', 'call_date_until');
+  $query->addField('cb', 'body_value', 'call_body');
+  $query->addField('cpe', 'field_call_parent_event_target_id', 'call_parent_event');
+  // Select all calls for given time interval.
+  $query->condition('n.type', 'call', '=');
+  $query->condition('edv.field_event_date_value', $date_from, '>');
+  $query->condition('edv.field_event_date_value', $date_until, '<');
+  // Select only for a given user.
+  if ($account) {
+    $account_groups = _schedulearts_user_schedule_get_user_groups($account->uid); 
+    $query->where("call_individual = {$account->uid} or call_group IN (".implode($account_groups, ',').")");
+  }
+
+  $query->orderBy('edv.field_event_date_value', 'asc');
+
+  $result = $query->execute()->fetchAll();
+
+  // Attach relevant fields from parent event entity.
+  foreach ($result as $key => $row) {
+    $event_id = $row->call_parent_event;
+    $event_entity = array_shift(entity_load('node', array($event_id)));
+    $event_entity_wrapper = entity_metadata_wrapper('node', $event_entity);
+
+    $event_body = $event_entity_wrapper->body->value();
+    $event_location = $event_entity_wrapper->field_event_location->value();
+
+    $event = new stdClass();
+    $event->event_body = $event_body['value'];
+    $event->event_location = $event_location->title;
+
+    $result[$key] = (object) array_merge((array) $row, (array) $event);
+  }
+  return $result;
+}
+/**
+ * Return an array with user taxonomy groups term ID-s.
+ *
+ * @param $uid
+ *   The user id.
+ * @return array
+ *   Array with user taxonomy group tid.
+ */
+function _schedulearts_user_schedule_get_user_groups($uid) {
+  $account = array_shift(entity_load('user', array($uid)));
+  $account_wrapper = entity_metadata_wrapper('user', $account);
+  $account_groups = array();
+  foreach ($account_wrapper->field_user_groups->value() as $group) {
+    $account_groups[] = $group->tid;
+  }
+  return $account_groups;
 }
