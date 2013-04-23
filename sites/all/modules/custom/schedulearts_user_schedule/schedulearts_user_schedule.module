@@ -185,7 +185,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
 
   $query->orderBy('edv.field_event_date_value', 'asc');
 
-  $result = $query->execute(); //->fetchAll();
+  $result = $query->execute()->fetchAll();
 var_dump($result);
   // Attach relevant fields from parent event entity.
   foreach ($result as $key => $row) {
