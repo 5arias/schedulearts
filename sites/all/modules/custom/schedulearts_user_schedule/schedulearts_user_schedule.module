@@ -267,3 +267,19 @@ function _schedulearts_user_schedule_get_user_groups($account) {
   }
   return $account_groups;
 }
+/**
+ * Fetch the term name of a term id.
+ *
+ * @param $tid
+ *   The term ID.
+ * @return string
+ *   The term name.
+ */
+function _schedulearts_user_schedule_get_term_name($tid) {
+  $output = '';
+  if ($tid != NULL) {
+    $term = taxonomy_term_load($tid);
+    $output = $term->name;
+  }
+  return $output;
+}
