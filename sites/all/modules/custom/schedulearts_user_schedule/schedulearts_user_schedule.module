@@ -64,10 +64,10 @@ function schedulearts_user_schedule_render($account, $node) {
 function schedulearts_user_schedule_theme() {
   return array(
     'schedulearts_user_schedule_subject' => array(
-      'variables' => array('username' => '', 'date_from' => 0, 'date_until' => 0);
+      'variables' => array('username' => '', 'date_from' => 0, 'date_until' => 0),
     ),
     'schedulearts_user_schedule_body' => array(
-      'variables' => array('account' => NULL, 'date_from' => 0, 'date_until' => 0);
+      'variables' => array('account' => NULL, 'date_from' => 0, 'date_until' => 0),
     ),
   );
 }
