@@ -143,7 +143,7 @@ function schedulearts_user_schedule_print_date($date, $account) {
   $output = array();
   if (!empty($schedule_calls)){
     $output[] = '<h2>' . date('l n/j/Y', $date) . '</h2>';   
-    $output[] = theme('schedule_arts_user_schedule_table_render', 
+    $output[] = theme('schedulearts_user_schedule_table_render', 
       array('account' => $account, 'calls' => $schedule_calls));
   }
   return implode("\n", $output);
