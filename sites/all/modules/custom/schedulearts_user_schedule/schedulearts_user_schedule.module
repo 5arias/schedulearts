@@ -211,7 +211,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->leftjoin('node', 'en', 'cpe.entity_id = en.nid');
   // Add relevant fields.
   $query->addField('n', 'title', 'call_title');
-  $query->addField('feg', 'field_event_groups_tax_tid', 'call_group');
+  //$query->addField('feg', 'field_event_groups_tax_tid', 'call_group');
   //$query->addField('fei', 'field_event_individuals_target_id', 'call_individual');
   $query->addField('edv', 'field_event_date_value', 'call_date_from');
   $query->addField('edv', 'field_event_date_value2', 'call_date_until');
