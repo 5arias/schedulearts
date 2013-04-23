@@ -154,7 +154,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   // Convert the date format to DATATIME format.
   $date_from = date('Y-m-d G:i:s', $date_from);
   $date_until = date('Y-m-d G:i:s', $date_until);
-
+var_dump($date_from); var_dump($date_until); die();
   $query = db_select('node', 'n');
   // Add relevant tables to the node table.
   $query->leftJoin('field_data_field_event_groups_tax', 'feg', 'feg.entity_id = n.nid');
@@ -177,7 +177,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->condition('edv.field_event_date_value', $date_until, '<');
   // Select only for a given user.
   if ($account) {
-    $account_groups = _schedulearts_user_schedule_get_user_groups($account->uid); 
+    $account_groups = _schedulearts_user_schedule_get_user_groups($account); 
     $where_string = "fei.field_event_individuals_target_id = {$account->uid}";
     if (!empty($account_groups)) {
       $where_string .= " or feg.field_event_groups_tax_tid IN (".implode($account_groups, ',').")"; 
@@ -214,8 +214,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
  * @return array
  *   Array with user taxonomy group tid.
  */
-function _schedulearts_user_schedule_get_user_groups($uid) {
-  $account = array_shift(entity_load('user', array($uid)));
+function _schedulearts_user_schedule_get_user_groups($account) {
   $account_wrapper = entity_metadata_wrapper('user', $account);
   $account_groups = array();
   foreach ($account_wrapper->field_user_groups->value() as $group) {
