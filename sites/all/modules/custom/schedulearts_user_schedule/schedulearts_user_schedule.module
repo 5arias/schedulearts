@@ -268,6 +268,22 @@ function _schedulearts_user_schedule_get_user_groups($account) {
   return $account_groups;
 }
 /**
+ * Fetch the user name from user id.
+ *
+ * @param $uid
+ *   The user ID.
+ * @return mixed
+ *   The username of the user.
+ */
+function _schedulearts_user_schedule_get_user_name($uid) {
+  $output = '';
+  if ($uid != NULL) {
+    $account = array_shift(entity_load('user', array($uid)));
+    $output = $account->name;
+  }
+  return $output;
+}
+/**
  * Fetch the term name of a term id.
  *
  * @param $tid
