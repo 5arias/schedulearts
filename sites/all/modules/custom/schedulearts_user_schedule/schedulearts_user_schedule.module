@@ -247,11 +247,12 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   // Attach relevant fields from parent event entity.
   foreach ($result as $key => $row) {
     // Extract attached groups and individuals‘ data.
-    $persons = field_get_items('node', $row->call_nid, 'field_event_individuals');
+    $call =node_load($row->call_nid);
+    $persons = field_get_items('node', $call, 'field_event_individuals');
     foreach($persons as $person) {
       $row->call_individuals[] = $person['target_id'];
     }
-    $groups = field_get_items('node', $row->call_nid, 'field_event_groups_tax');
+    $groups = field_get_items('node', $call, 'field_event_groups_tax');
     foreach($groups as $group) {
       $row->call_groups[] = $group['tid'];
     }
