@@ -17,15 +17,14 @@ function schedulearts_user_schedule_menu() {
   return $items;
 }
 /**
- * Implements hook_flag_flag().
+ * Implements hook_flag().
  *
  * When a flagging action happens, and the flag is a schedule_approved flag,
  * we send the schedule e-mail for them.
- * @see hook_flag_flag().
+ * @see hook_flag().
  */
-function schedulearts_user_schedule_flag_flag($flag, $content_id, $account, $flagging) {
-  var_dump($flag); die();
-  if ($flag->name === 'schedule_approved') {
+function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $flagging) {
+  if ($op === 'flag' && $flag->name === 'schedule_approved') {
     // Send email to group members.
     $node = node_load($content_id);
     if (isset($node->field_sched_groups['und'])) {
