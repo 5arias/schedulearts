@@ -74,7 +74,7 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
       'id' => $mailid,
       'to' => $sched_to,
       'subject' => $mail_contents['subject'],
-      'body' => $mail_contents['body'],
+      'body' => (array)$mail_contents['body'],
       'headers' => array(
         'From' => $sched_from,
         'Sender' => $sched_from,
@@ -136,8 +136,9 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
     return implode("\n", $output);
   }
   else {
-    $return = array('subject' => array_shift($output), 'body' => $output);
-    return $return;
+    $subject = array_shift($output);
+    $body = implode("\n", $output);
+    return array('subject' => $subject, 'body' => $body);
   }
 }
 /**
