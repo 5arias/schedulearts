@@ -28,9 +28,10 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   if ($op !== 'flag' && $flag->name !== 'schedule_approved') {
     return NULL;
   }
+  $node = node_load($content_id);
   // We need the node to have information about the users to send mail.
-  if (!$node = node_load($content_id) || $node->type !== 'schedule' 
-    || !property_exists($node, $field_sched_groups) ||
+  if (!$node || $node->type !== 'schedule' 
+    || !property_exists($node, 'field_sched_groups') ||
     empty($node->field_sched_groups[LANGUAGE_NONE])) {
     return FALSE;
   }
