@@ -46,9 +46,9 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   }
   $users_query = new EntityFieldQuery();
   $users_query->entityCondition('entity_type', 'user');
-  $users_query->fieldCondition('field_user_groups', 'field_user_groups_tid', $tids);
-  $results = $users_query->execute();
-  var_dump($results); die();
+  $users_query->fieldCondition('field_user_groups', 'tid', $tids);
+  $users_query->execute();
+  var_dump($users_query); die();
 
   foreach ($users as $user) {
     $userfields = reset(entity_load('user', array($user->uid)));
