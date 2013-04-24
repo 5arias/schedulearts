@@ -3,3 +3,5 @@ description = Displays the following week schedule of the user.
 version = "7.x-1.x-dev"
 core = "7.x"
 package = "Custom"
+
+files[]= schedulearts_user_schedule.module
