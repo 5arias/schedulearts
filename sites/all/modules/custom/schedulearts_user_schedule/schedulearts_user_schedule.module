@@ -85,9 +85,11 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
     $message = $system->format($message);
 
     if ($system->mail($message)) {
+      print 'a';die();
       drupal_set_message(t('Schedule has been sent to its recipients'));
     }
     else {
+      print 'b'; die();
       t('Mail sending failed.');
     }
   }
