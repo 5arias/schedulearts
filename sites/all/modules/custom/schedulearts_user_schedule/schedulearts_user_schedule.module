@@ -60,11 +60,11 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
     $account = entity_load_single('user', $uid);
     // Build the actual email
     $sched_from = variable_get('system_mail', 'info@schedulearts.com');
-    $sched_to = $userfields->mail;
-    $sched_to_name = $userfields->name;
+    $sched_to = $account->mail;
+    $sched_to_name = $account->name;
     
     // Get rendered mail contents
-    $mail_contents = schedulearts_user_schedule_render($user, $node, TRUE);
+    $mail_contents = schedulearts_user_schedule_render($account, $node, TRUE);
     $allowed_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
     $mail_contents['body'] = drupal_html_to_text($mail_contents['body'], $allowed_tags);
 
