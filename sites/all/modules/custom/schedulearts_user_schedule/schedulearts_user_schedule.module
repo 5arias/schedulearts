@@ -25,7 +25,7 @@ function schedulearts_user_schedule_menu() {
  */
 function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $flagging) {
   // This module only deals with the schedule_approved flag, and not with unflagging.
-  if ($op !== 'flag' && $flag->name !== 'schedule_approved') {
+  if ($op !== 'flag' || $flag->name !== 'schedule_approved') {
     return NULL;
   }
   $node = node_load($content_id);
@@ -39,21 +39,25 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   $tids = array();
   foreach(field_get_items('node', $node, 'field_sched_groups') as $item) {
     $tids[] = $item['tid'];
-
+    // We need the subgroups to be included? @TODO: ask Campbell about the required implementation. 
+    foreach(taxonomy_get_children($item['tid']) as $term) {
+      $tids[] = $term->tid;
+    }
   }
-  // We dont want to send e-mail to everyone or break the script.
+  // We dont want to send e-mail to everyone or break the script if there are no terms specified.
   if (empty($tids)) {
-    return;
+    return FALSE;
   }
   $users_query = new EntityFieldQuery();
   $users_query->entityCondition('entity_type', 'user');
   $users_query->fieldCondition('field_user_groups', 'tid', $tids);
   $result = $users_query->execute();
-  var_dump($result); die();
-
-  foreach ($users as $user) {
-    $userfields = reset(entity_load('user', array($user->uid)));
-    
+  // There are no results, so nothing to do.
+  if (!array_key_exists('user', $result)) {
+    return FALSE;
+  }
+  foreach ($result['user'] as $uid => $entity_ids) {
+    $account = entity_load_single('user', $uid);
     // Build the actual email
     $sched_from = variable_get('system_mail', 'info@schedulearts.com');
     $sched_to = $userfields->mail;
