@@ -17,24 +17,14 @@ function schedulearts_user_schedule_menu() {
   return $items;
 }
 /**
- * Implements hook_flag_link().
+ * Implements hook_flag_flag().
  *
- * When Flag uses a link type provided by this module, it will call this
- * implementation of hook_flag_link().
- * This implementation sends a schedule email in response to the schedule flag
- *
- * @param $action
- *   The action this link will perform. Either 'flag' or 'unflag'.
- * @param $flag
- *   The full flag object of for the flag link being generated.
- * @param $content_id
- *   The ID of the node, comment, user, or other object being flagged.
- * @param $account
- * @return array
- *   An array defining properties of the link.
+ * When a flagging action happens, and the flag is a schedule_approved flag,
+ * we send the schedule e-mail for them.
+ * @see hook_flag_flag().
  */
-function schedulearts_user_schedule_flag_link($action, $flag, $content_id, $account) {
-  if ($action == 'flag' && $flag->name == 'schedule_approved') {
+function schedulearts_user_schedule_flag_flag($flag, $content_id, $account, $flagging) {
+  if ($flag->name === 'schedule_approved') {
     // Send email to group members.
     $node = node_load($content_id);
     if (isset($node->field_sched_groups['und'])) {
