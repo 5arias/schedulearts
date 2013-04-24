@@ -24,6 +24,7 @@ function schedulearts_user_schedule_menu() {
  * @see hook_flag_flag().
  */
 function schedulearts_user_schedule_flag_flag($flag, $content_id, $account, $flagging) {
+  var_dump($flag); die();
   if ($flag->name === 'schedule_approved') {
     // Send email to group members.
     $node = node_load($content_id);
