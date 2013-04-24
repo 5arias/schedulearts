@@ -39,6 +39,7 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   $tids = array();
   foreach(field_get_items('node', $node, 'field_sched_groups') as $item) {
     $tids[] = $item['tid'];
+
   }
   // We dont want to send e-mail to everyone or break the script.
   if (empty($tids)) {
@@ -47,8 +48,8 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   $users_query = new EntityFieldQuery();
   $users_query->entityCondition('entity_type', 'user');
   $users_query->fieldCondition('field_user_groups', 'tid', $tids);
-  $users_query->execute();
-  var_dump($users_query); die();
+  $result = $users_query->execute();
+  var_dump($result); die();
 
   foreach ($users as $user) {
     $userfields = reset(entity_load('user', array($user->uid)));
