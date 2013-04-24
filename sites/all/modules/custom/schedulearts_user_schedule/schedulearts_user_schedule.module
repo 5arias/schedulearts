@@ -24,9 +24,11 @@ function schedulearts_user_schedule_menu() {
  * @see hook_flag().
  */
 function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $flagging) {
+  print 'a';die();
   if ($op === 'flag' && $flag->name === 'schedule_approved') {
     // Send email to group members.
     $node = node_load($content_id);
+    
     if (isset($node->field_sched_groups['und'])) {
       foreach ($node->field_sched_groups['und'] as $term_entry ) {
         $tid_array[] = $term_entry['tid'];
