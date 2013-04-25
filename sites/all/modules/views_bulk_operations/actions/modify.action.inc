@@ -59,6 +59,11 @@ function views_bulk_operations_modify_action($entity, $context) {
                              '!cardinality' => $field_info['cardinality']));
           drupal_set_message($warning, 'warning', FALSE);
         }
+
+        // Prevent redundant storing of taxonomy terms.
+        if ($field_info['type'] == 'taxonomy_term_reference') {
+          $entity->{$key}[LANGUAGE_NONE] = array_unique($entity->{$key}[LANGUAGE_NONE], SORT_REGULAR);
+        }
       }
       else {
         $entity->$key = $pseudo_entity->$key;

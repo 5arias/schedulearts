@@ -1,0 +1,28 @@
+From d1cd5bef88333e6620b3185690ccf565b3ca707a Mon Sep 17 00:00:00 2001
+From: mimrock <mimrock@850192.no-reply.drupal.org>
+Date: Mon, 8 Apr 2013 14:46:44 +0200
+Subject: [PATCH] #1812794 - Fix duplicating taxonomy terms
+
+---
+ actions/modify.action.inc |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/actions/modify.action.inc b/actions/modify.action.inc
+index 7877b42..dbafbba 100644
+--- a/actions/modify.action.inc
++++ b/actions/modify.action.inc
+@@ -59,6 +59,11 @@ function views_bulk_operations_modify_action($entity, $context) {
+                              '!cardinality' => $field_info['cardinality']));
+           drupal_set_message($warning, 'warning', FALSE);
+         }
++
++        // Prevent redundant storing of taxonomy terms.
++        if ($field_info['type'] == 'taxonomy_term_reference') {
++          $entity->{$key}[LANGUAGE_NONE] = array_unique($entity->{$key}[LANGUAGE_NONE], SORT_REGULAR);
++        }
+       }
+       else {
+         $entity->$key = $pseudo_entity->$key;
+-- 
+1.7.10.4
+
