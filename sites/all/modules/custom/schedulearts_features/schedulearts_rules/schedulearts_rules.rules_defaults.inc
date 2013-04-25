@@ -132,6 +132,66 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_detect_group_hard_conflicts'] = entity_import('rules_config', '{ "rules_detect_group_hard_conflicts" : {
+      "LABEL" : "Detect group hard conflicts",
+      "PLUGIN" : "rule",
+      "REQUIRES" : [ "rules", "flag", "php" ],
+      "USES VARIABLES" : {
+        "current_conflict_list_item_group" : { "label" : "Current conflict group", "type" : "taxonomy_term" },
+        "saved_node_group_item" : { "label" : "Saved node group", "type" : "taxonomy_term" },
+        "saved_node" : { "label" : "Saved node", "type" : "node" },
+        "current_conflicts_list_item" : { "label" : "Current conflict node", "type" : "node" }
+      },
+      "IF" : [
+        { "data_is" : {
+            "data" : [ "current-conflict-list-item-group" ],
+            "value" : [ "saved-node-group-item" ]
+          }
+        }
+      ],
+      "DO" : [
+        { "entity_create" : {
+            "USING" : {
+              "type" : "node",
+              "param_type" : "conflict",
+              "param_title" : "[current-conflict-list-item-group:name] is called to both [saved-node:title] and [current-conflicts-list-item:title] ",
+              "param_author" : "1"
+            },
+            "PROVIDE" : { "entity_created" : { "conflict_entity_created" : "Created conflict entity" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-entity-created:field-conflict-grp-call" ],
+            "value" : [ "current-conflicts-list-item" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-entity-created:field-conflict-ind-call" ],
+            "value" : [ "saved-node" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-entity-created:field-conflict-group" ],
+            "value" : [ "current-conflict-list-item-group" ]
+          }
+        },
+        { "entity_save" : { "data" : [ "conflict-entity-created" ], "immediate" : 1 } },
+        { "flag_flagnode" : {
+            "flag" : "hard_conflict",
+            "node" : [ "conflict-entity-created" ],
+            "flagging_user" : "1",
+            "permission_check" : 0
+          }
+        },
+        { "drupal_message" : {
+            "message" : "\\u003Cstrong\\u003ECONFLICT:\\u003C\\/strong\\u003E \\u003C?php \\r\\nif(isset($conflict_entity_created-\\u003Efield_conflict_usr[\\u0027und\\u0027])) { \\r\\n  $conflict_object = user_load($conflict_entity_created-\\u003Efield_conflict_usr[\\u0027und\\u0027][\\u00270\\u0027][\\u0027target_id\\u0027]);\\r\\n  $conflict_fname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027);\\r\\n  $conflict_lname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027);\\r\\n  $conflict_fname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027, $conflict_fname_dirty[0]);\\r\\n  $conflict_lname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027, $conflict_lname_dirty[0]);\\r\\n  $conflict_name = $conflict_fname[\\u0027#markup\\u0027] . \\u0027 \\u0027 . $conflict_lname[\\u0027#markup\\u0027];\\r\\n  $conflict_path = entity_uri(\\u0027user\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nelseif(isset($conflict_entity_created-\\u003Efield_conflict_group[\\u0027und\\u0027])) {\\r\\n  $conflict_object = taxonomy_term_load($conflict_entity_created-\\u003Efield_conflict_group[\\u0027und\\u0027][\\u00270\\u0027][\\u0027tid\\u0027]);\\r\\n  $conflict_name = $conflict_object-\\u003Ename;\\r\\n  $conflict_path = entity_uri(\\u0027taxonomy_term\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nprint $conflict_object_link;\\r\\n?\\u003E is scheduled for \\u003Ca href=\\u0022[conflict-entity-created:field-conflict-grp-call:url]\\u0022\\u003E[conflict-entity-created:field-conflict-grp-call:title]\\u003C\\/a\\u003E and \\u003Ca href=\\u0022[conflict-entity-created:field-conflict-ind-call:url]\\u0022\\u003E[conflict-entity-created:field-conflict-ind-call:title]\\u003C\\/a\\u003E at the same time. \\u003Cspan class=\\u0022conflict-msg-buttons\\u0022\\u003E\\u003C?php print flag_create_link(\\u0027conflict_approved\\u0027, $conflict_entity_created-\\u003Enid); ?\\u003E \\u003C?php print flag_create_link(\\u0027conflict_postponed\\u0027, $conflict_entity_created-\\u003Enid); ?\\u003E\\u003C\\/span\\u003E\\r\\n\\r\\n",
+            "type" : "error",
+            "repeat" : 0
+          }
+        }
+      ]
+    }
+  }');
   $items['rules_detect_group_parent_soft_conflicts'] = entity_import('rules_config', '{ "rules_detect_group_parent_soft_conflicts" : {
       "LABEL" : "Detect group parent soft conflicts",
       "PLUGIN" : "rule",
@@ -171,6 +231,66 @@ function schedulearts_rules_default_rules_configuration() {
         { "data_set" : {
             "data" : [ "created-conflict-record:field-conflict-group" ],
             "value" : [ "term" ]
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_detect_individual_hard_conflicts'] = entity_import('rules_config', '{ "rules_detect_individual_hard_conflicts" : {
+      "LABEL" : "Detect individual hard conflicts",
+      "PLUGIN" : "rule",
+      "REQUIRES" : [ "rules", "flag", "php" ],
+      "USES VARIABLES" : {
+        "current_conflict_list_item_individual" : { "label" : "Current conflict list item individual", "type" : "user" },
+        "saved_node_individual_item" : { "label" : "Saved node individual list item", "type" : "user" },
+        "saved_node" : { "label" : "Saved node", "type" : "node" },
+        "current_conflicts_list_item" : { "label" : "Current conflict node", "type" : "node" }
+      },
+      "IF" : [
+        { "data_is" : {
+            "data" : [ "current-conflict-list-item-individual" ],
+            "value" : [ "saved-node-individual-item" ]
+          }
+        }
+      ],
+      "DO" : [
+        { "entity_create" : {
+            "USING" : {
+              "type" : "node",
+              "param_type" : "conflict",
+              "param_title" : "[current-conflict-list-item-individual:name] is called to both [saved-node:title] and [current-conflicts-list-item:title] ",
+              "param_author" : "1"
+            },
+            "PROVIDE" : { "entity_created" : { "conflict_entity_created" : "Created conflict entity" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-entity-created:field-conflict-grp-call" ],
+            "value" : [ "current-conflicts-list-item" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-entity-created:field-conflict-ind-call" ],
+            "value" : [ "saved-node" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-entity-created:field-conflict-usr" ],
+            "value" : [ "saved-node-individual-item" ]
+          }
+        },
+        { "entity_save" : { "data" : [ "conflict-entity-created" ], "immediate" : 1 } },
+        { "flag_flagnode" : {
+            "flag" : "hard_conflict",
+            "node" : [ "conflict-entity-created" ],
+            "flagging_user" : "1",
+            "permission_check" : 1
+          }
+        },
+        { "drupal_message" : {
+            "message" : "\\u003Cstrong\\u003ECONFLICT:\\u003C\\/strong\\u003E \\u003C?php \\r\\nif(isset($conflict_entity_created-\\u003Efield_conflict_usr[\\u0027und\\u0027])) { \\r\\n  $conflict_object = user_load($conflict_entity_created-\\u003Efield_conflict_usr[\\u0027und\\u0027][\\u00270\\u0027][\\u0027target_id\\u0027]);\\r\\n  $conflict_fname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027);\\r\\n  $conflict_lname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027);\\r\\n  $conflict_fname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027, $conflict_fname_dirty[0]);\\r\\n  $conflict_lname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027, $conflict_lname_dirty[0]);\\r\\n  $conflict_name = $conflict_fname[\\u0027#markup\\u0027] . \\u0027 \\u0027 . $conflict_lname[\\u0027#markup\\u0027];\\r\\n  $conflict_path = entity_uri(\\u0027user\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nelseif(isset($conflict_entity_created-\\u003Efield_conflict_group[\\u0027und\\u0027])) {\\r\\n  $conflict_object = taxonomy_term_load($conflict_entity_created-\\u003Efield_conflict_group[\\u0027und\\u0027][\\u00270\\u0027][\\u0027tid\\u0027]);\\r\\n  $conflict_name = $conflict_object-\\u003Ename;\\r\\n  $conflict_path = entity_uri(\\u0027taxonomy_term\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nprint $conflict_object_link;\\r\\n?\\u003E is scheduled for \\u003Ca href=\\u0022[conflict-entity-created:field-conflict-grp-call:url]\\u0022\\u003E[conflict-entity-created:field-conflict-grp-call:title]\\u003C\\/a\\u003E and \\u003Ca href=\\u0022[conflict-entity-created:field-conflict-ind-call:url]\\u0022\\u003E[conflict-entity-created:field-conflict-ind-call:title]\\u003C\\/a\\u003E at the same time. \\u003Cspan class=\\u0022conflict-msg-buttons\\u0022\\u003E\\u003C?php print flag_create_link(\\u0027conflict_approved\\u0027, $conflict_entity_created-\\u003Enid); ?\\u003E \\u003C?php print flag_create_link(\\u0027conflict_postponed\\u0027, $conflict_entity_created-\\u003Enid); ?\\u003E\\u003C\\/span\\u003E\\r\\n\\r\\n",
+            "type" : "error",
+            "repeat" : 0
           }
         }
       ]
@@ -365,12 +485,180 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_detect_resource_hard_errors'] = entity_import('rules_config', '{ "rules_detect_resource_hard_errors" : {
+      "LABEL" : "Detect resource hard errors",
+      "PLUGIN" : "rule set",
+      "REQUIRES" : [ "rules", "resource_conflict" ],
+      "USES VARIABLES" : {
+        "saved_node" : { "label" : "Saved node", "type" : "node" },
+        "current_conflicts_list_item" : { "label" : "Current conflicted node", "type" : "node" }
+      },
+      "RULES" : [
+        { "RULE" : {
+            "PROVIDE" : { "variable_added" : { "error_messages" : "Error Messages" } },
+            "DO" : [
+              { "variable_add" : {
+                  "USING" : { "type" : "list\\u003Ctext\\u003E" },
+                  "PROVIDE" : { "variable_added" : { "error_messages" : "Error Messages" } }
+                }
+              }
+            ],
+            "LABEL" : "Set error message list"
+          }
+        },
+        { "RULE" : {
+            "IF" : [
+              { "node_is_of_type" : { "node" : [ "saved-node" ], "type" : { "value" : { "call" : "call" } } } },
+              { "node_is_of_type" : {
+                  "node" : [ "current-conflicts-list-item" ],
+                  "type" : { "value" : { "call" : "call" } }
+                }
+              },
+              { "AND" : [
+                  { "OR" : [
+                      { "AND" : [
+                          { "NOT data_is_empty" : { "data" : [ "saved-node:field-event-groups-tax" ] } },
+                          { "data_is" : {
+                              "data" : [ "saved-node:field-event-groups-tax" ],
+                              "value" : [ "current-conflicts-list-item:field-event-groups-tax" ]
+                            }
+                          }
+                        ]
+                      },
+                      { "AND" : [
+                          { "NOT data_is_empty" : { "data" : [ "saved-node:field-event-individuals" ] } },
+                          { "data_is" : {
+                              "data" : [ "saved-node:field-event-individuals" ],
+                              "value" : [ "current-conflicts-list-item:field-event-individuals" ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "DO" : [
+              { "LOOP" : {
+                  "USING" : { "list" : [ "current-conflicts-list-item:field-event-groups-tax" ] },
+                  "ITEM" : { "current_conflict_list_item_group" : "Current conflict list item group" },
+                  "DO" : [
+                    { "LOOP" : {
+                        "USING" : { "list" : [ "saved-node:field-event-groups-tax" ] },
+                        "ITEM" : { "saved_node_group_item" : "Saved node group list item" },
+                        "DO" : [
+                          { "component_rules_detect_group_hard_conflicts" : {
+                              "current_conflict_list_item_group" : [ "saved-node-group-item" ],
+                              "saved_node_group_item" : [ "saved_node_group_item" ],
+                              "saved_node" : [ "saved_node" ],
+                              "current_conflicts_list_item" : [ "current_conflicts_list_item" ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              { "LOOP" : {
+                  "USING" : { "list" : [ "current-conflicts-list-item:field-event-individuals" ] },
+                  "ITEM" : { "current_conflict_list_item_individual" : "Current conflict list item individual" },
+                  "DO" : [
+                    { "LOOP" : {
+                        "USING" : { "list" : [ "saved-node:field-event-individuals" ] },
+                        "ITEM" : { "saved_node_individual_item" : "Saved node individual list item" },
+                        "DO" : [
+                          { "component_rules_detect_individual_hard_conflicts" : {
+                              "current_conflict_list_item_individual" : [ "current_conflict_list_item_individual" ],
+                              "saved_node_individual_item" : [ "saved_node_individual_item" ],
+                              "saved_node" : [ "saved_node" ],
+                              "current_conflicts_list_item" : [ "current_conflicts_list_item" ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "LABEL" : "Check for hard conflicts"
+          }
+        },
+        { "RULE" : {
+            "IF" : [ { "NOT data_is_empty" : { "data" : [ "error-messages" ] } } ],
+            "DO" : [
+              { "LOOP" : {
+                  "USING" : { "list" : [ "error-messages" ] },
+                  "ITEM" : { "list_item" : "Current list item" },
+                  "DO" : [ { "resource_conflict_form_error" : { "message" : [ "list-item" ] } } ]
+                }
+              }
+            ],
+            "LABEL" : "set form validation errors"
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_display_hard_conflict_message'] = entity_import('rules_config', '{ "rules_display_hard_conflict_message" : {
+      "LABEL" : "Display hard conflict message",
+      "PLUGIN" : "rule",
+      "REQUIRES" : [ "rules", "flag", "php" ],
+      "USES VARIABLES" : { "conflict_node" : { "label" : "Conflict node", "type" : "node" } },
+      "IF" : [
+        { "entity_is_of_type" : { "entity" : [ "conflict-node" ], "type" : "node" } },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node" ],
+            "type" : { "value" : { "conflict" : "conflict" } }
+          }
+        },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node:field-conflict-grp-call" ],
+            "type" : { "value" : { "call" : "call" } }
+          }
+        },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node:field-conflict-ind-call" ],
+            "type" : { "value" : { "call" : "call" } }
+          }
+        },
+        { "NOT flag_flagged_node" : {
+            "flag" : "conflict_approved",
+            "node" : [ "conflict-node" ],
+            "flagging_user" : "1"
+          }
+        },
+        { "NOT flag_flagged_node" : {
+            "flag" : "conflict_postponed",
+            "node" : [ "conflict-node" ],
+            "flagging_user" : "1"
+          }
+        },
+        { "flag_flagged_node" : {
+            "flag" : "hard_conflict",
+            "node" : [ "conflict-node" ],
+            "flagging_user" : "1"
+          }
+        }
+      ],
+      "DO" : [
+        { "drupal_message" : {
+            "message" : "\\u003Cstrong\\u003ECONFLICT:\\u003C\\/strong\\u003E \\u003C?php \\r\\nif(isset($conflict_node-\\u003Efield_conflict_usr[\\u0027und\\u0027])) { \\r\\n  $conflict_object = user_load($conflict_node-\\u003Efield_conflict_usr[\\u0027und\\u0027][\\u00270\\u0027][\\u0027target_id\\u0027]);\\r\\n  $conflict_fname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027);\\r\\n  $conflict_lname_dirty = field_get_items(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027);\\r\\n  $conflict_fname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_fname\\u0027, $conflict_fname_dirty[0]);\\r\\n  $conflict_lname = field_view_value(\\u0027user\\u0027, $conflict_object, \\u0027field_user_lname\\u0027, $conflict_lname_dirty[0]);\\r\\n  $conflict_name = $conflict_fname[\\u0027#markup\\u0027] . \\u0027 \\u0027 . $conflict_lname[\\u0027#markup\\u0027];\\r\\n  $conflict_path = entity_uri(\\u0027user\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nelseif(isset($conflict_node-\\u003Efield_conflict_group[\\u0027und\\u0027])) {\\r\\n  $conflict_object = taxonomy_term_load($conflict_node-\\u003Efield_conflict_group[\\u0027und\\u0027][\\u00270\\u0027][\\u0027tid\\u0027]);\\r\\n  $conflict_name = $conflict_object-\\u003Ename;\\r\\n  $conflict_path = entity_uri(\\u0027taxonomy_term\\u0027, $conflict_object);\\r\\n  $conflict_object_link = l($conflict_name, $conflict_path[\\u0027path\\u0027]);\\r\\n} \\r\\nprint $conflict_object_link;\\r\\n?\\u003E is scheduled for \\u003Ca href=\\u0022[conflict-node:field-conflict-grp-call:url]\\u0022\\u003E[conflict-node:field-conflict-grp-call:title]\\u003C\\/a\\u003E and \\u003Ca href=\\u0022[conflict-node:field-conflict-ind-call:url]\\u0022\\u003E[conflict-node:field-conflict-ind-call:title]\\u003C\\/a\\u003E at the same time. \\u003Cspan class=\\u0022conflict-msg-buttons\\u0022\\u003E\\u003C?php print flag_create_link(\\u0027conflict_approved\\u0027, $conflict_node-\\u003Enid); ?\\u003E \\u003C?php print flag_create_link(\\u0027conflict_postponed\\u0027, $conflict_node-\\u003Enid); ?\\u003E\\u003C\\/span\\u003E\\r\\n",
+            "type" : "error",
+            "repeat" : 0
+          }
+        }
+      ]
+    }
+  }');
   $items['rules_display_unapproved_conflict_message'] = entity_import('rules_config', '{ "rules_display_unapproved_conflict_message" : {
       "LABEL" : "Display unapproved conflict message",
       "PLUGIN" : "rule",
       "ACTIVE" : false,
       "TAGS" : [ "conflict display" ],
-      "REQUIRES" : [ "rules", "flag" ],
+      "REQUIRES" : [ "rules", "flag", "php" ],
       "USES VARIABLES" : { "conflict_node" : { "label" : "conflict node", "type" : "node" } },
       "IF" : [
         { "entity_is_of_type" : { "entity" : [ "conflict-node" ], "type" : "node" } },
@@ -444,6 +732,31 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_display_unapproved_hard_conflict_message'] = entity_import('rules_config', '{ "rules_display_unapproved_hard_conflict_message" : {
+      "LABEL" : "Display unapproved hard conflict message",
+      "PLUGIN" : "reaction rule",
+      "REQUIRES" : [ "views_bulk_operations", "rules", "rb_views" ],
+      "ON" : [ "rb_views_event_view_complete" ],
+      "IF" : [
+        { "views_bulk_operations_condition_result_count" : { "view" : "pending_conflicts|page_2", "minimum" : "1" } }
+      ],
+      "DO" : [
+        { "views_bulk_operations_action_load_list" : {
+            "USING" : { "view" : "pending_conflicts|page_2" },
+            "PROVIDE" : { "entity_list" : { "entity_list" : "A list of entities" } }
+          }
+        },
+        { "LOOP" : {
+            "USING" : { "list" : [ "entity-list" ] },
+            "ITEM" : { "list_item" : "Current list item" },
+            "DO" : [
+              { "component_rules_display_hard_conflict_message" : { "conflict_node" : [ "list-item" ] } }
+            ]
+          }
+        }
+      ]
+    }
+  }');
   $items['rules_group_hard_conflicts'] = entity_import('rules_config', '{ "rules_group_hard_conflicts" : {
       "LABEL" : "Detect group hard conflicts",
       "PLUGIN" : "rule",
@@ -463,6 +776,33 @@ function schedulearts_rules_default_rules_configuration() {
             "list" : [ "error-messages" ],
             "item" : "\\u003Ca href=\\u0022[term:url]\\u0022\\u003E[term:name]\\u003C\\/a\\u003E is already called to \\u003Ca href=\\u0022[conflict-node:url]\\u0022\\u003E[conflict-node:title]\\u003C\\/a\\u003E at this time.",
             "unique" : 1
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_hard_resource_conflicts'] = entity_import('rules_config', '{ "rules_hard_resource_conflicts" : {
+      "LABEL" : "Hard resource conflicts",
+      "PLUGIN" : "reaction rule",
+      "REQUIRES" : [ "resource_conflict", "rules" ],
+      "ON" : [ "node_insert", "node_update" ],
+      "IF" : [ { "resource_conflict_contains_conflict" : { "node" : [ "node" ] } } ],
+      "DO" : [
+        { "resource_conflict_load_conflict_list" : {
+            "USING" : { "node" : [ "node" ] },
+            "PROVIDE" : { "conflict_list" : { "conflict_list" : "Conflict List" } }
+          }
+        },
+        { "LOOP" : {
+            "USING" : { "list" : [ "conflict-list" ] },
+            "ITEM" : { "current_conflict_list_item" : "Current conflict list item" },
+            "DO" : [
+              { "component_rules_detect_resource_hard_errors" : {
+                  "saved_node" : [ "node" ],
+                  "current_conflicts_list_item" : [ "current-conflict-list-item" ]
+                }
+              }
+            ]
           }
         }
       ]
