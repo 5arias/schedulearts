@@ -35,7 +35,8 @@ function schedulearts_settings_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'admin_theme_path';
-  $strongarm->value = 'taxonomy/term/*/delete';
+  $strongarm->value = 'taxonomy/term/*/delete
+schedulearts_clone/clone/*';
   $export['admin_theme_path'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -227,6 +228,8 @@ function schedulearts_settings_strongarm() {
     'productions/*' => TRUE,
     'locations/*' => TRUE,
     'taxonomy/term/*/delete' => TRUE,
+    'schedulearts_clone/clone' => TRUE,
+    'schedulearts_clone/clone/*' => TRUE,
   );
   $export['overlay_paths_ui_paths'] = $strongarm;
 
@@ -374,6 +377,45 @@ function schedulearts_settings_strongarm() {
   $strongarm->name = 'print_robots_noindex';
   $strongarm->value = 1;
   $export['print_robots_noindex'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'schedulearts_undeletables_reserved_eventtypes';
+  $strongarm->value = array(
+    697 => '697',
+    70 => '70',
+    71 => '71',
+  );
+  $export['schedulearts_undeletables_reserved_eventtypes'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'schedulearts_undeletables_reserved_eventtypes_vocab';
+  $strongarm->value = '6';
+  $export['schedulearts_undeletables_reserved_eventtypes_vocab'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'user_picture_imagecache_profiles_min_height';
+  $strongarm->value = '';
+  $export['user_picture_imagecache_profiles_min_height'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'user_picture_imagecache_profiles_min_width';
+  $strongarm->value = '';
+  $export['user_picture_imagecache_profiles_min_width'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'user_picture_style_profiles';
+  $strongarm->value = 'thumbnail';
+  $export['user_picture_style_profiles'] = $strongarm;
 
   return $export;
 }
