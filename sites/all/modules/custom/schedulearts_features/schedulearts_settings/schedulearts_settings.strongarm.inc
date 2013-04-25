@@ -386,6 +386,7 @@ schedulearts_clone/clone/*';
     697 => '697',
     70 => '70',
     71 => '71',
+    739 => '739',
   );
   $export['schedulearts_undeletables_reserved_eventtypes'] = $strongarm;
 
