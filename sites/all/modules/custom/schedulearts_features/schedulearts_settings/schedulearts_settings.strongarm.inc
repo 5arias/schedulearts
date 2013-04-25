@@ -36,7 +36,10 @@ function schedulearts_settings_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'admin_theme_path';
   $strongarm->value = 'taxonomy/term/*/delete
-schedulearts_clone/clone/*';
+schedulearts_clone/clone/*
+node/*/repeats
+node/*/date_repeat_instance_edit
+node/*/date_repeat_instance_edit/*';
   $export['admin_theme_path'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -230,6 +233,9 @@ schedulearts_clone/clone/*';
     'taxonomy/term/*/delete' => TRUE,
     'schedulearts_clone/clone' => TRUE,
     'schedulearts_clone/clone/*' => TRUE,
+    'node/*/repeats' => TRUE,
+    'node/*/date_repeat_instance_edit' => TRUE,
+    'node/*/date_repeat_instance_edit/*' => TRUE,
   );
   $export['overlay_paths_ui_paths'] = $strongarm;
 
