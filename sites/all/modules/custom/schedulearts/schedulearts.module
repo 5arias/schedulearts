@@ -341,17 +341,37 @@ function schedulearts_menu_alter(&$items) {
   $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access arguments'] = array(3);
 
   // Event tabs.
+  // Update the title for node/nid/repeat
+  // Add our own access callback/arguments to only add this tab on nodes that
+  // HAVE repeats.
   $items['node/%node/repeats']['title'] = 'Edit single event';
+  $items['node/%node/repeats']['access callback'] = 'schedulearts_repeat_field_show';
+  $items['node/%node/repeats']['access arguments'] = array(1);
+
   unset($items['node/%node/edit']['title']);
   $items['node/%node/edit']['title callback'] = 'schedulearts_tab_title';
   $items['node/%node/edit']['title arguments'] = array(1);
+}
+
+/**
+ * Custom menu access callback for node/%nid/repeat.
+ *
+ * Validates that the node actually has a repeat on it,
+ * then passes to the date_repeat_field_show function
+ * which does access for the actual date_repeat_field module.
+ */
+function schedulearts_repeat_field_show($node) {
+  if (!empty($node->field_event_date[LANGUAGE_NONE]['0']['rrule'])) {
+    return date_repeat_field_show('node', $node);
+  }
+  return FALSE;
 }
 
 /*
  * Rename 'Edit' tabs of events.
  */
 function schedulearts_tab_title($node) {
-  if ($node->type == 'event') {
+  if ($node->type == 'event' && !empty($node->field_event_date[LANGUAGE_NONE]['0']['rrule'])) {
     return t('Edit all events');
   }
   return t('Edit');
