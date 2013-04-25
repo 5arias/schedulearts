@@ -8,12 +8,14 @@
 function schedulearts_eventwiz_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
   case 'event_node_form':
-    $form['actions']['addcall'] = array(
-      '#type' => 'submit',
-      '#value' => 'Save and add Calls',
-      '#weight' => -41,
-      '#submit' => array('node_form_submit', 'schedulearts_eventwiz_addcall_form_submit'),
-    );
+    if (!$form['nid']['#value']) {
+      $form['actions']['addcall'] = array(
+        '#type' => 'submit',
+        '#value' => 'Save and add Calls',
+        '#weight' => -41,
+        '#submit' => array('node_form_submit', 'schedulearts_eventwiz_addcall_form_submit'),
+      );
+    }
     break;
   }
 }

@@ -1,0 +1,7 @@
+name = Schedule Arts Repeating Events
+description = Delete behavior on repeating events
+version = "7.x-1.x-dev"
+core = "7.x"
+package = "Custom"
+dependencies[] = date
+dependencies[] = date_repeat_instance

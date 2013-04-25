@@ -6,7 +6,7 @@
  * permission.
  */
 
-/* 
+/*
  * Implements hook_form_ID_alter()
  * Tweaks to the Event Type form.
  */
@@ -18,24 +18,38 @@ function schedulearts_undeletables_form_taxonomy_form_term_alter(&$form, &$form_
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function schedulearts_undeletables_views_api() {
+  return array(
+    'api' => 3,
+    'template path' => drupal_get_path('module', 'schedulearts_undeletables'),
+  );
+}
+
+/**
  * Custom access callback for reserved TIDs
  */
 function schedulearts_undeletables_reserved_term_access($tid, $access=NULL) {
   $reservedtids = variable_get('schedulearts_undeletables_reserved_eventtypes', array());
-  // Sometimes TID is passed as a term object. We just want TID
-  if ($tid->tid) {
+  // Sometimes TID is passed as a term object. We want TID and its object
+  // in separate, easy to distinguish variables.
+  if (is_object($tid)) {
     $tid_number = $tid->tid;
+    $tid_object = $tid;
   }
   else {
     $tid_number = $tid;
+    $tid_object = taxonomy_term_load($tid_number);
   }
   // Check our reserved TIDs
   if (in_array($tid_number, $reservedtids)) {
     return FALSE;
   }
-  // If we haven't already denied access before or during this function, check for taxonomy_edit access
+  // If we haven't already denied access before or during this function,
+  // check for taxonomy_edit access. 
   if ($access != FALSE) {
-    return taxonomy_term_edit_access($tid);;
+    return taxonomy_term_edit_access($tid_object);
   }
   return TRUE;
 }
@@ -90,4 +104,18 @@ function schedulearts_undeletables_menu_alter(&$items) {
   // Delete link - from taxonomy_delete_link module
   $items['taxonomy/term/%taxonomy_term/delete']['access callback'] = 'schedulearts_undeletables_reserved_term_delete_access';
   $items['taxonomy/term/%taxonomy_term/delete']['access arguments'] = array(2);
+}
+
+/**
+ * Implements hook_taxonomy_term_delete().
+ */
+function schedulearts_undeletables_taxonomy_term_delete($term) {
+  drupal_goto('content/event-types');
+}
+
+/**
+ * Implements hook_taxonomy_term_update().
+ */
+function schedulearts_undeletables_taxonomy_term_update($term) {
+  drupal_goto('content/event-types');
 }

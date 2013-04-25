@@ -1,0 +1,13 @@
+diff --git a/date_repeat_instance.module b/date_repeat_instance.module
+index 0a8049c..6e0ee25 100644
+--- a/date_repeat_instance.module
++++ b/date_repeat_instance.module
+@@ -94,7 +94,7 @@ function date_repeat_instance_set_exception($node, $field, $langcode, $delta) {
+   else {
+     module_load_include('inc', 'date_api', 'date_api_ical');
+     list($data, $exdate, $rdate) = date_repeat_split_rrule($node->{$field}[$langcode][$delta]['rrule']);
+-    $exdate[]['datetime'] = $exception->format(DATE_FORMAT_ICAL);
++    $exdate[] = date_ical_parse_exceptions('EXDATE:', $exception->format(DATE_FORMAT_ICAL));
+     $data['EXDATE'] = $exdate;
+     $data['RDATE'] = $rdate;
+     $rrule = date_api_ical_build_rrule($data);
