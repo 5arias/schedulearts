@@ -47,6 +47,15 @@ function schedulearts_permissions_user_default_permissions() {
     'module' => 'views',
   );
 
+  // Exported permission: access apc statistics.
+  $permissions['access apc statistics'] = array(
+    'name' => 'access apc statistics',
+    'roles' => array(
+      'Site Admin' => 'Site Admin',
+    ),
+    'module' => 'apc',
+  );
+
   // Exported permission: access backup and migrate.
   $permissions['access backup and migrate'] = array(
     'name' => 'access backup and migrate',
@@ -528,16 +537,16 @@ function schedulearts_permissions_user_default_permissions() {
   // Exported permission: clone event.
   $permissions['clone event'] = array(
     'name' => 'clone event',
-    'roles' => array(),
+    'roles' => array(
+      'Company Admin' => 'Company Admin',
+    ),
     'module' => 'schedulearts_clone_events',
   );
 
   // Exported permission: clone node.
   $permissions['clone node'] = array(
     'name' => 'clone node',
-    'roles' => array(
-      'Company Admin' => 'Company Admin',
-    ),
+    'roles' => array(),
     'module' => 'clone',
   );
 
