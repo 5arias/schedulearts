@@ -47,6 +47,15 @@ function schedulearts_permissions_user_default_permissions() {
     'module' => 'views',
   );
 
+  // Exported permission: access apc statistics.
+  $permissions['access apc statistics'] = array(
+    'name' => 'access apc statistics',
+    'roles' => array(
+      'Site Admin' => 'Site Admin',
+    ),
+    'module' => 'apc',
+  );
+
   // Exported permission: access backup and migrate.
   $permissions['access backup and migrate'] = array(
     'name' => 'access backup and migrate',
@@ -308,6 +317,15 @@ function schedulearts_permissions_user_default_permissions() {
     'module' => 'menu',
   );
 
+  // Exported permission: administer menu attributes.
+  $permissions['administer menu attributes'] = array(
+    'name' => 'administer menu attributes',
+    'roles' => array(
+      'Site Admin' => 'Site Admin',
+    ),
+    'module' => 'menu_attributes',
+  );
+
   // Exported permission: administer modules.
   $permissions['administer modules'] = array(
     'name' => 'administer modules',
@@ -514,6 +532,38 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'clear users feeds',
     'roles' => array(),
     'module' => 'feeds',
+  );
+
+  // Exported permission: clone event.
+  $permissions['clone event'] = array(
+    'name' => 'clone event',
+    'roles' => array(
+      'Company Admin' => 'Company Admin',
+    ),
+    'module' => 'schedulearts_clone_events',
+  );
+
+  // Exported permission: clone node.
+  $permissions['clone node'] = array(
+    'name' => 'clone node',
+    'roles' => array(),
+    'module' => 'clone',
+  );
+
+  // Exported permission: clone own nodes.
+  $permissions['clone own nodes'] = array(
+    'name' => 'clone own nodes',
+    'roles' => array(),
+    'module' => 'clone',
+  );
+
+  // Exported permission: configure schedulearts_undeletables admin settings.
+  $permissions['configure schedulearts_undeletables admin settings'] = array(
+    'name' => 'configure schedulearts_undeletables admin settings',
+    'roles' => array(
+      'Site Admin' => 'Site Admin',
+    ),
+    'module' => 'schedulearts_undeletables',
   );
 
   // Exported permission: create announcement content.
@@ -1370,6 +1420,13 @@ function schedulearts_permissions_user_default_permissions() {
     'module' => 'shortcut',
   );
 
+  // Exported permission: unlock users feeds.
+  $permissions['unlock users feeds'] = array(
+    'name' => 'unlock users feeds',
+    'roles' => array(),
+    'module' => 'feeds',
+  );
+
   // Exported permission: update any fullcalendar event.
   $permissions['update any fullcalendar event'] = array(
     'name' => 'update any fullcalendar event',
@@ -1416,6 +1473,13 @@ function schedulearts_permissions_user_default_permissions() {
     'module' => 'search',
   );
 
+  // Exported permission: use flag import.
+  $permissions['use flag import'] = array(
+    'name' => 'use flag import',
+    'roles' => array(),
+    'module' => 'flag',
+  );
+
   // Exported permission: use text format filtered_html.
   $permissions['use text format filtered_html'] = array(
     'name' => 'use text format filtered_html',
@@ -1445,6 +1509,7 @@ function schedulearts_permissions_user_default_permissions() {
   $permissions['view date repeats'] = array(
     'name' => 'view date repeats',
     'roles' => array(
+      'Company Admin' => 'Company Admin',
       'Site Admin' => 'Site Admin',
     ),
     'module' => 'date_repeat_field',

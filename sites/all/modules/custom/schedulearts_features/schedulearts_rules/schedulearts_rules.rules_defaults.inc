@@ -757,6 +757,28 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_fwd_to_user_account_on_login'] = entity_import('rules_config', '{ "rules_fwd_to_user_account_on_login" : {
+      "LABEL" : "fwd to user account on login",
+      "PLUGIN" : "reaction rule",
+      "REQUIRES" : [ "rules" ],
+      "ON" : [ "user_login" ],
+      "IF" : [
+        { "NOT user_has_role" : {
+            "account" : [ "account" ],
+            "roles" : { "value" : { "4" : "4", "3" : "3" } },
+            "operation" : "OR"
+          }
+        },
+        { "NOT text_matches" : {
+            "text" : [ "site:current-page:path" ],
+            "match" : "user\\/reset\\/",
+            "operation" : "starts"
+          }
+        }
+      ],
+      "DO" : [ { "redirect" : { "url" : "user" } } ]
+    }
+  }');
   $items['rules_group_hard_conflicts'] = entity_import('rules_config', '{ "rules_group_hard_conflicts" : {
       "LABEL" : "Detect group hard conflicts",
       "PLUGIN" : "rule",
@@ -986,6 +1008,53 @@ function schedulearts_rules_default_rules_configuration() {
               }
             ],
             "LABEL" : "set form validation errors"
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_send_bulk_e_mail'] = entity_import('rules_config', '{ "rules_send_bulk_e_mail" : {
+      "LABEL" : "Send bulk e-mail",
+      "PLUGIN" : "action set",
+      "TAGS" : [ "VBO actions" ],
+      "REQUIRES" : [ "rules", "php" ],
+      "USES VARIABLES" : { "user" : { "label" : "user", "type" : "user" } },
+      "ACTION SET" : [
+        { "mail" : {
+            "to" : "[user:mail]",
+            "subject" : "An administrator created an account for you at [site:name]",
+            "message" : "[user:name],\\r\\n\\r\\nA site administrator at [site:name] has created an account for you. You may now log in by clicking this link or copying and pasting it to your browser:\\r\\n\\r\\n\\u003C?php\\r\\nprint user_pass_reset_url($user); \\r\\n?\\u003E\\r\\n\\r\\nThis link can only be used once to log in and will lead you to a page where you can set your password.\\r\\n\\r\\nAfter setting your password, you will be able to log in at [site:login-url] in the future using:\\r\\n\\r\\nusername: [user:name]\\r\\npassword: Your password\\r\\n\\r\\n--  [site:name] team",
+            "language" : [ "" ]
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_send_schedule_email'] = entity_import('rules_config', '{ "rules_send_schedule_email" : {
+      "LABEL" : "Send schedule email",
+      "PLUGIN" : "reaction rule",
+      "ACTIVE" : false,
+      "REQUIRES" : [ "rules", "php", "flag" ],
+      "ON" : [ "flag_flagged_schedule_approved" ],
+      "IF" : [
+        { "node_is_of_type" : {
+            "node" : [ "flagged-node" ],
+            "type" : { "value" : { "schedule" : "schedule" } }
+          }
+        }
+      ],
+      "DO" : [
+        { "LOOP" : {
+            "USING" : { "list" : [ "flagged-node:field-sched-groups" ] },
+            "ITEM" : { "current_group" : "Group" },
+            "DO" : [
+              { "mail" : {
+                  "to" : [ "recipient:mail" ],
+                  "subject" : "Your schedule for [flagged-node:field_sched_date]",
+                  "message" : "Dear [recipient:field-user-fname],\\r\\n\\r\\nHere is your schedule for the period [flagged-node:field_sched_date]. You can see this in a friendlier format online at: [site:url]\\/user\\/[recipient:uid]\\/mycal\\r\\n\\r\\n[flagged-node:body]\\r\\n\\r\\n*** MY SCHEDULE FOR [flagged-node:field_sched_date] ***\\r\\n\\u003C?php \\r\\n  print_r($flagged_node);\\r\\n  print_r($recipient);\\r\\n  $allowed_tags = array(\\u0027a\\u0027, \\u0027em\\u0027, \\u0027i\\u0027, \\u0027strong\\u0027, \\u0027b\\u0027, \\u0027br\\u0027, \\u0027p\\u0027, \\u0027blockquote\\u0027, \\u0027ul\\u0027, \\u0027ol\\u0027, \\u0027li\\u0027, \\u0027dl\\u0027, \\u0027dt\\u0027, \\u0027dd\\u0027, \\u0027h1\\u0027, \\u0027h2\\u0027, \\u0027h3\\u0027, \\u0027h4\\u0027, \\u0027h5\\u0027, \\u0027h6\\u0027, \\u0027hr\\u0027);\\r\\n  $view = views_get_view(\\u0027taxonomy_term_calendar\\u0027 , TRUE);\\r\\n  $arg[] = \\u0027dummy\\u0027;\\r\\n  $arg[] = $recipient-\\u003Euid;\\r\\n  $views_result = $view-\\u003Epreview(\\u0027page_2\\u0027, $arg);\\r\\n  $output = drupal_html_to_text($views_result, $allowed_tags);\\r\\n  print $output; \\r\\n?\\u003E\\r\\n\\r\\nRegards,\\r\\n\\r\\n[site:name] Team"
+                }
+              }
+            ]
           }
         }
       ]
