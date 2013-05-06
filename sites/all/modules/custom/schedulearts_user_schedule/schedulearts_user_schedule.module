@@ -284,8 +284,8 @@ function theme_schedulearts_user_schedule_table_render($variables) {
   foreach ($variables as $data) {
     $call = $data['call'];
     $event = $data['event'];
-    $time_range = date('G:i', strtotime($call->call_date_from))
-      . ' - ' . date('G:i', strtotime($call->call_date_until));
+    $time_range = date('g:i', strtotime($call->call_date_from))
+      . ' - ' . date('g:i', strtotime($call->call_date_until));
     $header = array(
       $time_range,
       check_plain($call->call_title),
