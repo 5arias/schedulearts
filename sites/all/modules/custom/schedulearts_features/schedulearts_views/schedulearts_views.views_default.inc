@@ -3977,7 +3977,6 @@ The actions available to you are:
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['use_ajax'] = TRUE;
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['access']['perm'] = 'access user profiles';
@@ -3989,45 +3988,32 @@ The actions available to you are:
   $handler->display->display_options['pager']['options']['offset'] = '0';
   $handler->display->display_options['pager']['options']['id'] = '0';
   $handler->display->display_options['pager']['options']['quantity'] = '9';
-  $handler->display->display_options['style_plugin'] = 'table';
-  $handler->display->display_options['style_options']['columns'] = array(
-    'picture' => 'picture',
-    'entityreference_browser' => 'entityreference_browser',
-  );
-  $handler->display->display_options['style_options']['default'] = '-1';
-  $handler->display->display_options['style_options']['info'] = array(
-    'picture' => array(
-      'sortable' => 0,
-      'default_sort_order' => 'asc',
-      'align' => '',
-      'separator' => '',
-      'empty_column' => 0,
-    ),
-    'entityreference_browser' => array(
-      'align' => '',
-      'separator' => '',
-      'empty_column' => 0,
-    ),
-  );
+  $handler->display->display_options['style_plugin'] = 'grid';
+  $handler->display->display_options['style_options']['columns'] = '3';
+  $handler->display->display_options['row_plugin'] = 'fields';
   /* Field: User: Picture */
   $handler->display->display_options['fields']['picture']['id'] = 'picture';
   $handler->display->display_options['fields']['picture']['table'] = 'users';
   $handler->display->display_options['fields']['picture']['field'] = 'picture';
   $handler->display->display_options['fields']['picture']['label'] = '';
-  $handler->display->display_options['fields']['picture']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['picture']['alter']['text'] = '<a href="/user/[uid]" class="picker" data-id="[uid]">[picture]</a>';
   $handler->display->display_options['fields']['picture']['alter']['strip_tags'] = TRUE;
   $handler->display->display_options['fields']['picture']['alter']['preserve_tags'] = '<img>';
   $handler->display->display_options['fields']['picture']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['picture']['link_photo_to_profile'] = FALSE;
-  $handler->display->display_options['fields']['picture']['image_style'] = 'user_avatar';
-  $handler->display->display_options['fields']['picture']['imagecache_preset'] = 'user_avatar';
+  $handler->display->display_options['fields']['picture']['image_style'] = 'thumbnail';
   /* Field: Entity Reference Browser: User */
   $handler->display->display_options['fields']['entityreference_browser']['id'] = 'entityreference_browser';
   $handler->display->display_options['fields']['entityreference_browser']['table'] = 'users';
   $handler->display->display_options['fields']['entityreference_browser']['field'] = 'entityreference_browser';
   $handler->display->display_options['fields']['entityreference_browser']['label'] = '';
   $handler->display->display_options['fields']['entityreference_browser']['element_label_colon'] = FALSE;
+  /* Field: User: Searchable name */
+  $handler->display->display_options['fields']['field_user_searchable_name']['id'] = 'field_user_searchable_name';
+  $handler->display->display_options['fields']['field_user_searchable_name']['table'] = 'field_data_field_user_searchable_name';
+  $handler->display->display_options['fields']['field_user_searchable_name']['field'] = 'field_user_searchable_name';
+  $handler->display->display_options['fields']['field_user_searchable_name']['label'] = '';
+  $handler->display->display_options['fields']['field_user_searchable_name']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_user_searchable_name']['element_label_colon'] = FALSE;
   /* Sort criterion: User: Last Name (field_user_lname) */
   $handler->display->display_options['sorts']['field_user_lname_value']['id'] = 'field_user_lname_value';
   $handler->display->display_options['sorts']['field_user_lname_value']['table'] = 'field_data_field_user_lname';
@@ -4054,49 +4040,45 @@ The actions available to you are:
   $handler->display->display_options['filters']['status']['value'] = '1';
   $handler->display->display_options['filters']['status']['group'] = 1;
   $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
-  /* Filter criterion: User: E-mail */
-  $handler->display->display_options['filters']['mail']['id'] = 'mail';
-  $handler->display->display_options['filters']['mail']['table'] = 'users';
-  $handler->display->display_options['filters']['mail']['field'] = 'mail';
-  $handler->display->display_options['filters']['mail']['operator'] = 'contains';
-  $handler->display->display_options['filters']['mail']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['mail']['expose']['operator_id'] = 'mail_op';
-  $handler->display->display_options['filters']['mail']['expose']['label'] = 'E-mail';
-  $handler->display->display_options['filters']['mail']['expose']['operator'] = 'mail_op';
-  $handler->display->display_options['filters']['mail']['expose']['identifier'] = 'mail';
-  /* Filter criterion: User: First Name (field_user_fname) */
-  $handler->display->display_options['filters']['field_user_fname_value']['id'] = 'field_user_fname_value';
-  $handler->display->display_options['filters']['field_user_fname_value']['table'] = 'field_data_field_user_fname';
-  $handler->display->display_options['filters']['field_user_fname_value']['field'] = 'field_user_fname_value';
-  $handler->display->display_options['filters']['field_user_fname_value']['operator'] = 'contains';
-  $handler->display->display_options['filters']['field_user_fname_value']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['field_user_fname_value']['expose']['operator_id'] = 'field_user_fname_value_op';
-  $handler->display->display_options['filters']['field_user_fname_value']['expose']['label'] = 'First Name';
-  $handler->display->display_options['filters']['field_user_fname_value']['expose']['operator'] = 'field_user_fname_value_op';
-  $handler->display->display_options['filters']['field_user_fname_value']['expose']['identifier'] = 'field_user_fname_value';
-  /* Filter criterion: User: Last Name (field_user_lname) */
-  $handler->display->display_options['filters']['field_user_lname_value']['id'] = 'field_user_lname_value';
-  $handler->display->display_options['filters']['field_user_lname_value']['table'] = 'field_data_field_user_lname';
-  $handler->display->display_options['filters']['field_user_lname_value']['field'] = 'field_user_lname_value';
-  $handler->display->display_options['filters']['field_user_lname_value']['operator'] = 'contains';
-  $handler->display->display_options['filters']['field_user_lname_value']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['field_user_lname_value']['expose']['operator_id'] = 'field_user_lname_value_op';
-  $handler->display->display_options['filters']['field_user_lname_value']['expose']['label'] = 'Last Name';
-  $handler->display->display_options['filters']['field_user_lname_value']['expose']['operator'] = 'field_user_lname_value_op';
-  $handler->display->display_options['filters']['field_user_lname_value']['expose']['identifier'] = 'field_user_lname_value';
-  /* Filter criterion: User: Name */
-  $handler->display->display_options['filters']['uid']['id'] = 'uid';
-  $handler->display->display_options['filters']['uid']['table'] = 'users';
-  $handler->display->display_options['filters']['uid']['field'] = 'uid';
-  $handler->display->display_options['filters']['uid']['value'] = '';
-  $handler->display->display_options['filters']['uid']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['uid']['expose']['operator_id'] = 'uid_op';
-  $handler->display->display_options['filters']['uid']['expose']['label'] = 'username';
-  $handler->display->display_options['filters']['uid']['expose']['operator'] = 'uid_op';
-  $handler->display->display_options['filters']['uid']['expose']['identifier'] = 'uid';
-
-  /* Display: Entity Reference View Widget */
-  $handler = $view->new_display('entityreference_view_widget', 'Entity Reference View Widget', 'entityreference_view_widget_1');
+  /* Filter criterion: User: Searchable name (field_user_searchable_name) */
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['id'] = 'field_user_searchable_name_value';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['table'] = 'field_data_field_user_searchable_name';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['field'] = 'field_user_searchable_name_value';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['operator'] = 'contains';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['operator_id'] = 'field_user_searchable_name_value_op';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['label'] = 'Name/Email';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['operator'] = 'field_user_searchable_name_value_op';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['identifier'] = 'field_user_searchable_name_value';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    4 => 0,
+    3 => 0,
+  );
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_filter'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_items'] = '10';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_field'] = 'field_user_searchable_name';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_raw_suggestion'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_raw_dropdown'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_dependent'] = 0;
+  /* Filter criterion: User: Organizational Role (field_organizational_role) */
+  $handler->display->display_options['filters']['field_organizational_role_tid']['id'] = 'field_organizational_role_tid';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['table'] = 'field_data_field_organizational_role';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['field'] = 'field_organizational_role_tid';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_organizational_role_tid']['expose']['operator_id'] = 'field_organizational_role_tid_op';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['expose']['label'] = 'Organizational Role';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['expose']['operator'] = 'field_organizational_role_tid_op';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['expose']['identifier'] = 'field_organizational_role_tid';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    4 => 0,
+    3 => 0,
+  );
+  $handler->display->display_options['filters']['field_organizational_role_tid']['type'] = 'select';
+  $handler->display->display_options['filters']['field_organizational_role_tid']['vocabulary'] = 'organizational_role';
 
   /* Display: Entityreference block */
   $handler = $view->new_display('block', 'Entityreference block', 'block_1');
@@ -4110,18 +4092,13 @@ The actions available to you are:
   $handler->display->display_options['defaults']['style_plugin'] = FALSE;
   $handler->display->display_options['style_plugin'] = 'entityreference_style';
   $handler->display->display_options['style_options']['search_fields'] = array(
-    'entityreference_browser' => 'entityreference_browser',
+    'field_user_searchable_name' => 'field_user_searchable_name',
     'picture' => 0,
+    'entityreference_browser' => 0,
   );
   $handler->display->display_options['defaults']['style_options'] = FALSE;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['row_plugin'] = 'entityreference_fields';
-  $handler->display->display_options['row_options']['inline'] = array(
-    'picture' => 'picture',
-    'entityreference_browser' => 'entityreference_browser',
-  );
-  $handler->display->display_options['row_options']['separator'] = '  ';
-  $handler->display->display_options['row_options']['default_field_elements'] = FALSE;
   $handler->display->display_options['defaults']['row_options'] = FALSE;
   $export['user_select'] = $view;
 
