@@ -316,7 +316,7 @@ function theme_schedulearts_user_schedule_table_render($variables) {
     $rows[] = array('', implode(', ', $called), '');
   }
   // Render the table of calls.
-  $output .= theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('width' => '100%')));
   return $output;
 }
 
