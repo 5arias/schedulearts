@@ -46,7 +46,7 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
       $tids[] = $term->tid;
     }
   }
-  // We dont want to send e-mail to everyone or break the script if there are no terms specified.
+  // We don't want to send e-mail to everyone or break the script if there are no terms specified.
   if (empty($tids)) {
     return FALSE;
   }
@@ -63,7 +63,6 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
     // Build the actual email
     $sched_from = variable_get('system_mail', 'info@schedulearts.com');
     $sched_to = $account->mail;
-    $sched_to_name = $account->name;
 
     // Get rendered mail contents
     $mail_contents = schedulearts_user_schedule_render($account, $node, TRUE);
@@ -134,12 +133,12 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
   $date_until = strtotime($schedule_date['value2']);
 
   // Get the output for subject.
-  /*$output['subject'] = theme('schedulearts_user_schedule_subject',
+  $output['subject'] = theme('schedulearts_user_schedule_subject',
     array(
       'date_from' => $date_from,
       'date_until' => $date_until,
     )
-  );*/
+  );
   $body = reset(field_get_items('node', $node, 'body'));
   $output['body'] = theme('schedulearts_user_schedule_body',
     array(
