@@ -3855,7 +3855,18 @@ The actions available to you are:
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['label'] = 'Search';
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['operator'] = 'field_user_searchable_name_value_op';
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['identifier'] = 'field_user_searchable_name_value';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    4 => 0,
+    3 => 0,
+  );
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_filter'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_items'] = '10';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_field'] = 'field_user_searchable_name';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_raw_suggestion'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_raw_dropdown'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_dependent'] = 0;
   /* Filter criterion: User: Groups (field_user_groups) */
   $handler->display->display_options['filters']['field_user_groups_tid']['id'] = 'field_user_groups_tid';
   $handler->display->display_options['filters']['field_user_groups_tid']['table'] = 'field_data_field_user_groups';
@@ -3948,7 +3959,18 @@ The actions available to you are:
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['label'] = 'Search';
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['operator'] = 'field_user_searchable_name_value_op';
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['identifier'] = 'field_user_searchable_name_value';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    4 => 0,
+    3 => 0,
+  );
   $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_filter'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_items'] = '10';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_field'] = 'field_user_searchable_name';
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_raw_suggestion'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_raw_dropdown'] = 1;
+  $handler->display->display_options['filters']['field_user_searchable_name_value']['expose']['autocomplete_dependent'] = 0;
   /* Filter criterion: User: Name */
   $handler->display->display_options['filters']['uid']['id'] = 'uid';
   $handler->display->display_options['filters']['uid']['table'] = 'users';
