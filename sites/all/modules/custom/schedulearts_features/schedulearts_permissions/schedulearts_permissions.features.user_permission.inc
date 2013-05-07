@@ -47,15 +47,6 @@ function schedulearts_permissions_user_default_permissions() {
     'module' => 'views',
   );
 
-  // Exported permission: access apc statistics.
-  $permissions['access apc statistics'] = array(
-    'name' => 'access apc statistics',
-    'roles' => array(
-      'Site Admin' => 'Site Admin',
-    ),
-    'module' => 'apc',
-  );
-
   // Exported permission: access backup and migrate.
   $permissions['access backup and migrate'] = array(
     'name' => 'access backup and migrate',
