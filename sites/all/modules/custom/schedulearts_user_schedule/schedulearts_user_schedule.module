@@ -379,7 +379,6 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
     $date = strtotime($date[0]);
 
     $calls[$date][] = array('call' => $row, 'event' => $event);
-    dpq($query);
   }
 
   return $calls;
