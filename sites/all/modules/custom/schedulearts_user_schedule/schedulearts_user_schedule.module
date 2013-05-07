@@ -60,37 +60,12 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   }
   foreach ($result['user'] as $uid => $entity_ids) {
     $account = entity_load_single('user', $uid);
-    // Build the actual email
+    // Build the actual email.
     $sched_from = variable_get('system_mail', 'info@schedulearts.com');
     $sched_to = $account->mail;
 
-    // Get rendered mail contents
+    // Get rendered mail contents.
     $mail_contents = schedulearts_user_schedule_render($account, $node, TRUE);
-    $allowed_tags = array(
-      'a',
-      'em',
-      'i',
-      'strong',
-      'b',
-      'br',
-      'p',
-      'blockquote',
-      'ul',
-      'ol',
-      'li',
-      'dl',
-      'dt',
-      'dd',
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'hr'
-    );
-    $mail_contents['body'] = drupal_html_to_text($mail_contents['body'], $allowed_tags);
-
     $mailtoken = microtime();
     $mailid = 'schedulearts' . '_' . $mailtoken;
     $message = array(
@@ -101,17 +76,27 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
       'headers' => array(
         'From' => $sched_from,
         'Sender' => $sched_from,
-        'Return-Path' => $sched_from
+        'Return-Path' => $sched_from,
+        'Content-Type' => 'text/html',
       ),
+      'from' => $sched_from,
+      'key' => $mailtoken,
     );
-    $system = drupal_mail_system('schedulearts', $mailtoken);
+
+    $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+    if ($mail_system['default-system'] == 'MimeMailSystem') {
+      $system = drupal_mail_system('mimemail', $mailtoken);
+    }
+    else {
+      $system = drupal_mail_system('schedulearts_user_schedule', $mailtoken);
+    }
     $message = $system->format($message);
 
     if ($system->mail($message)) {
-      drupal_set_message(t('Schedule has been sent to its recipients'));
+      watchdog('schedule', 'Schedule has been sent to !recipient', array('!recipient' => $sched_to));
     }
     else {
-      drupal_set_message(t('Mail sending failed.'), 'error');
+      watchdog('schedule', 'Mail sending failed.', array(), WATCHDOG_ERROR);
     }
   }
 }
@@ -147,7 +132,7 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
       'date_until' => $date_until
     ));
 
-  //$output['author_comment'] = drupal_render(field_view_value('node', $node, 'body', $body));
+  $output['author_comment'] = drupal_render(field_view_value('node', $node, 'body', $body));
 
   // Print the days.
   $day = 60 * 60 * 24;
@@ -251,15 +236,15 @@ function theme_schedulearts_user_schedule_body($variables) {
  * @return string
  *   The rendered page.
  */
-function schedulearts_user_schedule_print_date($date) {
+function schedulearts_user_schedule_print_date($date, $account) {
   $day = 60 * 60 * 24;
   $date_until = $date + $day;
   $output = array();
-  $call_dates = array_filter(_schedulearts_user_schedule_get_calls($date, $date_until));
+  $call_dates = array_filter(_schedulearts_user_schedule_get_calls($date, $date_until, $account));
   foreach ($call_dates as $call_date => $calls) {
     $output[] = '<h3>' . date('l n/j/Y', $call_date) . '</h3>';
     foreach ($calls as $call) {
-      $output[] = theme('schedulearts_user_schedule_table_render', array('calls' => $call));
+      $output[] = '<p>' . theme('schedulearts_user_schedule_table_render', array('calls' => $call)) . '</p>';
     }
   }
   return implode("\n", $output);
@@ -286,9 +271,9 @@ function theme_schedulearts_user_schedule_table_render($variables) {
     $time_range = date('g:i', strtotime($call->call_date_from))
       . ' - ' . date('g:i', strtotime($call->call_date_until));
     $header = array(
-      $time_range,
-      check_plain($call->call_title),
-      check_plain($event->event_location)
+      array('data' => $time_range, 'width' => '20%'),
+      array('data' => check_plain($call->call_title), 'width' => '40%'),
+      array('data' => check_plain($event->event_location), 'width' => '40%'),
     );
 
     if (isset($call->call_body)) {
@@ -299,17 +284,21 @@ function theme_schedulearts_user_schedule_table_render($variables) {
     }
 
     $called = array();
-    foreach ($call->call_groups as $group) {
-      $called[] = check_plain(_schedulearts_user_schedule_get_term_name($group));
+    if (isset($call->call_groups)) {
+      foreach ($call->call_groups as $group) {
+        $called[] = check_plain(_schedulearts_user_schedule_get_term_name($group));
+      }
     }
-    foreach ($call->call_individuals as $person) {
-      $called[] = check_plain(_schedulearts_user_schedule_get_user_name($person));
+    if (isset($call->call_individuals)) {
+      foreach ($call->call_individuals as $person) {
+        $called[] = check_plain(_schedulearts_user_schedule_get_user_name($person));
+      }
     }
 
     $rows[] = array('', implode(', ', $called), '');
   }
   // Render the table of calls.
-  $output .= theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('width' => '100%')));
   return $output;
 }
 
@@ -323,7 +312,7 @@ function theme_schedulearts_user_schedule_table_render($variables) {
  * @return mixed
  *   Returns an array with all calls for selected date interval.
  */
-function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account = NULL) {
+function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account) {
   // Convert the date format to DATATIME format.
   $date_from = date('Y-m-d G:i:s', $date_from);
   $date_until = date('Y-m-d G:i:s', $date_until);
@@ -349,14 +338,15 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->condition('n.type', 'call', '=');
   $query->condition('edv.field_event_date_value', $date_from, '>');
   $query->condition('edv.field_event_date_value', $date_until, '<');
+
   // Select only for a given user.
-  if ($account) {
-    $account_groups = _schedulearts_user_schedule_get_user_groups($account);
-    $or_statement = db_or()->condition('fei.field_event_individuals_target_id', $account->uid);
-    if (!empty($account_groups)) {
-      $or_statement->condition('feg.field_event_groups_tax_tid', $account_groups);
-    }
-    $query->condition('feg.field_event_groups_tax_tid', $account_groups);
+  $account_groups = _schedulearts_user_schedule_get_user_groups($account);
+  if (!empty($account_groups)) {
+    $query->where('fei.field_event_individuals_target_id = :uid OR feg.field_event_groups_tax_tid IN (:tids)',
+      array(':uid' => $account->uid, ':tids' => join(', ', $account_groups)));
+  }
+  else {
+    $query->condition('fei.field_event_individuals_target_id', $account->uid);
   }
 
   $query->orderBy('edv.field_event_date_value', 'asc');
@@ -368,7 +358,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   foreach ($result as $row) {
     // Extract attached groups and individuals‘ data.
     $call = node_load($row->call_nid);
-    $persons = array_filter(field_get_items('node', $call, 'field_event_individuals'));
+    $persons = array_filter((array) field_get_items('node', $call, 'field_event_individuals'));
     foreach ($persons as $person) {
       $row->call_individuals[] = $person['target_id'];
     }

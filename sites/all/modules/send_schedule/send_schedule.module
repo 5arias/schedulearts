@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Send schedule feature.
+ */
+
+include_once 'send_schedule.features.inc';
