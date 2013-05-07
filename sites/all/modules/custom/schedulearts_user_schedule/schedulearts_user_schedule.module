@@ -66,31 +66,6 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
 
     // Get rendered mail contents.
     $mail_contents = schedulearts_user_schedule_render($account, $node, TRUE);
-    $allowed_tags = array(
-      'a',
-      'em',
-      'i',
-      'strong',
-      'b',
-      'br',
-      'p',
-      'blockquote',
-      'ul',
-      'ol',
-      'li',
-      'dl',
-      'dt',
-      'dd',
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'hr'
-    );
-    //$mail_contents['body'] = drupal_html_to_text($mail_contents['body'], $allowed_tags);
-
     $mailtoken = microtime();
     $mailid = 'schedulearts' . '_' . $mailtoken;
     $message = array(
@@ -115,10 +90,10 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
     $message = $system->format($message);
 
     if ($system->mail($message)) {
-      drupal_set_message(t('Schedule has been sent to its recipients.'));
+      watchdog('schedule', 'Schedule has been sent to !recipient.', array('!recipient' => $sched_to));
     }
     else {
-      drupal_set_message(t('Mail sending failed.'), 'error');
+      watchdog('schedule', 'Mail sending failed.', array(), WATCHDOG_ERROR);
     }
   }
 }
