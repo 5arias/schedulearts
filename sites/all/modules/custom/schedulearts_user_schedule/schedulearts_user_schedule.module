@@ -60,11 +60,11 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   }
   foreach ($result['user'] as $uid => $entity_ids) {
     $account = entity_load_single('user', $uid);
-    // Build the actual email
+    // Build the actual email.
     $sched_from = variable_get('system_mail', 'info@schedulearts.com');
     $sched_to = $account->mail;
 
-    // Get rendered mail contents
+    // Get rendered mail contents.
     $mail_contents = schedulearts_user_schedule_render($account, $node, TRUE);
     $allowed_tags = array(
       'a',
@@ -89,7 +89,7 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
       'h6',
       'hr'
     );
-    $mail_contents['body'] = drupal_html_to_text($mail_contents['body'], $allowed_tags);
+    //$mail_contents['body'] = drupal_html_to_text($mail_contents['body'], $allowed_tags);
 
     $mailtoken = microtime();
     $mailid = 'schedulearts' . '_' . $mailtoken;
@@ -104,11 +104,11 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
         'Return-Path' => $sched_from
       ),
     );
-    $system = drupal_mail_system('schedulearts', $mailtoken);
+    $system = drupal_mail_system('mimemail', $mailtoken);
     $message = $system->format($message);
 
     if ($system->mail($message)) {
-      drupal_set_message(t('Schedule has been sent to its recipients'));
+      drupal_set_message(t('Schedule has been sent to its recipients.'));
     }
     else {
       drupal_set_message(t('Mail sending failed.'), 'error');
