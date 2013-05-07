@@ -76,8 +76,11 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
       'headers' => array(
         'From' => $sched_from,
         'Sender' => $sched_from,
-        'Return-Path' => $sched_from
+        'Return-Path' => $sched_from,
+        'Content-Type' => 'text/html',
       ),
+      'from' => $sched_from,
+      'key' => $mailtoken,
     );
 
     $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
@@ -90,7 +93,7 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
     $message = $system->format($message);
 
     if ($system->mail($message)) {
-      watchdog('schedule', 'Schedule has been sent to !recipient.', array('!recipient' => $sched_to));
+      watchdog('schedule', 'Schedule has been sent to !recipient', array('!recipient' => $sched_to));
     }
     else {
       watchdog('schedule', 'Mail sending failed.', array(), WATCHDOG_ERROR);
