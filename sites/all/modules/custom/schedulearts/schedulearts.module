@@ -1,5 +1,7 @@
 <?php
 
+// @file: miscellaneous behaviors for Schedulearts.
+
 /**
  * Implements hook_views_api().
  */
@@ -420,4 +422,14 @@ function schedulearts_colors_classes($entity) {
     }
   }
   return $class_names;
+}
+
+/** 
+ * Implements hook_admin_paths_alter().
+ * Remove key paths from the list that gets counted as "admin" for
+ * Overlay/theme.
+ */
+function schedulearts_admin_paths_alter(&$paths) {
+  unset($paths['user/*/edit']);
+  unset($paths['user/*/edit/*']);
 }
