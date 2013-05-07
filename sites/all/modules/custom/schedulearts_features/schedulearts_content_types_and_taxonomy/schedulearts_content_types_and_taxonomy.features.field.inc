@@ -507,7 +507,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
       'module' => 'date',
       'settings' => array(
         'cache_count' => '4',
-        'cache_enabled' => 0,
+        'cache_enabled' => 1,
         'granularity' => array(
           'day' => 'day',
           'hour' => 'hour',
@@ -1196,7 +1196,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
       'module' => 'date',
       'settings' => array(
         'cache_count' => '4',
-        'cache_enabled' => 0,
+        'cache_enabled' => 1,
         'granularity' => array(
           'day' => 'day',
           'hour' => 'hour',
