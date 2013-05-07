@@ -236,11 +236,11 @@ function theme_schedulearts_user_schedule_body($variables) {
  * @return string
  *   The rendered page.
  */
-function schedulearts_user_schedule_print_date($date) {
+function schedulearts_user_schedule_print_date($date, $account) {
   $day = 60 * 60 * 24;
   $date_until = $date + $day;
   $output = array();
-  $call_dates = array_filter(_schedulearts_user_schedule_get_calls($date, $date_until));
+  $call_dates = array_filter(_schedulearts_user_schedule_get_calls($date, $date_until, $account));
   foreach ($call_dates as $call_date => $calls) {
     $output[] = '<h3>' . date('l n/j/Y', $call_date) . '</h3>';
     foreach ($calls as $call) {
