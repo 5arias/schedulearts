@@ -338,7 +338,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   // Select only for a given user.
   $account_groups = _schedulearts_user_schedule_get_user_groups($account);
   if (!empty($account_groups)) {
-    $query->where('fei.field_event_individuals_target_id = :uid OR fei.field_event_groups_tax IN (:tids)',
+    $query->where('fei.field_event_individuals_target_id = :uid OR fei.field_event_groups_tax_tid IN (:tids)',
       array(':uid' => $account->uid, ':tids' => join(', ', $account_groups)));
   }
   else {
