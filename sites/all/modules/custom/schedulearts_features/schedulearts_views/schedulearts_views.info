@@ -32,3 +32,4 @@ features[views_view][] = upcoming_conflicts
 features[views_view][] = user_groups
 features[views_view][] = user_select
 features_exclude[dependencies][views] = views
+project path = sites/all/modules/custom/schedulearts_features

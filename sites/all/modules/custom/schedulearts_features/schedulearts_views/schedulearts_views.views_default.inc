@@ -2229,7 +2229,7 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
     'multiple_number' => '',
     'multiple_from' => '',
     'multiple_to' => '',
-    'show_repeat_rule' => 'show',
+    'show_repeat_rule' => 'hide',
   );
   $handler->display->display_options['fields']['field_event_date']['group_rows'] = FALSE;
   $handler->display->display_options['fields']['field_event_date']['delta_offset'] = '0';
@@ -2277,7 +2277,7 @@ if ( arg(0) == \'node\' && is_numeric(arg(1)) && ! arg(2) ) {
   $handler->display->display_options['filters']['field_event_groups_tax_tid']['table'] = 'field_data_field_event_groups_tax';
   $handler->display->display_options['filters']['field_event_groups_tax_tid']['field'] = 'field_event_groups_tax_tid';
   $handler->display->display_options['filters']['field_event_groups_tax_tid']['value'] = array(
-    636 => '636',
+    939 => '939',
   );
   $handler->display->display_options['filters']['field_event_groups_tax_tid']['group'] = 2;
   $handler->display->display_options['filters']['field_event_groups_tax_tid']['type'] = 'select';
