@@ -1,0 +1,28 @@
+diff --git a/memcache_admin/memcache_admin.module b/memcache_admin/memcache_admin.module
+index 9760668..12d4623 100644
+--- a/memcache_admin/memcache_admin.module
++++ b/memcache_admin/memcache_admin.module
+@@ -165,7 +165,22 @@ function _memcache_admin_stats_gets($stats) {
+  * Statistics report: calculate # of increments and decrements.
+  */
+ function _memcache_admin_stats_counters($stats) {
+-  return t('!incr increments, !decr decrements', array('!incr' => number_format($stats['incr_hits'] + $stats['incr_misses']), '!decr' => number_format($stats['decr_hits'] + $stats['decr_misses'])));
++  $increments = 0;
++  $increments += isset($stats['incr_hits']) ? $stats['incr_hits'] : 0;
++  $increments += isset($stats['incr_misses']) ? $stats['incr_misses'] : 0;
++
++  $decrements = 0;
++  $decrements += isset($stats['decr_hits']) ? $stats['decr_hits'] : 0;
++  $decrements += isset($stats['decr_misses']) ? $stats['decr_misses'] : 0;
++
++  // If connected and no increment/decrement stats, assume PECL.
++  if (($increments + $decrements) == 0 && isset($stats['uptime'])) {
++    return t('Increment and decrement stats unsupported by PECL Memcached.');
++  }
++  return t('!incr increments, !decr decrements', array(
++    '!incr' => number_format($increments),
++    '!decr' => number_format($decrements),
++  ));
+ }
+ 
+ /**
