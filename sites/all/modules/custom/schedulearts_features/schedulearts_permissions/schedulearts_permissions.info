@@ -47,7 +47,6 @@ features[user_permission][] = access admin theme
 features[user_permission][] = access administration menu
 features[user_permission][] = access administration pages
 features[user_permission][] = access all views
-features[user_permission][] = access apc statistics
 features[user_permission][] = access backup and migrate
 features[user_permission][] = access backup files
 features[user_permission][] = access comments
