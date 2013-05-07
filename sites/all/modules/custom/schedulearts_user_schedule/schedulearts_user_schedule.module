@@ -284,11 +284,15 @@ function theme_schedulearts_user_schedule_table_render($variables) {
     }
 
     $called = array();
-    foreach ($call->call_groups as $group) {
-      $called[] = check_plain(_schedulearts_user_schedule_get_term_name($group));
+    if (isset($call->call_groups)) {
+      foreach ($call->call_groups as $group) {
+        $called[] = check_plain(_schedulearts_user_schedule_get_term_name($group));
+      }
     }
-    foreach ($call->call_individuals as $person) {
-      $called[] = check_plain(_schedulearts_user_schedule_get_user_name($person));
+    if (isset($call->call_individuals)) {
+      foreach ($call->call_individuals as $person) {
+        $called[] = check_plain(_schedulearts_user_schedule_get_user_name($person));
+      }
     }
 
     $rows[] = array('', implode(', ', $called), '');
