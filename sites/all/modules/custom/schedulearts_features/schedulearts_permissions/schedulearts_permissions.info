@@ -7,7 +7,6 @@ project = schedulearts_permissions
 dependencies[] = addanother
 dependencies[] = admin_menu
 dependencies[] = admin_theme
-dependencies[] = apc
 dependencies[] = auto_nodetitle
 dependencies[] = backup_migrate
 dependencies[] = block
