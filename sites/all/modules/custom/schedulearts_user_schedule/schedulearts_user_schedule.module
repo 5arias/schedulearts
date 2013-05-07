@@ -104,7 +104,14 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
         'Return-Path' => $sched_from
       ),
     );
-    $system = drupal_mail_system('mimemail', $mailtoken);
+
+    $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem'));
+    if ($mail_system['default-system'] == 'MimeMailSystem') {
+      $system = drupal_mail_system('mimemail', $mailtoken);
+    }
+    else {
+      $system = drupal_mail_system('schedulearts_user_schedule', $mailtoken);
+    }
     $message = $system->format($message);
 
     if ($system->mail($message)) {
@@ -147,7 +154,7 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
       'date_until' => $date_until
     ));
 
-  //$output['author_comment'] = drupal_render(field_view_value('node', $node, 'body', $body));
+  $output['author_comment'] = drupal_render(field_view_value('node', $node, 'body', $body));
 
   // Print the days.
   $day = 60 * 60 * 24;
@@ -259,7 +266,7 @@ function schedulearts_user_schedule_print_date($date) {
   foreach ($call_dates as $call_date => $calls) {
     $output[] = '<h3>' . date('l n/j/Y', $call_date) . '</h3>';
     foreach ($calls as $call) {
-      $output[] = theme('schedulearts_user_schedule_table_render', array('calls' => $call));
+      $output[] = '<p>' . theme('schedulearts_user_schedule_table_render', array('calls' => $call)) . '</p>';
     }
   }
   return implode("\n", $output);
@@ -286,9 +293,9 @@ function theme_schedulearts_user_schedule_table_render($variables) {
     $time_range = date('g:i', strtotime($call->call_date_from))
       . ' - ' . date('g:i', strtotime($call->call_date_until));
     $header = array(
-      $time_range,
-      check_plain($call->call_title),
-      check_plain($event->event_location)
+      array('data' => $time_range, 'width' => '20%'),
+      array('data' => check_plain($call->call_title), 'width' => '40%'),
+      array('data' => check_plain($event->event_location), 'width' => '40%'),
     );
 
     if (isset($call->call_body)) {
