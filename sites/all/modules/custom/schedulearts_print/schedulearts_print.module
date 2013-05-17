@@ -118,6 +118,23 @@ function schedulearts_print_event_data_query($date) {
           $data[$value->nid]['data']['calls'][$value->entity_id]['body'] = $value->cb_body_value;
         }
         break;
+      default:
+        if (!isset($data[$value->nid]['data']['calls'][$value->entity_id])) {
+          $data[$value->nid]['data']['calls'][$value->entity_id] = array(
+                                                                        'date' => $value->cd_field_event_date_value,
+                                                                        'date2' => $value->cd_field_event_date_value2,
+                                                                        );
+        }
+        if (isset($value->field_event_groups_tax_tid)) {
+          $data[$value->nid]['data']['calls'][$value->entity_id]['groups'][] = $value->field_event_groups_tax_tid;
+        }
+        if (isset($value->field_event_individuals_target_id)) {
+          $data[$value->nid]['data']['calls'][$value->entity_id]['individuals'][] = $value->field_event_individuals_target_id;
+        }
+        if (isset($value->cb_body_value)) {
+          $data[$value->nid]['data']['calls'][$value->entity_id]['body'] = $value->cb_body_value;
+        }
+        break;
     }
     
   }
