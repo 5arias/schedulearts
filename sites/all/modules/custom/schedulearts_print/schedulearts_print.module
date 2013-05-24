@@ -16,7 +16,7 @@ function schedulearts_print_permission() {
 }
  
 /**
- * Implementation of hook_menu().
+ * Implements of hook_menu().
  */
 function schedulearts_print_menu() {
   $items = array();
@@ -25,6 +25,13 @@ function schedulearts_print_menu() {
       'page callback' => 'schedulearts_print_page',
       'page arguments' => array(1),
       'access arguments' => array('schedule print page'),
+      'type' => MENU_CALLBACK,
+  );
+  $items['schedulears_print/select-timeframe'] = array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('schedulearts_select_timeframe_form'),
+      'access arguments' => array('schedule print page'),
+      'file' => 'schedulearts_print.pages.inc',
       'type' => MENU_CALLBACK,
   );
 
