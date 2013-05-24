@@ -24,7 +24,6 @@ function send_schedule_strongarm() {
   $strongarm->value = array(
     'default-system' => 'MimeMailSystem',
     'mimemail' => 'MimeMailSystem',
-    'maillog' => 'MaillogMailSystem',
   );
   $export['mail_system'] = $strongarm;
 
