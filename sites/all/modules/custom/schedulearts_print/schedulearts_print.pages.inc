@@ -41,6 +41,11 @@ function schedulearts_select_timeframe_form($form, &$form_state) {
           '#title' => t('Select month'),
           '#required' => TRUE,
         );
+        $form['timeframes']['production'] = array(
+          '#type' => 'select',
+          '#title' => t('Production'),
+          '#options' => array(0 => '- Select - ') + _schedulearts_print_production_options(),
+        );
         break;
       case 'day':
         $form['timeframes']['print_day'] = array(
@@ -74,11 +79,29 @@ function schedulearts_select_timeframe_form_submit($form, &$form_state) {
   switch ($form_state['values']['timeframe_selector']) {
     case 'month':
         $redirect = 'print/calendar-node-field-event-date/month/' . $form_state['values']['timeframes']['print_month']['year']
-          . '-' . $form_state['values']['timeframes']['print_month']['month'];
+          . '-' . $form_state['values']['timeframes']['print_month']['month']
+          .($form_state['values']['timeframes']['production'] ? ('/' . $form_state['values']['timeframes']['production']) : '');
       break;
     case 'day':
       $redirect = 'print/schedule/' . urlencode($form_state['values']['timeframes']['print_day']) . '/print';
       break;
   }
   $form_state['redirect'] = $redirect;
+}
+
+/**
+ * Generates a select list of all 'production' bundle node.
+ *
+ * @return array
+ * 1 => Label for the first node
+ * 2 => Label for the second node
+ * ...
+ */
+function _schedulearts_print_production_options() {
+  $nodes = node_load_multiple(array(), array('type' => 'production'));
+  $list = array();
+  foreach ($nodes as $node) {
+    $list[$node->nid] = check_plain($node->title);
+  }
+  return $list;
 }
