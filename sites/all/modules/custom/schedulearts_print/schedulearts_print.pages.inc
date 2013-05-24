@@ -17,7 +17,7 @@ function schedulearts_select_timeframe_form($form, &$form_state) {
     '#ajax' => array(
       'event' => 'change',
       'callback' => 'schedulearts_print_timeframe_select',
-      'wrapper' => 'replace_model_div',
+      'wrapper' => 'schedulearts_timeframe_div',
       'method' => 'replace',
       'effect' => 'fade',
     ),
@@ -30,15 +30,25 @@ function schedulearts_select_timeframe_form($form, &$form_state) {
 
   $form['timeframes'] = array(
     '#tree' => TRUE,
-    '#prefix' => '<div id="replace_model_div">',
+    '#prefix' => '<div id="schedulearts_timeframe_div">',
     '#suffix' => '</div>',
   );
   if (isset($form_state['values']['timeframe_selector'])) {
     switch ($form_state['values']['timeframe_selector']) {
       case 'month':
-        $form['timeframes']['print_month'] = array(
-          '#type' => 'date',
-          '#title' => t('Select month'),
+        $form['timeframes']['print_month']['label'] = array(
+          '#markup' => '<label for="edit-timeframes-print-year">Select month<span class="form-required" title="This field is required.">*</span></label>',
+        );
+        $form['timeframes']['print_month']['year'] = array(
+          '#type' => 'select',
+          '#options' => _schedulearts_print_numeric_list_options(1900, 2099),
+          '#default_value' => date('Y'),
+          '#required' => TRUE,
+        );
+        $form['timeframes']['print_month']['month'] = array(
+          '#type' => 'select',
+          '#options' => _schedulearts_print_print_month_options(),
+          '#default_value' => date('m'),
           '#required' => TRUE,
         );
         $form['timeframes']['production'] = array(
@@ -104,4 +114,40 @@ function _schedulearts_print_production_options() {
     $list[$node->nid] = check_plain($node->title);
   }
   return $list;
+}
+
+/**
+ * Generates a numeric list for select fields, like year selector.
+ *
+ * @param int $from First element.
+ * @param int $to Last element.
+ */
+function _schedulearts_print_numeric_list_options($from, $to) {
+  $elements = array();
+  for ($i = $from; $i <= $to; $i++) {
+    $elements[$i] = $i;
+  }
+  return $elements;
+}
+
+/**
+ * Return the list of months for a select list.
+ *
+ * @return Array
+ */
+function _schedulearts_print_print_month_options() {
+  return array(
+    '01' => t('January'),
+    '02' => t('February'),
+    '03' => t('March'),
+    '04' => t('April'),
+    '05' => t('May'),
+    '06' => t('June'),
+    '07' => t('July'),
+    '08' => t('August'),
+    '09' => t('September'),
+    '10' => t('October'),
+    '11' => t('November'),
+    '12' => t('December'),
+  );
 }

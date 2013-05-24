@@ -1,4 +1,4 @@
-#edit-timeframes-print-month .form-item-timeframes-print-month-day {
-  display:none;
+#schedulearts-select-timeframe-form .form-item-timeframes-print-month-year,
+#schedulearts-select-timeframe-form .form-item-timeframes-print-month-month{
+  display:inline;
 }
-
