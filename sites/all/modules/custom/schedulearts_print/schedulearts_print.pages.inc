@@ -4,7 +4,6 @@
  * Form callback for selecting a timeframe to print.
  */
 function schedulearts_select_timeframe_form($form, &$form_state) {
-  drupal_add_css('#edit-timeframes-print-month .form-item-timeframes-print-month-day {display:none;}',$option['type'] = 'inline');
   $form['timeframe_selector'] = array(
     '#type' => 'radios',
     '#title' => t('Timeframe'),
@@ -23,6 +22,12 @@ function schedulearts_select_timeframe_form($form, &$form_state) {
       'effect' => 'fade',
     ),
   );
+
+  $form['#attached']['css'] = array(
+    // Hide day selector of drupal date field.
+    drupal_get_path('module', 'schedulearts_print') . '/css/schedulearts_print_timeframe_form.css',
+  );
+
   $form['timeframes'] = array(
     '#tree' => TRUE,
     '#prefix' => '<div id="replace_model_div">',
