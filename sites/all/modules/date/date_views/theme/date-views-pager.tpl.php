@@ -34,12 +34,12 @@
       <h3><?php print $nav_title ?></h3>
     </div>
     <ul class="pager">
-    <?php if (!empty($prev_url)) : ?>
+    <?php if (!empty($prev_url) && $plugin->view->name != 'monthly_printable') : ?>
       <li class="date-prev">
         <?php print l('&laquo;' . ($mini ? '' : ' ' . t('Prev', array(), array('context' => 'date_nav'))), $prev_url, $prev_options); ?>
       &nbsp;</li>
     <?php endif; ?>
-    <?php if (!empty($next_url)) : ?>
+    <?php if (!empty($next_url) && $plugin->view->name != 'monthly_printable') : ?>
       <li class="date-next">&nbsp;
         <?php print l(($mini ? '' : t('Next', array(), array('context' => 'date_nav')) . ' ') . '&raquo;', $next_url, $next_options); ?>
       </li>

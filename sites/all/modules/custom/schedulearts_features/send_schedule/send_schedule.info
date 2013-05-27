@@ -1,9 +1,13 @@
-name = Send schedule
+name = send schedule
+description = Schedule sending and general email config
 core = 7.x
 package = Schedulearts
-version = 7.x-1.0
+php = 5.2.4
+version = 7.x-1.1
 project = send_schedule
 dependencies[] = ctools
+dependencies[] = mailsystem
+dependencies[] = mimemail
 dependencies[] = strongarm
 features[ctools][] = strongarm:strongarm:1
 features[features_api][] = api:1

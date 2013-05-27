@@ -39,7 +39,8 @@ function schedulearts_settings_strongarm() {
 schedulearts_clone/clone/*
 node/*/repeats
 node/*/date_repeat_instance_edit
-node/*/date_repeat_instance_edit/*';
+node/*/date_repeat_instance_edit/*
+schedulears_print/select-timeframe';
   $export['admin_theme_path'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -236,6 +237,7 @@ node/*/date_repeat_instance_edit/*';
     'node/*/repeats' => TRUE,
     'node/*/date_repeat_instance_edit' => TRUE,
     'node/*/date_repeat_instance_edit/*' => TRUE,
+    'schedulears_print/select-timeframe' => TRUE,
   );
   $export['overlay_paths_ui_paths'] = $strongarm;
 
