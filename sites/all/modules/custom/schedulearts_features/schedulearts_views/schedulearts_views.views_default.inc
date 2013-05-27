@@ -765,6 +765,14 @@ function schedulearts_views_views_default_views() {
   $handler->display->display_options['arguments']['date_argument']['date_fields'] = array(
     'field_data_field_event_date.field_event_date_value' => 'field_data_field_event_date.field_event_date_value',
   );
+  /* Contextual filter: Content: Production (field_production) */
+  $handler->display->display_options['arguments']['field_production_target_id']['id'] = 'field_production_target_id';
+  $handler->display->display_options['arguments']['field_production_target_id']['table'] = 'field_data_field_production';
+  $handler->display->display_options['arguments']['field_production_target_id']['field'] = 'field_production_target_id';
+  $handler->display->display_options['arguments']['field_production_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_production_target_id']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_production_target_id']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_production_target_id']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['path'] = 'calendar-node-field-event-date/month';
   $handler->display->display_options['menu']['type'] = 'default tab';
   $handler->display->display_options['menu']['title'] = 'Month';
