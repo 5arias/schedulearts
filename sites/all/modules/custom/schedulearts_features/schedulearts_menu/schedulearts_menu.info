@@ -1,0 +1,12 @@
+name = Schedulearts menu
+description = Menu structure and links for schedulearts
+core = 7.x
+package = Schedulearts
+version = 7.x-1.1
+project = schedulearts_menu
+dependencies[] = features
+dependencies[] = menu
+features[features_api][] = api:1
+features[menu_custom][] = main-menu
+features[menu_custom][] = user-menu
+project path = sites/all/modules/custom/schedulearts_features

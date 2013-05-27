@@ -16,7 +16,7 @@ function schedulearts_print_permission() {
 }
  
 /**
- * Implementation of hook_menu().
+ * Implements of hook_menu().
  */
 function schedulearts_print_menu() {
   $items = array();
@@ -25,6 +25,13 @@ function schedulearts_print_menu() {
       'page callback' => 'schedulearts_print_page',
       'page arguments' => array(1),
       'access arguments' => array('schedule print page'),
+      'type' => MENU_CALLBACK,
+  );
+  $items['schedulears_print/select-timeframe'] = array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('schedulearts_select_timeframe_form'),
+      'access arguments' => array('schedule print page'),
+      'file' => 'schedulearts_print.pages.inc',
       'type' => MENU_CALLBACK,
   );
 
@@ -44,20 +51,22 @@ function schedulearts_print_menu() {
  */
 function schedulearts_print_event_data_query($date) {
   $data = array();
-  $query = db_select('node', 'n');  
-  
+  $query = db_select('node', 'n');
+
   $query->join('field_data_field_event_date', 'd', 'd.entity_id = n.nid');
-  $query->join('field_data_field_call_parent_event', 'p', 'p.field_call_parent_event_target_id = n.nid');
+
+  $query->leftJoin('field_data_field_call_parent_event', 'p', 'p.field_call_parent_event_target_id = n.nid');
+
   $query->join('field_data_field_event_type', 't', 't.entity_id = n.nid');
   $query->join('taxonomy_term_data', 'td', 't.field_event_type_tid = td.tid');
   $query->join('field_data_field_event_location', 'l', 'l.entity_id = n.nid');
-    
+
   $query->leftJoin('field_data_field_event_groups_tax', 'g', 'g.entity_id = p.entity_id');
   $query->leftJoin('field_data_field_event_individuals', 'i', 'i.entity_id = p.entity_id');
   $query->leftJoin('field_data_body', 'b', 'b.entity_id = n.nid');
   $query->leftJoin('field_data_body', 'cb', 'cb.entity_id = p.entity_id');
   $query->leftJoin('field_data_field_event_date', 'cd', 'cd.entity_id = p.entity_id');
-  
+
   $query->fields('n', array('title', 'nid'));
   $query->fields('td', array('name'));
   $query->fields('d', array('field_event_date_value', 'field_event_date_value2'));
@@ -70,11 +79,11 @@ function schedulearts_print_event_data_query($date) {
   $query->fields('cd', array('field_event_date_value', 'field_event_date_value2'));
 
   $query->condition('d.field_event_date_value', $date . '%', 'LIKE');
-  $query->condition('cd.field_event_date_value', $date . '%', 'LIKE');
+  //$query->condition('cd.field_event_date_value', $date . '%', 'LIKE');
   $query->orderBy('d.field_event_date_value');
   $query->orderBy('cd.field_event_date_value');
-  
-  $result = $query->execute();  
+
+  $result = $query->execute();
 
   foreach ($result as $value) {
     if (!isset($data[$value->nid])) {
@@ -100,6 +109,23 @@ function schedulearts_print_event_data_query($date) {
         break;
       case 'Coaching':
       case 'Performance':
+        if (!isset($data[$value->nid]['data']['calls'][$value->entity_id])) {
+          $data[$value->nid]['data']['calls'][$value->entity_id] = array(
+                                                                        'date' => $value->cd_field_event_date_value,
+                                                                        'date2' => $value->cd_field_event_date_value2,
+                                                                        );
+        }
+        if (isset($value->field_event_groups_tax_tid)) {
+          $data[$value->nid]['data']['calls'][$value->entity_id]['groups'][] = $value->field_event_groups_tax_tid;
+        }
+        if (isset($value->field_event_individuals_target_id)) {
+          $data[$value->nid]['data']['calls'][$value->entity_id]['individuals'][] = $value->field_event_individuals_target_id;
+        }
+        if (isset($value->cb_body_value)) {
+          $data[$value->nid]['data']['calls'][$value->entity_id]['body'] = $value->cb_body_value;
+        }
+        break;
+      default:
         if (!isset($data[$value->nid]['data']['calls'][$value->entity_id])) {
           $data[$value->nid]['data']['calls'][$value->entity_id] = array(
                                                                         'date' => $value->cd_field_event_date_value,
