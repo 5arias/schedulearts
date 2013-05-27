@@ -579,7 +579,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'active' => 1,
         'module' => 'date',
         'settings' => array(
-          'display_all_day' => 0,
+          'display_all_day' => 1,
           'increment' => '5',
           'input_format' => 'm/d/Y - g:i:sa',
           'input_format_custom' => '',
@@ -1254,7 +1254,7 @@ function schedulearts_content_types_and_taxonomy_field_default_fields() {
         'active' => 1,
         'module' => 'date',
         'settings' => array(
-          'display_all_day' => 0,
+          'display_all_day' => 1,
           'increment' => '5',
           'input_format' => 'm/d/Y - g:i:sa',
           'input_format_custom' => '',
