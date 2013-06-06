@@ -433,3 +433,13 @@ function schedulearts_admin_paths_alter(&$paths) {
   unset($paths['user/*/edit']);
   unset($paths['user/*/edit/*']);
 }
+
+/**
+ * Implements hook_views_default_views_alter().
+ *
+ * @param $views
+ */
+function schedulearts_views_default_views_alter(&$views) {
+  // Set the date field formatter to 'time_only'.
+  $views['monthly_printable']->display['default']->display_options['fields']['field_event_date']['settings']['format_type'] = 'time_only';
+}
