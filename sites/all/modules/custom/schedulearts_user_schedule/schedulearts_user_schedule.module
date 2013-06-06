@@ -21,11 +21,11 @@ function schedulearts_user_schedule_menu() {
  * Implements hook_flag().
  *
  * When a flagging action happens, and the flag is a schedule_approved flag,
- * we send the schedule e-mail for them.
- * @see hook_flag().
+ * we send the schedule e-mail for them. @see hook_flag().
  */
 function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $flagging) {
-  // This module only deals with the schedule_approved flag, and not with unflagging.
+  // This module only deals with the schedule_approved flag,
+  // and not with unflagging.
   if ($op !== 'flag' || $flag->name !== 'schedule_approved') {
     return NULL;
   }
@@ -41,12 +41,14 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
   $tids = array();
   foreach (field_get_items('node', $node, 'field_sched_groups') as $item) {
     $tids[] = $item['tid'];
-    // We need the subgroups to be included? @TODO: ask Campbell about the required implementation.
+    // We need the subgroups to be included? @TODO:
+    // ask Campbell about the required implementation.
     foreach (taxonomy_get_children($item['tid']) as $term) {
       $tids[] = $term->tid;
     }
   }
-  // We don't want to send e-mail to everyone or break the script if there are no terms specified.
+  // We don't want to send e-mail to everyone or break the script
+  // if there are no terms specified.
   if (empty($tids)) {
     return FALSE;
   }
@@ -67,7 +69,7 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
     // Get rendered mail contents.
     $mail_contents = schedulearts_user_schedule_render($account, $node, TRUE);
     $mailtoken = microtime();
-    $mailid = 'schedulearts' . '_' . $mailtoken;
+    $mailid = 'schedulearts_' . $mailtoken;
     $message = array(
       'id' => $mailid,
       'to' => $sched_to,
@@ -105,9 +107,9 @@ function schedulearts_user_schedule_flag($op, $flag, $content_id, $account, $fla
  * Render the calls in a dete range of a given schedule for a user.
  *
  * @param stdClass $account
- * A standard user object the schedule is displayed for.
+ *   A standard user object the schedule is displayed for.
  * @param stdClass $node
- * The node that defines the range and groups of the schedule.
+ *   The node that defines the range and groups of the schedule.
  */
 function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE) {
   if ($node->type !== 'schedule' || !$account) {
@@ -129,7 +131,7 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
     array(
       'account' => $account,
       'date_from' => $date_from,
-      'date_until' => $date_until
+      'date_until' => $date_until,
     ));
 
   $output['author_comment'] = drupal_render(field_view_value('node', $node, 'body', $body));
@@ -155,7 +157,7 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
 }
 
 /**
- * IMplements hook_theme().
+ * Implements hook_theme().
  */
 function schedulearts_user_schedule_theme() {
   return array(
@@ -163,14 +165,14 @@ function schedulearts_user_schedule_theme() {
       'variables' => array(
         'username' => '',
         'date_from' => 0,
-        'date_until' => 0
+        'date_until' => 0,
       ),
     ),
     'schedulearts_user_schedule_body' => array(
       'variables' => array(
         'account' => NULL,
         'date_from' => 0,
-        'date_until' => 0
+        'date_until' => 0,
       ),
     ),
     'schedulearts_user_schedule_table_render' => array(
@@ -182,10 +184,11 @@ function schedulearts_user_schedule_theme() {
 /**
  * Theme function for subject.
  *
- * @param $data
+ * @param array $variables
  *   Array containing:
  *    date_from - the selected calls start date,
  *    date_until - the selected calls end date.
+ *
  * @return string
  *   The output string for subject.
  */
@@ -203,12 +206,13 @@ function theme_schedulearts_user_schedule_subject($variables) {
 /**
  * Theme function for body.
  *
- * @param $data
+ * @param array $variables
  *   Array containing:
  *    uid - user ID
  *    username - username,
  *    date_from - the selected calls start date,
  *    date_until - the selected calls end date.
+ *
  * @return string
  *   The output string for body.
  */
@@ -231,8 +235,9 @@ function theme_schedulearts_user_schedule_body($variables) {
 /**
  * Menu callback; Output the schedule tables.
  *
- * @param $date
+ * @param date $date
  *   The date in Y-m-d format.
+ *
  * @return string
  *   The rendered page.
  */
@@ -253,23 +258,30 @@ function schedulearts_user_schedule_print_date($date, $account) {
 /**
  * The theme function for the table of selected calls.
  *
- * @param $uid
+ * @param array $variables
  *   The user id.
- * @param $date_from
- *   The selected calls start date.
- * @param $date_until
- *   The selected calls end date.
+ *
  * @return string
  *   The HTML output of the selected calls table.
  */
 function theme_schedulearts_user_schedule_table_render($variables) {
   $output = '';
+  $header = array();
+  $rows = array();
   // Render the HTML for each event.
   foreach ($variables as $data) {
+    if (!isset($data['call']) || !isset($data['event'])) {
+      return t('You are not called to any events on this day');
+    }
     $call = $data['call'];
     $event = $data['event'];
-    $time_range = date('g:i', strtotime($call->call_date_from))
-      . ' - ' . date('g:i', strtotime($call->call_date_until));
+    if ($call->call_date_from == $call->call_date_until) {
+      $time_range = t('All day');
+    }
+    else {
+      $time_range = date('g:i', strtotime($call->call_date_from))
+        . ' - ' . date('g:i', strtotime($call->call_date_until));
+    }
     $header = array(
       array('data' => $time_range, 'width' => '20%'),
       array('data' => check_plain($call->call_title), 'width' => '40%'),
@@ -298,17 +310,23 @@ function theme_schedulearts_user_schedule_table_render($variables) {
     $rows[] = array('', implode(', ', $called), '');
   }
   // Render the table of calls.
-  $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('width' => '100%')));
+  $output .= theme(
+    'table',
+    array(
+      'header' => $header,
+      'rows' => $rows,
+      'attributes' => array('width' => '100%')));
   return $output;
 }
 
 /**
  * Fetch all calls for given date interval.
  *
- * @param $date_from
+ * @param date $date_from
  *   The selected interval start date.
- * @param $date_until
+ * @param date $date_until
  *   The selected interval end date.
+ *
  * @return mixed
  *   Returns an array with all calls for selected date interval.
  */
@@ -316,6 +334,7 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   // Convert the date format to DATATIME format.
   $date_from = date('Y-m-d G:i:s', $date_from);
   $date_until = date('Y-m-d G:i:s', $date_until);
+
   $query = db_select('node', 'n');
   $query->distinct();
   // Add relevant tables to the node table.
@@ -324,36 +343,38 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
   $query->leftJoin('field_data_field_event_date', 'edv', 'edv.entity_id = n.nid');
   $query->leftJoin('field_data_body', 'cb', 'cb.entity_id = n.nid');
   $query->leftJoin('field_data_field_call_parent_event', 'cpe', 'cpe.entity_id = n.nid');
-  $query->leftjoin('node', 'en', 'cpe.entity_id = en.nid');
   // Add relevant fields.
   $query->addField('n', 'nid', 'call_nid');
   $query->addField('n', 'title', 'call_title');
-  //$query->addField('feg', 'field_event_groups_tax_tid', 'call_group');
-  //$query->addField('fei', 'field_event_individuals_target_id', 'call_individual');
+  $query->addField('feg', 'field_event_groups_tax_tid', 'call_group');
+  $query->addField('fei', 'field_event_individuals_target_id', 'call_individual');
   $query->addField('edv', 'field_event_date_value', 'call_date_from');
   $query->addField('edv', 'field_event_date_value2', 'call_date_until');
-  $query->addField('cb', 'body_value', 'call_body');
   $query->addField('cpe', 'field_call_parent_event_target_id', 'call_parent_event');
   // Select all calls for given time interval.
   $query->condition('n.type', 'call', '=');
-  $query->condition('edv.field_event_date_value', $date_from, '>');
+  $query->condition('edv.field_event_date_value', $date_from, '>=');
   $query->condition('edv.field_event_date_value', $date_until, '<');
 
   // Select only for a given user.
   $account_groups = _schedulearts_user_schedule_get_user_groups($account);
   if (!empty($account_groups)) {
-    $query->where('fei.field_event_individuals_target_id = :uid OR feg.field_event_groups_tax_tid IN (:tids)',
-      array(':uid' => $account->uid, ':tids' => join(', ', $account_groups)));
+    $or = db_or()->condition('fei.field_event_individuals_target_id', $account->uid)->condition('feg.field_event_groups_tax_tid', $account_groups, 'IN');
+    $query->condition($or);
   }
   else {
     $query->condition('fei.field_event_individuals_target_id', $account->uid);
   }
-
   $query->orderBy('edv.field_event_date_value', 'asc');
+  $query->groupBy('n.nid');
 
   $result = $query->execute()->fetchAll();
-
   $calls = array();
+  if (empty($result)) {
+    $date = explode(' ', $date_from);
+    $date = strtotime($date[0]);
+    $calls[$date]['empty'] = TRUE;
+  }
   // Attach relevant fields from parent event entity.
   foreach ($result as $row) {
     // Extract attached groups and individuals‘ data.
@@ -381,18 +402,17 @@ function _schedulearts_user_schedule_get_calls($date_from, $date_until, $account
     // Get call date.
     $date = explode(' ', $row->call_date_from);
     $date = strtotime($date[0]);
-
     $calls[$date][] = array('call' => $row, 'event' => $event);
   }
-
   return $calls;
 }
 
 /**
  * Return an array with user taxonomy groups term ID-s.
  *
- * @param $uid
- *   The user id.
+ * @param array $account
+ *   The user account.
+ *
  * @return array
  *   Array with user taxonomy group tid.
  */
@@ -408,8 +428,9 @@ function _schedulearts_user_schedule_get_user_groups($account) {
 /**
  * Fetch the user name from user id.
  *
- * @param $uid
+ * @param int $uid
  *   The user ID.
+ *
  * @return mixed
  *   The username of the user.
  */
@@ -425,8 +446,9 @@ function _schedulearts_user_schedule_get_user_name($uid) {
 /**
  * Fetch the term name of a term id.
  *
- * @param $tid
+ * @param int $tid
  *   The term ID.
+ *
  * @return string
  *   The term name.
  */
