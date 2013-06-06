@@ -639,6 +639,7 @@ function schedulearts_permissions_user_default_permissions() {
   $permissions['create field_user_searchable_name'] = array(
     'name' => 'create field_user_searchable_name',
     'roles' => array(
+      'Company Admin' => 'Company Admin',
       'Site Admin' => 'Site Admin',
     ),
     'module' => 'field_permissions',
@@ -1074,7 +1075,9 @@ function schedulearts_permissions_user_default_permissions() {
   // Exported permission: edit field_user_searchable_name.
   $permissions['edit field_user_searchable_name'] = array(
     'name' => 'edit field_user_searchable_name',
-    'roles' => array(),
+    'roles' => array(
+      'Company Admin' => 'Company Admin',
+    ),
     'module' => 'field_permissions',
   );
 
@@ -1170,7 +1173,9 @@ function schedulearts_permissions_user_default_permissions() {
   // Exported permission: edit own field_user_searchable_name.
   $permissions['edit own field_user_searchable_name'] = array(
     'name' => 'edit own field_user_searchable_name',
-    'roles' => array(),
+    'roles' => array(
+      'Company Admin' => 'Company Admin',
+    ),
     'module' => 'field_permissions',
   );
 
@@ -1557,6 +1562,7 @@ function schedulearts_permissions_user_default_permissions() {
   $permissions['view field_user_searchable_name'] = array(
     'name' => 'view field_user_searchable_name',
     'roles' => array(
+      'Company Admin' => 'Company Admin',
       'Site Admin' => 'Site Admin',
     ),
     'module' => 'field_permissions',
@@ -1611,7 +1617,9 @@ function schedulearts_permissions_user_default_permissions() {
   // Exported permission: view own field_user_searchable_name.
   $permissions['view own field_user_searchable_name'] = array(
     'name' => 'view own field_user_searchable_name',
-    'roles' => array(),
+    'roles' => array(
+      'Company Admin' => 'Company Admin',
+    ),
     'module' => 'field_permissions',
   );
 
