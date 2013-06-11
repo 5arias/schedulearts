@@ -1,0 +1,22 @@
+diff --git a/sites/all/modules/calendar/includes/calendar_plugin_style.inc b/sites/all/modules/calendar/includes/calendar_plugin_style.inc
+index 50d1bbf..3496245 100644
+--- a/sites/all/modules/calendar/includes/calendar_plugin_style.inc
++++ b/sites/all/modules/calendar/includes/calendar_plugin_style.inc
+@@ -704,7 +704,7 @@ class calendar_plugin_style extends views_plugin_style {
+               $is_multi_day = ($start_ydate < $cur_ydate || $end_ydate > $cur_ydate);
+ 
+               // Does this event span multi-days?
+-              if ($multiday_theme && ($is_multi_day || $all_day)) {
++              if ($multiday_theme && ($is_multi_day)) {
+ 
+                 // Remove multiday items from the total count. We can't hide them or they will break.
+                 $total_cnt--;
+@@ -712,7 +712,7 @@ class calendar_plugin_style extends views_plugin_style {
+                 // If this the first day of the week, or is the start date of the multi-day event,
+                 // then record this item, otherwise skip over
+                 $day_no = date_format($this->curday, 'd');
+-                if ($wday == 0 || $start_ydate == $cur_ydate || ($this->date_info->granularity == 'month' && $day_no == 1) || ($all_day && !$is_multi_day)) {
++                if ($wday == 0 || $start_ydate == $cur_ydate || ($this->date_info->granularity == 'month' && $day_no == 1)) {
+                   // Calculate the colspan for this event
+ 
+                   // If the last day of this event exceeds the end of the current month or week,
