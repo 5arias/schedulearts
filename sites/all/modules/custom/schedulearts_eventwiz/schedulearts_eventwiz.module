@@ -87,12 +87,11 @@ function schedulearts_eventwiz_addanother_submit_handler($form, &$form_state) {
  * Submit handler for addcall and addevent submits on Event forms. Redirects user to add a relevant call.
  */
 function schedulearts_eventwiz_addcall_form_submit($form, &$form_state) {
-  var_dump($form_state['clicked_button']); die();
-  if (isset($form['actions']['addcall'])) {
+  if ($form_state['clicked_button']['#id'] === 'edit-addcall')) {
     $form_state['redirect'] = array('node/add/call');
     $form_state['redirect'][]['query']['edit']['field_call_parent_event']['und'] = $form_state['values']['nid'];
   }
-  elseif (isset($form['actions']['addevent'])) {
+  elseif ($form_state['clicked_button']['#id'] === 'edit-addevent')) {
     $form_state['redirect'] = array('node/add/event');
   }
 }
