@@ -457,8 +457,3 @@ textarea:focus {
 #ui-datepicker-div {
   z-index: 500 !important;
 }
-
-/** Greater height after days on My Schedule page. **/
-.page-schedule .block-main h3 {
-  margin-top: 30px;
-}
