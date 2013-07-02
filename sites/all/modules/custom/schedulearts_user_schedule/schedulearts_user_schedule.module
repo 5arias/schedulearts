@@ -142,7 +142,7 @@ function schedulearts_user_schedule_render($account, $node, $mail_layout = FALSE
   while ($date <= $date_until) {
     $output["date_{$date}"] = '<div>'
       . schedulearts_user_schedule_print_date($date, $account)
-      . '</div>';
+      . "<br>\n</div>";
     $date += $day;
   }
 
