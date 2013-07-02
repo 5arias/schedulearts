@@ -42,7 +42,7 @@ h1, h2, h3, h4, h5, h6 {
   background: -moz-linear-gradient(top, #f3f3f3, #dfdfdf); 
   background: -ms-linear-gradient(top, #f3f3f3, #dfdfdf); 
   background: -o-linear-gradient(top, #f3f3f3, #dfdfdf);
-  -ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf')Ó;
+  -ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf')Ã“;
   filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf');
   font-size: 16px;
   padding: 3px 5px 1px 10px;
@@ -190,7 +190,7 @@ background: -webkit-linear-gradient(top, #f3f3f3, #dfdfdf);
 background: -moz-linear-gradient(top, #f3f3f3, #dfdfdf); 
 background: -ms-linear-gradient(top, #f3f3f3, #dfdfdf); 
 background: -o-linear-gradient(top, #f3f3f3, #dfdfdf);
--ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf')Ó;
+-ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf')Ã“;
 filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f3f3f3', endColorstr='#dfdfdf'); 
   color: #5a5a5a;
 }
@@ -205,7 +205,7 @@ background: -webkit-linear-gradient(top, #ececec, #cdcdcd);
 background: -moz-linear-gradient(top, #ececec, #cdcdcd); 
 background: -ms-linear-gradient(top, #ececec, #cdcdcd); 
 background: -o-linear-gradient(top, #ececec, #cdcdcd);
--ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ececec', endColorstr='#cdcdcd')Ó;
+-ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ececec', endColorstr='#cdcdcd')Ã“;
 filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ececec', endColorstr='#cdcdcd'); 
 }
 
@@ -394,7 +394,7 @@ ul.tabs.primary li a:hover{
   background: -moz-linear-gradient(top, #cfddec, #9aa5cc);
   background: -ms-linear-gradient(top, #cfddec, #9aa5cc);
   background: -o-linear-gradient(top, #cfddec, #9aa5cc);
-  -ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#cfddec', endColorstr='#9aa5cc')Ó;
+  -ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#cfddec', endColorstr='#9aa5cc')Ã“;
   filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#cfddec', endColorstr='#9aa5cc'); 
 }
 
@@ -456,4 +456,9 @@ textarea:focus {
 
 #ui-datepicker-div {
   z-index: 500 !important;
+}
+
+/** Greater height after days on My Schedule page. **/
+.page-schedule .block-main h3 {
+  margin-top: 30px;
 }
