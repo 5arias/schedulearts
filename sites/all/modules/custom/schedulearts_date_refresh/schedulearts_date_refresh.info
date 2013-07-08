@@ -1,0 +1,9 @@
+name = Schedule Arts Date Refresh
+description = Provides functionality for opening the front page at a certain date.
+project = "schedulearts"
+version = "7.x-1.x-dev"
+core = "7.x"
+package = "Custom"
+
+;files[] =
+dependencies[] = views
