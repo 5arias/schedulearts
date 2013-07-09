@@ -10,7 +10,7 @@ function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) 
     $year = $ymd[0];
     $month = intval($ymd[1]);
     $day = intval($ymd[2]);
-    $js = '(function($){$(document).ready(function(){$(".fullcalendar").fullCalendar("gotoDate", "'. $year . '", ' . ($month - 1) . ', ' . ($day - 1) . ');})})(jQuery);';
+    $js = '(function($){$(document).ready(function(){$(".fullcalendar").fullCalendar("gotoDate", "'. $year . '", ' . ($month - 1) . ', ' . $day . ');})})(jQuery);';
     drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
   }
 }
