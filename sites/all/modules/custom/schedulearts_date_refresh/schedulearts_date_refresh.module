@@ -31,6 +31,6 @@ function schedulearts_date_refresh_node_view($node, $view_mode, $langcode) {
 }
 
 function schedulearts_date_refresh_overlay_parent_initialize() {
-  print_r($_REQUEST);
-  print_r($GLOBALS);
+  //print_r($_REQUEST);
+  //print_r($GLOBALS);
 }
