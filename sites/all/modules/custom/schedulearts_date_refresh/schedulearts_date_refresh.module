@@ -31,6 +31,6 @@ function schedulearts_date_refresh_node_view($node, $view_mode, $langcode) {
 }
 
 function schedulearts_date_refresh_overlay_parent_initialize() {
-  drupal_set_message('<pre>' . print_r($_REQUEST, true) . '</pre>');
-  drupal_set_message('<pre>' . print_r($GLOBALS, true) . '</pre>');
+  print_r($_REQUEST, true);
+  print_r($GLOBALS, true);
 }
