@@ -10,6 +10,7 @@ function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) 
     drupal_set_message(4);
     if (count($ymd < 3) || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
       drupal_set_message(5);
+      dpm($ymd);
       return;
     }
     $year = $ymd[0];
