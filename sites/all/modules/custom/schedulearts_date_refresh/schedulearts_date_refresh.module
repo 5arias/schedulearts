@@ -1,7 +1,7 @@
 <?php
 
 function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) {
-  if (preg_match('/.*fullcalendar.*/i', $display_id) && isset($_REQUEST['date'])) {
+  if (preg_match('/.*calendar.*/i', $display_id) && isset($_REQUEST['date'])) {
     $date_str = $_REQUEST['date'];
     $ymd = explode('-', $date_str);
     if (count($ymd) < 3 || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
@@ -16,5 +16,21 @@ function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) 
 }
 
 function schedulearts_date_refresh_node_view($node, $view_mode, $langcode) {
-  
+  if ($node->type == 'event' && $view_mode == 'full') {
+    if (isset($node->field_event_date) && isset($node->field_event_date['und']) && isset($node->field_event_date['und'][0])) {
+      $date_parts = explode(' ', $node->field_event_date['und'][0]['value']);
+      $date = $date_parts[0];
+    } else {
+      return;
+    }
+    $path = drupal_get_path('module', 'schedulearts_date_refresh') . '/schedulearts_date_refresh.js';
+    drupal_add_js($path, array('type' => 'file', 'scope' => 'footer'));
+    $js = '(function($){$(document).ready(function(){replaceOverlay("'.$date.'");})})(jQuery);';
+    drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
+  }
+}
+
+function schedulearts_date_refresh_overlay_parent_initialize() {
+  //print_r($_REQUEST);
+  //print_r($GLOBALS);
 }
