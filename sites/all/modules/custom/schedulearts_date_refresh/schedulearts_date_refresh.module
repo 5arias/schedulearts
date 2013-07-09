@@ -1,10 +1,16 @@
 <?php
 
 function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) {
-  if ($display_id == 'fullcalendar_1') {
-    //dpm(array('view' => $view, 'id' => $display_id, 'args' => $args));
-    //$view->style_plugin->options['date'] = array('year' => '2013', 'month' => 7); // test.
-    $js = '(function($){$(document).ready(function(){$(".fullcalendar").fullCalendar("gotoDate", "2013", 9);})})(jQuery);';
+  if (preg_match('/.*fullcalendar.*/i', $display_id) && isset($_REQUEST['date'])) {
+    $date_str = $_REQUEST['date'];
+    $ymd = explode('-', $date_str);
+    if (count($ymd < 3) || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
+      return;
+    }
+    $year = $ymd[0];
+    $month = intval($ymd[1]);
+    $day = intval($ymd[2]);
+    $js = '(function($){$(document).ready(function(){$(".fullcalendar").fullCalendar("gotoDate", "'. $year . '", ' . $month - 1 . ', ' . $day - 1 . ');})})(jQuery);';
     drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
   }
 }
