@@ -1,7 +1,7 @@
 <?php
 
 function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) {
-  if (preg_match('/.*fullcalendar.*/i', $display_id) && isset($_REQUEST['date'])) {
+  if (preg_match('/.*calendar.*/i', $display_id) && isset($_REQUEST['date'])) {
     $date_str = $_REQUEST['date'];
     $ymd = explode('-', $date_str);
     if (count($ymd) < 3 || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
