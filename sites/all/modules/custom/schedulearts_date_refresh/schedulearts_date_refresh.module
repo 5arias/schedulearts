@@ -16,9 +16,15 @@ function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) 
 }
 
 function schedulearts_date_refresh_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'event') {
+    $node->content['nv'] = array(
+      '#markup' => "Content is $view_mode.",
+    );
+  }
   if ($node->type == 'event' && $view_mode == 'full') {
     $path = drupal_get_path('module', 'schedulearts_date_refresh') . '/schedulearts_date_refresh.js';
     drupal_add_js($path);
+    
     //$js = ''
     //drupal_add_js($js)
   }
