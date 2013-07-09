@@ -25,7 +25,7 @@ function schedulearts_date_refresh_node_view($node, $view_mode, $langcode) {
     }
     $path = drupal_get_path('module', 'schedulearts_date_refresh') . '/schedulearts_date_refresh.js';
     drupal_add_js($path, array('type' => 'file', 'scope' => 'footer'));
-    $js = 'replaceOverlay("'.$date_parts.'");';
+    $js = 'replaceOverlay("'.$date.'");';
     drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
   }
 }
