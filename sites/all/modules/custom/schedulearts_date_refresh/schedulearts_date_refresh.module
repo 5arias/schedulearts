@@ -5,4 +5,5 @@ function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) 
     dpm(array('view' => $view, 'id' => $display_id, 'args' => $args));
     $view->style_plugin->options['date'] = array('year' => '2013', 'month' => 7); // test.
   }
+  drupal_add_js('(function($){$(".fullcalendar").fullCalendar("gotoDate", 2013, 9);})(jQuery);', array('type' => 'inline', 'defer' => TRUE, 'scope' => 'footer'));
 }
