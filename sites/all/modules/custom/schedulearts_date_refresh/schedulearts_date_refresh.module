@@ -1,16 +1,10 @@
 <?php
 
 function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) {
-  drupal_set_message(1);
   if (preg_match('/.*fullcalendar.*/i', $display_id) && isset($_REQUEST['date'])) {
-    drupal_set_message(2);
     $date_str = $_REQUEST['date'];
-    drupal_set_message(3);
     $ymd = explode('-', $date_str);
-    drupal_set_message(4);
-    if (count($ymd < 3) || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
-      drupal_set_message(5);
-      dpm($ymd);
+    if (count($ymd) < 3 || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
       return;
     }
     $year = $ymd[0];
