@@ -283,9 +283,21 @@ function theme_schedulearts_user_schedule_table_render($variables) {
         . ' - ' . date('g:i', strtotime($call->call_date_until));
     }
     $header = array(
-      array('data' => $time_range, 'width' => '20%'),
-      array('data' => check_plain($call->call_title), 'width' => '40%'),
-      array('data' => check_plain($event->event_location), 'width' => '40%'),
+      array(
+        'data' => $time_range,
+        'width' => '20%',
+        'style' => 'text-align:left',
+      ),
+      array(
+        'data' => check_plain($call->call_title),
+        'width' => '40%',
+        'style' => 'text-align:left',
+      ),
+      array(
+        'data' => check_plain($event->event_location),
+        'width' => '40%',
+        'style' => 'text-align: left',
+      ),
     );
 
     if (isset($call->call_body)) {
