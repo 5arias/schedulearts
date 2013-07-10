@@ -34,7 +34,7 @@ function schedulearts_date_refresh_node_view($node, $view_mode, $langcode) {
   '_url.split("?")[0]+"?"+param+"&"+_url.split("?")[1] :'.
   '(_url.indexOf("#") !== -1 ?'.
   '_url.split("#")[0]+"?"+param+"#"+ _url.split("#")[1] : _url+\'?\'+param));'.
-  'window.top.location.href = _url;})})(jQuery);';
+  'window.top.location.href = _url;})})})(jQuery);';
     drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
   }
 }
