@@ -176,7 +176,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-#superfish-1 li.sf-item-1.sf-depth-1.menuparent a{
+#superfish-1 li.sf-item-1.sf-depth-1 a{
   background: #ee9c42;
   color: #fff;
 
@@ -207,11 +207,6 @@ background: -ms-linear-gradient(top, #ececec, #cdcdcd);
 background: -o-linear-gradient(top, #ececec, #cdcdcd);
 -ms-filter: "prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ececec', endColorstr='#cdcdcd')";
 filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ececec', endColorstr='#cdcdcd');
-}
-
-
-#superfish-1 li.menuparent a.sf-depth-1{
-
 }
 
 #superfish-1 li.sf-item-1 a.sf-depth-1{
