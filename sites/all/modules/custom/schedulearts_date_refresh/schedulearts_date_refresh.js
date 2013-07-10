@@ -1,10 +1,14 @@
+function addParamToURL(url, param) {
+  _url = url;
+  _url = (_url.indexOf("?") !== -1 ?
+         _url.split("?")[0]+"?"+param+"&"+_url.split("?")[1] :
+         (_url.indexOf("#") !== -1 ?
+          _url.split("#")[0]+"?"+param+"#"+ _url.split("#")[1] : _url+'?'+param));
+  return _url;
+}
+
 function replaceOverlay(date) {
   jQuery(window.top.document).bind('drupalOverlayBeforeClose', function() {
-    if (window.location.href.indexOf('?', 0) === -1) {
-      window.location.href =  window.location.href + '?date=' + date;
-    }
-    else {
-      window.location.href =  window.location.href + '&date=' + date;
-    }
+    window.top.location.href = addParamToURL(window.top.location.href, "date="+date);
   });
 }
