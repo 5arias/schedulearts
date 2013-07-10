@@ -214,7 +214,7 @@ filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr
 
 }
 
-#superfish-1 li.sf-item-1.menuparent a.sf-depth-1{
+#superfish-1 li.sf-item-1 a.sf-depth-1{
   color: #bf5f02;
   border: 1px solid #bf5f02;
 background: #ee9b40;
@@ -227,7 +227,7 @@ background: -o-linear-gradient(top, #f2ad56, #ee9b40);
 filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#f2ad56', endColorstr='#ee9b40');
 }
 
-#superfish-1 li.sf-item-1.menuparent a.sf-depth-1:hover, #superfish-1 li.sf-item-1.menuparent.sfHover a.sf-depth-1{
+#superfish-1 li.sf-item-1 a.sf-depth-1:hover, #superfish-1 li.sf-item-1.menuparent.sfHover a.sf-depth-1{
 background: #df7c17;
 background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#df7c17, to(#f2ad56)));
 background: -webkit-linear-gradient(top, #f2ad56, #df7c17);
@@ -242,12 +242,6 @@ filter: prodig:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr
   border: 1px solid #bf5f02;
   background: #ee9c42;
 }
-
-
-
-
-
-
 
 #superfish-1 li.sf-item-2 ul {
   background: #e7e7e7;
