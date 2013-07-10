@@ -7,4 +7,5 @@ function replaceOverlay(date) {
       window.location.href =  window.location.href + '&date=' + date;
     }
   });
+  Drupal.overlay.isOpen; // This will generate a JS breakpoint that might be useful.
 }
