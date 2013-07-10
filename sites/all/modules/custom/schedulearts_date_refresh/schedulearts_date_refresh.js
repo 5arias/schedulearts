@@ -1,5 +1,5 @@
 function replaceOverlay(date) {
-  jQuery(document).live('drupalOverlayBeforeClose', function() {
+  jQuery(window.top.document).live('drupalOverlayBeforeClose', function() {
     if (window.location.href.indexOf('?', 0) === -1) {
       window.location.href =  window.location.href + '?date=' + date;
     }
@@ -7,5 +7,5 @@ function replaceOverlay(date) {
       window.location.href =  window.location.href + '&date=' + date;
     }
   });
-  Drupal.overlay.isOpen; // This will generate a JS breakpoint that might be useful.
+  //Drupal.overlay.isOpen; // This will generate a JS breakpoint that might be useful.
 }
