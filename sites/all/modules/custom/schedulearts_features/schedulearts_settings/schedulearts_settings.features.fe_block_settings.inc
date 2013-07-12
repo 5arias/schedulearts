@@ -43,7 +43,7 @@ function schedulearts_settings_default_fe_block_settings() {
         'region' => '',
         'status' => 0,
         'theme' => 'schedule_arts',
-        'weight' => '0',
+        'weight' => '-23',
       ),
       'seven' => array(
         'region' => '',
@@ -87,7 +87,7 @@ function schedulearts_settings_default_fe_block_settings() {
         'region' => '',
         'status' => 0,
         'theme' => 'schedule_arts',
-        'weight' => '0',
+        'weight' => '-16',
       ),
       'seven' => array(
         'region' => '',
@@ -131,7 +131,7 @@ function schedulearts_settings_default_fe_block_settings() {
         'region' => '',
         'status' => 0,
         'theme' => 'schedule_arts',
-        'weight' => '0',
+        'weight' => '-20',
       ),
       'seven' => array(
         'region' => '',
