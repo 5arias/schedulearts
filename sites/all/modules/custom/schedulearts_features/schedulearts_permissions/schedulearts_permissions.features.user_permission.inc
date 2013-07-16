@@ -14,8 +14,6 @@ function schedulearts_permissions_user_default_permissions() {
   $permissions['access admin theme'] = array(
     'name' => 'access admin theme',
     'roles' => array(
-      'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
       'authenticated user' => 'authenticated user',
     ),
@@ -72,8 +70,8 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'access comments',
     'roles' => array(
       'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'comment',
   );
@@ -83,8 +81,8 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'access content',
     'roles' => array(
       'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'node',
   );
@@ -121,8 +119,8 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'access overlay',
     'roles' => array(
       'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'overlay',
   );
@@ -131,9 +129,8 @@ function schedulearts_permissions_user_default_permissions() {
   $permissions['access print'] = array(
     'name' => 'access print',
     'roles' => array(
-      'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'print',
   );
@@ -179,8 +176,8 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'access user profiles',
     'roles' => array(
       'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'user',
   );
@@ -540,9 +537,7 @@ function schedulearts_permissions_user_default_permissions() {
   // Exported permission: clone node.
   $permissions['clone node'] = array(
     'name' => 'clone node',
-    'roles' => array(
-      'Company Admin' => 'Company Admin',
-    ),
+    'roles' => array(),
     'module' => 'clone',
   );
 
@@ -1349,8 +1344,8 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'post comments',
     'roles' => array(
       'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'comment',
   );
@@ -1377,8 +1372,6 @@ function schedulearts_permissions_user_default_permissions() {
   $permissions['schedule print page'] = array(
     'name' => 'schedule print page',
     'roles' => array(
-      'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
       'authenticated user' => 'authenticated user',
     ),
@@ -1408,8 +1401,8 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'skip comment approval',
     'roles' => array(
       'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'comment',
   );
@@ -1542,8 +1535,8 @@ function schedulearts_permissions_user_default_permissions() {
     'name' => 'view field_prod_color',
     'roles' => array(
       'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
+      'authenticated user' => 'authenticated user',
     ),
     'module' => 'field_permissions',
   );
@@ -1653,8 +1646,6 @@ function schedulearts_permissions_user_default_permissions() {
   $permissions['view the administration theme'] = array(
     'name' => 'view the administration theme',
     'roles' => array(
-      'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
       'Site Admin' => 'Site Admin',
       'authenticated user' => 'authenticated user',
     ),

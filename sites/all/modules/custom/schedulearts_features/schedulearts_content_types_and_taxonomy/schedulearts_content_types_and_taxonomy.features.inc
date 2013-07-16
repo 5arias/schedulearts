@@ -38,7 +38,7 @@ function schedulearts_content_types_and_taxonomy_node_info() {
     'conflict' => array(
       'name' => t('Conflict'),
       'base' => 'node_content',
-      'description' => t('A conflict between two calls or events. This kind of content should never be created manually'),
+      'description' => t('A conflict between two calls. This kind of content should never be created manually'),
       'has_title' => '1',
       'title_label' => t('Title'),
       'help' => '',

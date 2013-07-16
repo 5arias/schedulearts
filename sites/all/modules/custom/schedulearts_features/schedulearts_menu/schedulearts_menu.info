@@ -10,5 +10,6 @@ dependencies[] = menu
 features[features_api][] = api:1
 features[menu_custom][] = main-menu
 features[menu_custom][] = user-menu
+features[menu_links][] = main-menu:date-print
 features[menu_links][] = main-menu:schedulears_print/select-timeframe
 project path = sites/all/modules/custom/schedulearts_features

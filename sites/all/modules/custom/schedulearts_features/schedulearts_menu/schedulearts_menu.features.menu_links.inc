@@ -10,6 +10,24 @@
 function schedulearts_menu_menu_default_menu_links() {
   $menu_links = array();
 
+  // Exported menu link: main-menu:date-print
+  $menu_links['main-menu:date-print'] = array(
+    'menu_name' => 'main-menu',
+    'link_path' => 'date-print',
+    'router_path' => 'date-print',
+    'link_title' => 'Print',
+    'options' => array(
+      'attributes' => array(
+        'title' => 'Date popup redirect',
+      ),
+    ),
+    'module' => 'system',
+    'hidden' => '1',
+    'external' => '0',
+    'has_children' => '0',
+    'expanded' => '0',
+    'weight' => '-46',
+  );
   // Exported menu link: main-menu:schedulears_print/select-timeframe
   $menu_links['main-menu:schedulears_print/select-timeframe'] = array(
     'menu_name' => 'main-menu',
