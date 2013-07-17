@@ -54,6 +54,42 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_delete_conflict_if_necessary'] = entity_import('rules_config', '{ "rules_delete_conflict_if_necessary" : {
+      "LABEL" : "Delete conflict if necessary",
+      "PLUGIN" : "rule",
+      "REQUIRES" : [ "rules" ],
+      "USES VARIABLES" : {
+        "conflict_node" : { "label" : "Conflict node", "type" : "node" },
+        "event_node" : { "label" : "Event node", "type" : "node" }
+      },
+      "IF" : [
+        { "node_is_of_type" : {
+            "node" : [ "event-node" ],
+            "type" : { "value" : { "event" : "event" } }
+          }
+        },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node" ],
+            "type" : { "value" : { "conflict" : "conflict" } }
+          }
+        },
+        { "OR" : [
+            { "data_is" : {
+                "data" : [ "conflict-node:field-conflict-ev1:nid" ],
+                "value" : [ "event-node:nid" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "conflict-node:field-conflict-ev2:nid" ],
+                "value" : [ "event-node:nid" ]
+              }
+            }
+          ]
+        }
+      ],
+      "DO" : [ { "entity_delete" : { "data" : [ "conflict-node" ] } } ]
+    }
+  }');
   $items['rules_delete_dependent_calls_on_event_deletion'] = entity_import('rules_config', '{ "rules_delete_dependent_calls_on_event_deletion" : {
       "LABEL" : "Delete dependent calls on event deletion",
       "PLUGIN" : "reaction rule",
@@ -79,12 +115,61 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_delete_event_location_conflicts'] = entity_import('rules_config', '{ "rules_delete_event_location_conflicts" : {
+      "LABEL" : "Delete event location conflicts",
+      "PLUGIN" : "reaction rule",
+      "WEIGHT" : "-10",
+      "REQUIRES" : [ "rules" ],
+      "ON" : [ "node_update", "node_delete" ],
+      "IF" : [
+        { "node_is_of_type" : { "node" : [ "node" ], "type" : { "value" : { "event" : "event" } } } }
+      ],
+      "DO" : [
+        { "entity_query" : {
+            "USING" : {
+              "type" : "node",
+              "property" : "field_conflict_ev1",
+              "value" : [ "node" ],
+              "limit" : "999"
+            },
+            "PROVIDE" : { "entity_fetched" : { "conflict_nodes" : "Conflict Nodes" } }
+          }
+        },
+        { "LOOP" : {
+            "USING" : { "list" : [ "conflict-nodes" ] },
+            "ITEM" : { "list_item" : "Current list item" },
+            "DO" : [
+              { "component_rules_delete_conflict_if_necessary" : { "conflict_node" : [ "list-item" ], "event_node" : [ "node" ] } }
+            ]
+          }
+        },
+        { "entity_query" : {
+            "USING" : {
+              "type" : "node",
+              "property" : "field_conflict_ev2",
+              "value" : [ "node" ],
+              "limit" : "999"
+            },
+            "PROVIDE" : { "entity_fetched" : { "conflict_nodes_2" : "Conflict Nodes 2" } }
+          }
+        },
+        { "LOOP" : {
+            "USING" : { "list" : [ "conflict-nodes-2" ] },
+            "ITEM" : { "list_item" : "Current list item" },
+            "DO" : [
+              { "component_rules_delete_conflict_if_necessary" : { "conflict_node" : [ "list-item" ], "event_node" : [ "node" ] } }
+            ]
+          }
+        }
+      ]
+    }
+  }');
   $items['rules_delete_soft_resource_conflicts_presave'] = entity_import('rules_config', '{ "rules_delete_soft_resource_conflicts_presave" : {
       "LABEL" : "delete soft resource conflicts pre-save",
       "PLUGIN" : "reaction rule",
       "TAGS" : [ "conflict detection" ],
       "REQUIRES" : [ "rules" ],
-      "ON" : [ "node_presave" ],
+      "ON" : [ "node_presave", "node_delete" ],
       "IF" : [ { "NOT data_is_empty" : { "data" : [ "node:nid" ] } } ],
       "DO" : [
         { "entity_query" : {
@@ -129,6 +214,113 @@ function schedulearts_rules_default_rules_configuration() {
       "USES VARIABLES" : { "user" : { "label" : "user", "type" : "user" } },
       "ACTION SET" : [
         { "user_remove_role" : { "account" : [ "user" ], "roles" : { "value" : { "4" : "4" } } } }
+      ]
+    }
+  }');
+  $items['rules_detect_event_location_conflicts'] = entity_import('rules_config', '{ "rules_detect_event_location_conflicts" : {
+      "LABEL" : "Detect event location conflicts",
+      "PLUGIN" : "reaction rule",
+      "REQUIRES" : [ "rules", "resource_conflict" ],
+      "ON" : [ "node_insert", "node_update" ],
+      "IF" : [
+        { "node_is_of_type" : { "node" : [ "node" ], "type" : { "value" : { "event" : "event" } } } },
+        { "resource_conflict_contains_conflict" : { "node" : [ "node" ] } }
+      ],
+      "DO" : [
+        { "resource_conflict_load_conflict_list" : {
+            "USING" : { "node" : [ "node" ] },
+            "PROVIDE" : { "conflict_list" : { "conflict_list" : "Conflict List" } }
+          }
+        },
+        { "variable_add" : {
+            "USING" : { "type" : "list\\u003Ctext\\u003E" },
+            "PROVIDE" : { "variable_added" : { "error_messages" : "Error messages" } }
+          }
+        },
+        { "LOOP" : {
+            "USING" : { "list" : [ "conflict-list" ] },
+            "ITEM" : { "list_item" : "Current list item" },
+            "DO" : [
+              { "component_rules_detect_event_location_hard_conflicts" : {
+                  "saved_node" : [ "node" ],
+                  "conflict_node" : [ "list-item" ],
+                  "error_messages" : [ "error-messages" ]
+                }
+              }
+            ]
+          }
+        },
+        { "component_rules_form_validation_error_check" : { "error_messages" : [ "error-messages" ] } }
+      ]
+    }
+  }');
+  $items['rules_detect_event_location_hard_conflicts'] = entity_import('rules_config', '{ "rules_detect_event_location_hard_conflicts" : {
+      "LABEL" : "Detect event location hard conflicts",
+      "PLUGIN" : "rule",
+      "REQUIRES" : [ "rules", "flag", "php" ],
+      "USES VARIABLES" : {
+        "saved_node" : { "label" : "saved node", "type" : "node" },
+        "conflict_node" : { "label" : "conflict node", "type" : "node" },
+        "error_messages" : { "label" : "error messages", "type" : "list" }
+      },
+      "IF" : [
+        { "node_is_of_type" : {
+            "node" : [ "saved-node" ],
+            "type" : { "value" : { "event" : "event" } }
+          }
+        },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node" ],
+            "type" : { "value" : { "event" : "event" } }
+          }
+        },
+        { "NOT data_is_empty" : { "data" : [ "saved-node:field-event-location" ] } },
+        { "data_is" : {
+            "data" : [ "saved-node:field-event-location:nid" ],
+            "value" : [ "conflict-node:field-event-location:nid" ]
+          }
+        }
+      ],
+      "DO" : [
+        { "entity_create" : {
+            "USING" : {
+              "type" : "node",
+              "param_type" : "conflict",
+              "param_title" : "[saved-node:field-event-location:title] is booked at the same time for both [saved-node:title] and [conflict-node:title]",
+              "param_author" : "1"
+            },
+            "PROVIDE" : { "entity_created" : { "conflict_node_created" : "Created conflict node" } }
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-node-created:field-conflict-loc" ],
+            "value" : [ "saved-node:field-event-location" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-node-created:field-conflict-ev1" ],
+            "value" : [ "saved-node" ]
+          }
+        },
+        { "data_set" : {
+            "data" : [ "conflict-node-created:field-conflict-ev2" ],
+            "value" : [ "conflict-node" ]
+          }
+        },
+        { "entity_save" : { "data" : [ "conflict-node-created" ], "immediate" : 1 } },
+        { "flag_flagnode" : {
+            "flag" : "hard_conflict",
+            "node" : [ "conflict-node-created" ],
+            "flagging_user" : "1",
+            "permission_check" : 1
+          }
+        },
+        { "drupal_message" : {
+            "message" : "\\u003Cstrong\\u003ECONFLICT:\\u003C\\/strong\\u003E \\u003C?php\\r\\n$location = node_load($saved_node-\\u003Efield_event_location[\\u0027und\\u0027][0][\\u0027target_id\\u0027]);\\r\\n$location_name = $location-\\u003Etitle;\\r\\nprint l($location_name, drupal_get_path_alias(\\u0027node\\/\\u0027 . $location-\\u003Enid));\\r\\n?\\u003E is booked for both \\u003Ca href=\\u0022[saved-node:url]\\u0022\\u003E[saved-node:title]\\u003C\\/a\\u003E and \\u003Ca href=\\u0022[conflict-node:url]\\u0022\\u003E[conflict-node:title]\\u003C\\/a\\u003E at the same time.",
+            "type" : "error",
+            "repeat" : 0
+          }
+        }
       ]
     }
   }');
@@ -371,6 +563,11 @@ function schedulearts_rules_default_rules_configuration() {
                 }
               },
               { "NOT data_is" : {
+                  "data" : [ "saved-node:field-call-parent-event:nid" ],
+                  "value" : [ "conflict-node:field-call-parent-event:nid" ]
+                }
+              },
+              { "NOT data_is" : {
                   "data" : [ "saved-node:field-event-groups-tax" ],
                   "value" : [ "conflict-node:field-event-groups-tax" ]
                 }
@@ -514,6 +711,11 @@ function schedulearts_rules_default_rules_configuration() {
                   "type" : { "value" : { "call" : "call" } }
                 }
               },
+              { "NOT data_is" : {
+                  "data" : [ "saved-node:field-call-parent-event:nid" ],
+                  "value" : [ "current-conflicts-list-item:field-call-parent-event:nid" ]
+                }
+              },
               { "AND" : [
                   { "OR" : [
                       { "AND" : [
@@ -653,6 +855,58 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_display_hard_location_conflict_message'] = entity_import('rules_config', '{ "rules_display_hard_location_conflict_message" : {
+      "LABEL" : "Display hard location conflict message",
+      "PLUGIN" : "rule",
+      "REQUIRES" : [ "rules", "flag", "php" ],
+      "USES VARIABLES" : { "conflict_node" : { "label" : "Conflict node", "type" : "node" } },
+      "IF" : [
+        { "entity_is_of_type" : { "entity" : [ "conflict-node" ], "type" : "node" } },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node" ],
+            "type" : { "value" : { "conflict" : "conflict" } }
+          }
+        },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node:field-conflict-ev1" ],
+            "type" : { "value" : { "event" : "event" } }
+          }
+        },
+        { "node_is_of_type" : {
+            "node" : [ "conflict-node:field-conflict-ev2" ],
+            "type" : { "value" : { "event" : "event" } }
+          }
+        },
+        { "NOT flag_flagged_node" : {
+            "flag" : "conflict_approved",
+            "node" : [ "conflict-node" ],
+            "flagging_user" : "1"
+          }
+        },
+        { "NOT flag_flagged_node" : {
+            "flag" : "conflict_postponed",
+            "node" : [ "conflict-node" ],
+            "flagging_user" : "1"
+          }
+        },
+        { "flag_flagged_node" : {
+            "flag" : "hard_conflict",
+            "node" : [ "conflict-node" ],
+            "flagging_user" : "1"
+          }
+        },
+        { "NOT data_is_empty" : { "data" : [ "conflict-node:field-conflict-loc" ] } }
+      ],
+      "DO" : [
+        { "drupal_message" : {
+            "message" : "\\u003Cstrong\\u003ECONFLICT:\\u003C\\/strong\\u003E \\u003Ca href=\\u0022[conflict-node:field-conflict-loc:url]\\u0022\\u003E[conflict-node:field-conflict-loc:title]\\u003C\\/a\\u003E is booked for both \\u003Ca href=\\u0022[conflict-node:field-conflict-ev1:url]\\u0022\\u003E[conflict-node:field-conflict-ev1:title]\\u003C\\/a\\u003E and \\u003Ca href=\\u0022[conflict-node:field-conflict-ev2:url]\\u0022\\u003E[conflict-node:field-conflict-ev2:title]\\u003C\\/a\\u003E at the same time. \\u003Cspan class=\\u0022conflict-msg-buttons\\u0022\\u003E\\u003C?php print flag_create_link(\\u0027conflict_approved\\u0027, $conflict_node-\\u003Enid); ?\\u003E \\u003C?php print flag_create_link(\\u0027conflict_postponed\\u0027, $conflict_node-\\u003Enid); ?\\u003E\\u003C\\/span\\u003E",
+            "type" : "error",
+            "repeat" : 0
+          }
+        }
+      ]
+    }
+  }');
   $items['rules_display_unapproved_conflict_message'] = entity_import('rules_config', '{ "rules_display_unapproved_conflict_message" : {
       "LABEL" : "Display unapproved conflict message",
       "PLUGIN" : "rule",
@@ -757,6 +1011,69 @@ function schedulearts_rules_default_rules_configuration() {
       ]
     }
   }');
+  $items['rules_display_unapproved_hard_location_conflict_message'] = entity_import('rules_config', '{ "rules_display_unapproved_hard_location_conflict_message" : {
+      "LABEL" : "Display unapproved hard location conflict message",
+      "PLUGIN" : "reaction rule",
+      "REQUIRES" : [ "views_bulk_operations", "rules", "rb_views" ],
+      "ON" : [ "rb_views_event_view_complete" ],
+      "IF" : [
+        { "views_bulk_operations_condition_result_count" : { "view" : "pending_location_conflicts|page_1", "minimum" : "1" } }
+      ],
+      "DO" : [
+        { "views_bulk_operations_action_load_list" : {
+            "USING" : { "view" : "pending_location_conflicts|page_1" },
+            "PROVIDE" : { "entity_list" : { "entity_list" : "A list of entities" } }
+          }
+        },
+        { "LOOP" : {
+            "USING" : { "list" : [ "entity-list" ] },
+            "ITEM" : { "list_item" : "Current list item" },
+            "DO" : [
+              { "component_rules_display_hard_location_conflict_message" : { "conflict_node" : [ "list-item" ] } }
+            ]
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_form_validation_error_check'] = entity_import('rules_config', '{ "rules_form_validation_error_check" : {
+      "LABEL" : "Form validation error check",
+      "PLUGIN" : "rule",
+      "REQUIRES" : [ "rules", "resource_conflict" ],
+      "USES VARIABLES" : { "error_messages" : { "label" : "Error messages", "type" : "list\\u003Ctext\\u003E" } },
+      "IF" : [ { "NOT data_is_empty" : { "data" : [ "error-messages" ] } } ],
+      "DO" : [
+        { "LOOP" : {
+            "USING" : { "list" : [ "error-messages" ] },
+            "ITEM" : { "list_item" : "Current list item" },
+            "DO" : [ { "resource_conflict_form_error" : { "message" : [ "list-item" ] } } ]
+          }
+        }
+      ]
+    }
+  }');
+  $items['rules_fwd_to_schedule_on_login'] = entity_import('rules_config', '{ "rules_fwd_to_schedule_on_login" : {
+      "LABEL" : "fwd to schedule on login",
+      "PLUGIN" : "reaction rule",
+      "REQUIRES" : [ "rules" ],
+      "ON" : [ "user_login" ],
+      "IF" : [
+        { "user_has_role" : {
+            "account" : [ "account" ],
+            "roles" : { "value" : { "5" : "5" } },
+            "operation" : "OR"
+          }
+        },
+        { "NOT text_matches" : {
+            "text" : [ "site:current-page:path" ],
+            "match" : "user\\/reset\\/",
+            "operation" : "starts"
+          }
+        }
+      ],
+      "DO" : [ { "redirect" : { "url" : "navigator" } } ]
+    }
+  }');
   $items['rules_fwd_to_user_account_on_login'] = entity_import('rules_config', '{ "rules_fwd_to_user_account_on_login" : {
       "LABEL" : "fwd to user account on login",
       "PLUGIN" : "reaction rule",
@@ -765,7 +1082,7 @@ function schedulearts_rules_default_rules_configuration() {
       "IF" : [
         { "NOT user_has_role" : {
             "account" : [ "account" ],
-            "roles" : { "value" : { "4" : "4", "3" : "3" } },
+            "roles" : { "value" : { "5" : "5", "4" : "4", "3" : "3" } },
             "operation" : "OR"
           }
         },
