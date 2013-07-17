@@ -24,6 +24,7 @@ features[views_view][] = merci_calendar_view
 features[views_view][] = monthly_printable
 features[views_view][] = og_nodes
 features[views_view][] = pending_conflicts
+features[views_view][] = pending_location_conflicts
 features[views_view][] = production_events
 features[views_view][] = productions
 features[views_view][] = rehearsal_calls
