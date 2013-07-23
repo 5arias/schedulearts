@@ -36,6 +36,15 @@ function schedulearts_clone_events_block_info() {
     'pages' => 'events/*',
     'cache' => DRUPAL_CACHE_PER_PAGE,
   );
+  $blocks['delete_event'] = array(
+    'info' => t('Event > Delete Event'),
+    'status' => TRUE,
+    'region' => 'content',
+    'weight' => -24,
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => 'events/*',
+    'cache' => DRUPAL_CACHE_PER_PAGE,
+  );
   return $blocks;
 }
 
@@ -51,6 +60,15 @@ function schedulearts_clone_events_block_view($delta) {
       form_load_include($form_state, 'inc', 'schedulearts_clone_events', 'schedulearts_clone_events.pages');
       $block['content'] = drupal_get_form('schedulearts_clone_events_block_clone_form', $nid);
     }
+  break;
+  case 'delete_event':
+    $nid = (arg(0) == 'node' && is_numeric(arg(1)) ? arg(1) : NULL);
+    if (node_access('delete', node_load($nid))) {
+      $form_state = array();
+      form_load_include($form_state, 'inc', 'schedulearts_clone_events', 'schedulearts_clone_events.pages');
+      $block['content'] = drupal_get_form('schedulearts_clone_events_block_delete_form', $nid);
+    }
+    break;
   }
   return $block;
 }
