@@ -22,6 +22,9 @@ function schedulearts_clone_events_block_delete_form($form, &$form_state, $nid) 
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Delete'),
+    '#attributes' => array(
+      'style' => 'float:right',
+    ),
   );
   if (!empty($form_state['build_info']['args']['0'])) {
     //$current_nid = $form_state['build_info']['args']['0'];

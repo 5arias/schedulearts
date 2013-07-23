@@ -40,7 +40,7 @@ function schedulearts_clone_events_block_info() {
     'info' => t('Event > Delete Event'),
     'status' => TRUE,
     'region' => 'content',
-    'weight' => -24,
+    'weight' => -26,
     'visibility' => BLOCK_VISIBILITY_LISTED,
     'pages' => 'events/*',
     'cache' => DRUPAL_CACHE_PER_PAGE,
