@@ -7,6 +7,9 @@ function schedulearts_clone_events_block_clone_form($form, &$form_state, $nid) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Duplicate event'),
+    '#attributes' => array(
+      'style' => 'float:left',
+    ),
   );
   if (!empty($form_state['build_info']['args']['0'])) {
     //$current_nid = $form_state['build_info']['args']['0'];
@@ -23,7 +26,7 @@ function schedulearts_clone_events_block_delete_form($form, &$form_state, $nid) 
     '#type' => 'submit',
     '#value' => t('Delete'),
     '#attributes' => array(
-      'style' => 'float:right',
+      'style' => 'float:right; clear:right',
     ),
   );
   if (!empty($form_state['build_info']['args']['0'])) {
