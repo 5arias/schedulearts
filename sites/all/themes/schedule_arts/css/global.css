@@ -446,3 +446,7 @@ textarea:focus {
 #ui-datepicker-div {
   z-index: 500 !important;
 }
+
+.region-sidebar-first .views-exposed-widgets .views-widget .form-type-textfield  .form-text {
+  width: 185px;
+}
