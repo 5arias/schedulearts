@@ -9,7 +9,7 @@
  */
 function ctools_overlay_preprocess_link(&$variables) {
   if (user_access('access CTools overlay') && path_is_admin($variables['path'])) {
-    ctools_modal_add_js();
+    ctools_add_js('modal');
     $variables['options']['attributes']['class'][] = 'ctools-overlay';
   }
 }
@@ -27,4 +27,17 @@ function ctools_overlay_menu() {
       'type' => MENU_CALLBACK,
     ),
   );
+}
+
+/**
+ * Display overlay contents in a modal.
+ */
+function ctools_overlay_endpoint($js, $path) {
+//  if (!$js) drupal_goto($path);
+
+  ctools_include('ajax');
+  ctools_include('modal');
+  $title = 'Page Title';
+  $content = 'Page content: ' . $path;
+  ctools_modal_render($title, $output);
 }
