@@ -32,8 +32,12 @@ function ctools_overlay_menu() {
 /**
  * Display overlay contents in a modal.
  */
-function ctools_overlay_endpoint($js, $path) {
-//  if (!$js) drupal_goto($path);
+function ctools_overlay_endpoint($js) {
+  $path_elements = func_get_args();
+  array_shift($path_elements);
+  $path = implode('/', $path_elements);
+
+  if (!$js) drupal_goto($path);
 
   ctools_include('ajax');
   ctools_include('modal');
