@@ -5,7 +5,7 @@
  */
 
 function ctools_overlay_preprocess_link(&$variables) {
-  if (is_admin_path($variables['path'])) {
+  if (path_is_admin($variables['path'])) {
     $variables['options']['attributes']['class'][] = 'ctools-overlay';
   }
 }
