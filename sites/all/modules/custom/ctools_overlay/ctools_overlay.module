@@ -4,8 +4,27 @@
  * Core hooks and callbacks for CTools Overlay.module
  */
 
+/**
+ * Add overlay class to admin pages by default.
+ */
 function ctools_overlay_preprocess_link(&$variables) {
-  if (path_is_admin($variables['path'])) {
+  if (user_access('access CTools overlay') && path_is_admin($variables['path'])) {
+    ctools_modal_add_js();
     $variables['options']['attributes']['class'][] = 'ctools-overlay';
   }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function ctools_overlay_menu() {
+  return array(
+    'ctools-overlay/%ctools_js' => array(
+      'page callback' => 'ctools_overlay_endpoint',
+      'page arguments' => array(1),
+      'access arguments' => array('use CTools overlay'),
+      'title' => 'Modal callback',
+      'type' => MENU_CALLBACK,
+    ),
+  );
 }
