@@ -279,8 +279,8 @@ function theme_schedulearts_user_schedule_table_render($variables) {
       $time_range = t('All day');
     }
     else {
-      $time_range = date('g:i', strtotime($call->call_date_from))
-        . ' - ' . date('g:i', strtotime($call->call_date_until));
+      $time_range = date('g:ia', strtotime($call->call_date_from))
+        . ' - ' . date('g:ia', strtotime($call->call_date_until));
     }
     $header = array(
       array(
