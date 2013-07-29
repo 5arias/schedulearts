@@ -1,0 +1,6 @@
+name = CTools Overlay
+description = Overlay functionality using CTools.
+package = ScheduleArts
+core = 7.x
+
+files[] = ctools_overlay.module

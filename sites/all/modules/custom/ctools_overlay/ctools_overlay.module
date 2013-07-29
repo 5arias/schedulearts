@@ -1,0 +1,9 @@
+<?php
+/**
+ * @file
+ * Core hooks and callbacks for CTools Overlay.module
+ */
+
+function ctools_overlay_preprocess_link(&$variables) {
+  print("a");
+}
