@@ -39,5 +39,5 @@ function ctools_overlay_endpoint($js, $path) {
   ctools_include('modal');
   $title = 'Page Title';
   $content = 'Page content: ' . $path;
-  ctools_modal_render($title, $output);
+  ctools_modal_render($title, $content);
 }
