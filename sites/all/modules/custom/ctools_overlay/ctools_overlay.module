@@ -4,32 +4,46 @@
  * Core hooks and callbacks for CTools Overlay.module
  */
 
-
-
 /**
- * Add overlay class to admin pages by default.
+ * Implements hook_menu_alter().
  * @todo  add admin page to edit the paths.
  */
-function ctools_overlay_menu_alter(&$items) {
+// function ctools_overlay_menu_alter(&$items) {
+//   $nonadmin_paths = 'events/*
+// calls/*
+// conflicts/*
+// schedules/*
+// master-calendar-events/*
+// productions/*
+// locations/*
+// taxonomy/term/*/delete
+// schedulearts_clone/clone
+// schedulearts_clone/clone/*
+// node/*/repeats
+// node/*/date_repeat_instance_edit
+// node/*/date_repeat_instance_edit/*
+// schedulears_print/select-timeframe';
+// dpm(NULL);
+// print "a"; die();
+//   foreach ($items as $path => &$info) {
+//     if (path_is_admin($path) || drupal_match_path($path, $nonadmin_paths)) {
+//       $info['modal'] = TRUE;
+//     }
+//   }
+// }
 
-  $nonadmin_paths = 'events/*
-calls/*
-conflicts/*
-schedules/*
-master-calendar-events/*
-productions/*
-locations/*
-taxonomy/term/*/delete
-schedulearts_clone/clone
-schedulearts_clone/clone/*
-node/*/repeats
-node/*/date_repeat_instance_edit
-node/*/date_repeat_instance_edit/*
-schedulears_print/select-timeframe';
+function ctools_overlay_menu() {
+die('a');
+  return array(
+    'modal-test' => array(
+      'type' => MENU_CALLBACK,
+      'modal' => TRUE,
+      'page callback' => 'ctools_overlay_test',
+    ),
+  );
+}
 
-  foreach ($items as $path => &$info) {
-    if (path_is_admin($path) || drupal_match_path($path, $nonadmin_paths)) {
-      $info['modal'] = TRUE;
-    }
-  }
+function ctools_overlay_test() {
+
+  return "abcd";
 }

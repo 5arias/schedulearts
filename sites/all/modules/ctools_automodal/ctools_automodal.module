@@ -31,7 +31,7 @@ function ctools_automodal_menu_alter(&$items) {
 
   //$convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
   foreach ($items as $path => $item) {
-    if ( !in_array($path, $modal_paths) && !isset($item['modal']) ) {
+    if (!in_array($path, $modal_paths) && (!array_key_exists('modal', $item) || !$item['modal'])) {
       continue;
     }
     
@@ -194,8 +194,8 @@ function ctools_automodal_deliver_error($path, $page_callback_result) {
  * Check if an internal Drupal path should be converted to a modal link.
  */
 function ctools_automodal_is_path_modal($path) {
-  $modal_regexp = variable_get('ctools_automodal_regexp');
-  $not_modal_regexp = variable_get('ctools_automodal_not_regexp');
+  $modal_regexp = variable_get('ctools_automodal_regexp', '');
+  $not_modal_regexp = variable_get('ctools_automodal_not_regexp', '');
   if (!$modal_regexp || !$not_modal_regexp) {
     return FALSE;
   }
