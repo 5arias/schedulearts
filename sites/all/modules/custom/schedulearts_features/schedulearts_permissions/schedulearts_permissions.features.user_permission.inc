@@ -116,17 +116,6 @@ function schedulearts_permissions_user_default_permissions() {
     'module' => 'dashboard',
   );
 
-  // Exported permission: access overlay.
-  $permissions['access overlay'] = array(
-    'name' => 'access overlay',
-    'roles' => array(
-      'Company Admin' => 'Company Admin',
-      'Read Only' => 'Read Only',
-      'Site Admin' => 'Site Admin',
-    ),
-    'module' => 'overlay',
-  );
-
   // Exported permission: access print.
   $permissions['access print'] = array(
     'name' => 'access print',
@@ -549,7 +538,9 @@ function schedulearts_permissions_user_default_permissions() {
   // Exported permission: clone own nodes.
   $permissions['clone own nodes'] = array(
     'name' => 'clone own nodes',
-    'roles' => array(),
+    'roles' => array(
+      'Company Admin' => 'Company Admin',
+    ),
     'module' => 'clone',
   );
 
