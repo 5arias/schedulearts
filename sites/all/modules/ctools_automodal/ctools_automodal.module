@@ -275,21 +275,21 @@ function ctools_automodal_get_modal_options($path) {
   //$path = $router_item['path'];
 
 
-
+  $default_modal_options = array(
+    'style' => '',
+    'confirm' => FALSE,
+    'close' => FALSE,
+    'confirm' => FALSE,
+    'reload' => FALSE,
+    'redirect' => '',
+  );
 
   foreach ($ctools_modal_paths as $key => $modal_options) {
     $pattern = _ctools_automodal_menu_alter_regex($key);
     $pattern = str_replace(array('/'), array('\/'), $pattern);
     $pattern = '/^' . $pattern . '$/';
     if (preg_match($pattern, $path)) {
-      $modal_options += array(
-        'style' => '',
-        'confirm' => FALSE,
-        'close' => FALSE,
-        'confirm' => FALSE,
-        'reload' => FALSE,
-        'redirect' => '',
-      );
+      $modal_options += $default_modal_options;
       if ($modal_options['confirm']) {
         $modal_options['confirm'] += array(
           'title' => t('Confirmation'),
@@ -301,7 +301,7 @@ function ctools_automodal_get_modal_options($path) {
       return $modal_options;
     }
   }
-
+  return $default_modal_options;
 }
 
 /**
