@@ -9,8 +9,21 @@
  * Add overlay class to admin pages by default.
  * @todo  add admin page to edit the paths.
  */
-function ctools_overlay_menu_alter(&$items) {
-  $nonadmin_paths = 'events/*
+function ctools_overlay_modal_paths(&$items) {
+  $admin_paths = path_get_admin_paths();
+
+  foreach (explode($admin_paths['admin'], '\n') as $path => &$info) {
+    if (path_is_admin($path) || drupal_match_path($path, $nonadmin_paths)) {
+      $info['modal'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_admin_paths_alter().
+ */
+function ctools_overlay_admin_paths_alter(&$paths) {
+    $nonadmin_paths = 'events/*
 calls/*
 conflicts/*
 schedules/*
@@ -25,9 +38,7 @@ node/*/date_repeat_instance_edit
 node/*/date_repeat_instance_edit/*
 schedulears_print/select-timeframe';
 
-  foreach ($items as $path => &$info) {
-    if (path_is_admin($path) || drupal_match_path($path, $nonadmin_paths)) {
-      $info['modal'] = TRUE;
-    }
+  foreach(explode($nonadmin_paths, '\n') as $path) {
+    $paths[$path] = TRUE;
   }
 }

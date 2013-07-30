@@ -31,11 +31,10 @@ function ctools_automodal_menu_alter(&$items) {
 
   //$convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
   foreach ($items as $path => $item) {
-    if (!in_array($path, $modal_paths) && (!array_key_exists('modal', $item) || !$item['modal'])) {
+    if (!in_array($path, $modal_paths) && (!isset('modal', $item)) {
       continue;
     }
     
-
     if ($item['page callback'] == 'drupal_get_form') {
       $items["$path/%ctools_js"] = $item;
       $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_form';
