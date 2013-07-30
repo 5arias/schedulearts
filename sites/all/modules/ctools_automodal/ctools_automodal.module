@@ -31,6 +31,7 @@ function ctools_automodal_menu_alter(&$items) {
 
   //$convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
   foreach ($items as $path => $item) {
+    dpm($item);
     if (!in_array($path, $modal_paths) || (!array_key_exists('modal', $item) || !$item['modal'])) {
       continue;
     }
