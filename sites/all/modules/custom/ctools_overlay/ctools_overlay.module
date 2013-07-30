@@ -12,7 +12,7 @@
  */
 function ctools_overlay_modal_paths() {
   $items = menu_get_router();
-  dpm($items);
+//  dpm($items);
   $nonadmin_paths = 'events/*
 calls/*
 conflicts/*
@@ -33,5 +33,6 @@ schedulears_print/select-timeframe';
       $info[$path] = array();
     }
   }
+  dpm(array_keys($info));
   return $info;
 }
