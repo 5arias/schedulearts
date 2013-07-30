@@ -5,14 +5,11 @@
  */
 
 
-
 /**
  * Add overlay class to admin pages by default.
  * @todo  add admin page to edit the paths.
  */
-function ctools_overlay_modal_paths() {
-  $items = _menu_router_cache();
-  var_dump(array_keys($items));die();
+function ctools_overlay_menu_alter(&$items) {
   $nonadmin_paths = 'events/*
 calls/*
 conflicts/*
@@ -30,9 +27,7 @@ schedulears_print/select-timeframe';
 
   foreach ($items as $path => &$info) {
     if (path_is_admin($path) || drupal_match_path($path, $patterns)) {
-      $info[$path] = array();
+      $info['modal'] = TRUE;
     }
   }
-  dpm(array_keys($info));
-  return $info;
 }
