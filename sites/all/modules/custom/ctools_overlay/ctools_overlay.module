@@ -4,12 +4,15 @@
  * Core hooks and callbacks for CTools Overlay.module
  */
 
+
+
 /**
  * Add overlay class to admin pages by default.
  * @todo  add admin page to edit the paths.
  */
-function ctools_overlay_menu_alter(&$items) {
-
+function ctools_overlay_modal_paths() {
+  $items = menu_get_router();
+  dpm($items);
   $nonadmin_paths = 'events/*
 calls/*
 conflicts/*
@@ -27,7 +30,8 @@ schedulears_print/select-timeframe';
 
   foreach ($items as $path => &$info) {
     if (path_is_admin($path) || drupal_match_path($path, $patterns)) {
-      $info['modal'] = TRUE;
+      $info[$path] = array();
     }
   }
+  return $info;
 }
