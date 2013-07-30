@@ -11,8 +11,7 @@
  * @todo  add admin page to edit the paths.
  */
 function ctools_overlay_modal_paths() {
-  $items = menu_get_router();
-  var_dump(array_shift($items)); die();
+  $items = NULL;
 //  dpm($items);
   $nonadmin_paths = 'events/*
 calls/*
