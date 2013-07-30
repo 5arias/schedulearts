@@ -7,41 +7,10 @@
 /**
  * Add overlay class to admin pages by default.
  */
-function ctools_overlay_preprocess_link(&$variables) {
-  if (user_access('access CTools overlay') && path_is_admin($variables['path'])) {
-    ctools_add_js('modal');
-    $variables['options']['attributes']['class'][] = 'ctools-overlay';
+function ctools_overlay_menu_alter(&$items) {
+  foreach ($items as $path => &$info) {
+    if (path_is_admin($path)) {
+      $info['modal'] = TRUE;
+    }
   }
-}
-
-/**
- * Implements hook_menu().
- */
-function ctools_overlay_menu() {
-  return array(
-    'ctools-overlay/%ctools_js' => array(
-      'page callback' => 'ctools_overlay_endpoint',
-      'page arguments' => array(1),
-      'access arguments' => array('use CTools overlay'),
-      'title' => 'Modal callback',
-      'type' => MENU_CALLBACK,
-    ),
-  );
-}
-
-/**
- * Display overlay contents in a modal.
- */
-function ctools_overlay_endpoint($js) {
-  $path_elements = func_get_args();
-  array_shift($path_elements);
-  $path = implode('/', $path_elements);
-
-  if (!$js) drupal_goto($path);
-
-  ctools_include('ajax');
-  ctools_include('modal');
-  $title = 'Page Title';
-  $content = 'Page content: ' . $path;
-  ctools_modal_render($title, $content);
 }
