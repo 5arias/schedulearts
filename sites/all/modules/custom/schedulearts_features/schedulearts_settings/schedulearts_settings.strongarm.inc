@@ -207,43 +207,6 @@ schedulears_print/select-timeframe';
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'overlay_paths_example_paths';
-  $strongarm->value = array(
-    'events/*' => TRUE,
-    'calls/*' => TRUE,
-    'conflicts/*' => TRUE,
-    'schedules/*' => TRUE,
-    'master-calendar-events/*' => TRUE,
-    'productions/*' => TRUE,
-    'locations/*' => TRUE,
-  );
-  $export['overlay_paths_example_paths'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'overlay_paths_ui_paths';
-  $strongarm->value = array(
-    'events/*' => TRUE,
-    'calls/*' => TRUE,
-    'conflicts/*' => TRUE,
-    'schedules/*' => TRUE,
-    'master-calendar-events/*' => TRUE,
-    'productions/*' => TRUE,
-    'locations/*' => TRUE,
-    'taxonomy/term/*/delete' => TRUE,
-    'schedulearts_clone/clone' => TRUE,
-    'schedulearts_clone/clone/*' => TRUE,
-    'node/*/repeats' => TRUE,
-    'node/*/date_repeat_instance_edit' => TRUE,
-    'node/*/date_repeat_instance_edit/*' => TRUE,
-    'schedulears_print/select-timeframe' => TRUE,
-  );
-  $export['overlay_paths_ui_paths'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
   $strongarm->name = 'print_display_call';
   $strongarm->value = 1;
   $export['print_display_call'] = $strongarm;
