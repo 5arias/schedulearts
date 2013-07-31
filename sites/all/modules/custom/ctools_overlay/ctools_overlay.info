@@ -3,6 +3,6 @@ description = Overlay functionality using CTools.
 package = ScheduleArts
 core = 7.x
 
-;dependencies[] = ctools_automodal
+dependencies[] = ctools_automodal
 
 files[] = ctools_overlay.module
