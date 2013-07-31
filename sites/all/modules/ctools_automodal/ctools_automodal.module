@@ -28,10 +28,20 @@ function ctools_automodal_menu_alter(&$items) {
       $items['node/%node/edit/' . $type_url_str]['type'] = MENU_CALLBACK;
     }
   }
-  //$convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
+  // Match menu router DB entries to unparsed hook_menu keys.
+  // This is for supporting dynamic definitions according to an existing menu router.
+  foreach(array_keys($items) as $menu_full_path) {
+    $key = preg_replace('/%[^\/]*/', '%', $menu_full_path);
+    $menu_paths[$key] = $menu_full_path;
+  }
+
   foreach ($modal_paths as $path) {
-    if (empty($items[$path])) {
+    if (empty($items[$path]) && !in_array($path, array_keys($menu_paths))) {
       continue;
+    }
+    // Use real hook_menu path as $path.
+    if (in_array($path, array_keys($menu_paths))) {
+      $path = $menu_paths[$path];
     }
     $item = $items[$path];
     if ($item['page callback'] == 'drupal_get_form') {
@@ -205,7 +215,6 @@ function ctools_automodal_is_path_modal($path) {
  */
 function ctools_automodal_preprocess_link(&$variables) {
   static $ctools_modal_included = FALSE;
-
   if (ctools_automodal_is_path_modal($variables['path'])) {
     // Only process the modal includes once per request.
     if (!$ctools_modal_included) {
@@ -213,7 +222,6 @@ function ctools_automodal_preprocess_link(&$variables) {
       ctools_modal_add_js();
       $ctools_modal_included = TRUE;
     }
-
     $options = ctools_automodal_get_modal_options($variables['path']);
 
     if (!empty($options['style'])) {
