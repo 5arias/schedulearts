@@ -28,12 +28,13 @@ function ctools_automodal_menu_alter(&$items) {
       $items['node/%node/edit/' . $type_url_str]['type'] = MENU_CALLBACK;
     }
   }
+
   //$convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
-  foreach ($modal_paths as $path) {
-    if (empty($items[$path])) {
+  foreach ($items as $path => $item) {
+    if (!in_array($path, $modal_paths) && (!array_key_exists('modal', $item) || !$item['modal'])) {
       continue;
     }
-    $item = $items[$path];
+    
     if ($item['page callback'] == 'drupal_get_form') {
       $items["$path/%ctools_js"] = $item;
       $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_form';
@@ -193,11 +194,12 @@ function ctools_automodal_deliver_error($path, $page_callback_result) {
  * Check if an internal Drupal path should be converted to a modal link.
  */
 function ctools_automodal_is_path_modal($path) {
-  $modal_regexp = variable_get('ctools_automodal_regexp');
-  if (!$modal_regexp) {
+  $modal_regexp = variable_get('ctools_automodal_regexp', '');
+  $not_modal_regexp = variable_get('ctools_automodal_not_regexp', '');
+  if (!$modal_regexp || !$not_modal_regexp) {
     return FALSE;
   }
-  return (bool) preg_match($modal_regexp, $path);
+  return preg_match($modal_regexp, $path) && !preg_match($not_modal_regexp, $path);
 }
 
 /**
@@ -207,6 +209,7 @@ function ctools_automodal_preprocess_link(&$variables) {
   static $ctools_modal_included = FALSE;
 
   if (ctools_automodal_is_path_modal($variables['path'])) {
+
     // Only process the modal includes once per request.
     if (!$ctools_modal_included) {
       ctools_include('modal');
@@ -220,7 +223,9 @@ function ctools_automodal_preprocess_link(&$variables) {
       ctools_automodal_include_style($options['style']);
       $variables['options']['attributes']['class'][] = 'ctools-modal-' . $options['style'];
     }
+
     $variables['options']['attributes']['class'][] = 'ctools-use-modal';
+
     if (strpos($variables['path'], 'nojs') === FALSE) {
       $variables['path'] .= '/nojs';
     }
@@ -270,21 +275,21 @@ function ctools_automodal_get_modal_options($path) {
   //$path = $router_item['path'];
 
 
-
+  $default_modal_options = array(
+    'style' => '',
+    'confirm' => FALSE,
+    'close' => FALSE,
+    'confirm' => FALSE,
+    'reload' => FALSE,
+    'redirect' => '',
+  );
 
   foreach ($ctools_modal_paths as $key => $modal_options) {
     $pattern = _ctools_automodal_menu_alter_regex($key);
     $pattern = str_replace(array('/'), array('\/'), $pattern);
     $pattern = '/^' . $pattern . '$/';
     if (preg_match($pattern, $path)) {
-      $modal_options += array(
-        'style' => '',
-        'confirm' => FALSE,
-        'close' => FALSE,
-        'confirm' => FALSE,
-        'reload' => FALSE,
-        'redirect' => '',
-      );
+      $modal_options += $default_modal_options;
       if ($modal_options['confirm']) {
         $modal_options['confirm'] += array(
           'title' => t('Confirmation'),
@@ -296,7 +301,7 @@ function ctools_automodal_get_modal_options($path) {
       return $modal_options;
     }
   }
-
+  return $default_modal_options;
 }
 
 /**

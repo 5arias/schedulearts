@@ -8,53 +8,32 @@
  * Implements hook_menu_alter().
  * @todo  add admin page to edit the paths.
  */
-function ctools_overlay_modal_paths(&$items) {
-  $custom_paths = array(
-    'node/%node',
-    'node/%node/edit',
-    'node/%node/edit/%',
-    'node/%node/repeats',
-    'schedulearts_clone/clone',
-    'schedulearts_clone/clone/%',
-    'node/%node/date_repeat_instance_edit',
-    'node/%node/date_repeat_instance_edit/%',
-
-  );
-
-  $paths = db_query('select path from {menu_router}')->fetchCol();
-
-  foreach ($paths as $path) {
-    if (path_is_admin($path)) {
-      $overlay_paths[$path] = array();
-    }
-  }
-  return $overlay_paths;
-}
-
-
-function ctools_overlay_admin_paths_alter(&$paths) {
-  $generic_paths = explode("\n", 'events/*
-calls/*
-conflicts/*
-schedules/*
-master-calendar-events/*
-productions/*
-locations/*
-node/*/edit
-taxonomy/term/%taxonomy_term/delete
-schedulearts_clone/clone
-schedulearts_clone/clone/*
-node/*/repeats
-node/*/date_repeat_instance_edit
-node/*/date_repeat_instance_edit/*
-schedulears_print/select-timeframe'
-  );
-  foreach($generic_paths as $path) {
-    $paths[$path] = TRUE;
-  }
-}
+// function ctools_overlay_menu_alter(&$items) {
+//   $nonadmin_paths = 'events/*
+// calls/*
+// conflicts/*
+// schedules/*
+// master-calendar-events/*
+// productions/*
+// locations/*
+// taxonomy/term/*/delete
+// schedulearts_clone/clone
+// schedulearts_clone/clone/*
+// node/*/repeats
+// node/*/date_repeat_instance_edit
+// node/*/date_repeat_instance_edit/*
+// schedulears_print/select-timeframe';
+// dpm(NULL);
+// print "a"; die();
+//   foreach ($items as $path => &$info) {
+//     if (path_is_admin($path) || drupal_match_path($path, $nonadmin_paths)) {
+//       $info['modal'] = TRUE;
+//     }
+//   }
+// }
 
 function ctools_overlay_menu() {
+die('a');
   return array(
     'modal-test' => array(
       'type' => MENU_CALLBACK,

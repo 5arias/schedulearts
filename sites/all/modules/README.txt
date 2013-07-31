@@ -1,3 +1,4 @@
-IMPORTANT: This is from the fork of ctools_automodal at https://github.com/jlyon/ctools_automodal.
 
-git clone git://github.com/jlyon/ctools_automodal.git
+This directory should be used to place downloaded and custom modules
+which are common to all sites. This will allow you to more easily
+update Drupal core files.
