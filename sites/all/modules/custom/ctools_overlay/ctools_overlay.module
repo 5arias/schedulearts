@@ -4,22 +4,26 @@
  * Core hooks and callbacks for CTools Overlay.module
  */
 
+
 /**
  * Implements hook_modal_paths().
  * @todo  add admin page to edit the paths.
  */
 function ctools_overlay_modal_paths() {
   $paths = db_query('select path from {menu_router}')->fetchCol();
+  $overlay_path_patterns = '
+node/*
+taxonomy/term/*/delete
+schedulearts_clone/clone
+schedulearts_clone/clone/*
+schedulears_print/select-timeframe
+admin/people
+admin/content/*
+user/*/*';
 
-  $exclude_paths = '
-  admin_menu/flush-cache/*
-  admin/reports/*
-';
-  $redirect_paths = '
-';
-
+  $overlay_paths = array();
   foreach ($paths as $path) {
-    if (path_is_admin($path) && !drupal_match_path($path, $exclude_paths)) {
+    if (drupal_match_path($path, $overlay_path_patterns)) {
       $overlay_paths[$path] = array();
       if (drupal_match_path($path, $redirect_paths)) {
         $overlay_paths[$path]['redirect'] = TRUE;
@@ -29,40 +33,12 @@ function ctools_overlay_modal_paths() {
   return $overlay_paths;
 }
 
-
-function ctools_overlay_admin_paths_alter(&$paths) {
-  $generic_paths = explode("\n", 'events/*
-calls/*
-conflicts/*
-schedules/*
-master-calendar-events/*
-productions/*
-locations/*
-node/*/edit
-taxonomy/term/%taxonomy_term/delete
-schedulearts_clone/clone
-schedulearts_clone/clone/*
-node/*/repeats
-node/*/date_repeat_instance_edit
-node/*/date_repeat_instance_edit/*
-schedulears_print/select-timeframe'
-  );
-  foreach($generic_paths as $path) {
-    $paths[$path] = TRUE;
+/**
+ * Render the event.
+ */
+function ctools_overlay_fullcalendar_classes_alter(&$classes, $entity) {
+  $uri = entity_uri($entity->entity_type, $entity);
+  if (ctools_automodal_is_path_modal($uri['path']) && user_access('use ctools automodal')) {
+    $classes[] = 'ctools-use-modal';
   }
-}
-
-function ctools_overlay_menu() {
-  return array(
-    'modal-test' => array(
-      'type' => MENU_CALLBACK,
-      'modal' => TRUE,
-      'page callback' => 'ctools_overlay_test',
-    ),
-  );
-}
-
-function ctools_overlay_test() {
-
-  return "abcd";
 }
