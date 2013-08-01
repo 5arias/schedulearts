@@ -11,15 +11,7 @@
  */
 function ctools_overlay_modal_paths() {
   $paths = db_query('select path from {menu_router}')->fetchCol();
-  $overlay_path_patterns = '
-node/*
-taxonomy/term/*/delete
-schedulearts_clone/clone
-schedulearts_clone/clone/*
-schedulears_print/select-timeframe
-admin/people
-admin/content/*
-user/*/*';
+  $overlay_path_patterns = variable_get('ctools_overlay_modal_paths', ctools_overlay_default_modal_paths());
 
   $overlay_paths = array();
   foreach ($paths as $path) {
@@ -34,11 +26,68 @@ user/*/*';
 }
 
 /**
- * Render the event.
+ * Alter fullcalendar event rendering to diplay event views.
  */
 function ctools_overlay_fullcalendar_classes_alter(&$classes, $entity) {
+  static $js_attached = FALSE;
+
   $uri = entity_uri($entity->entity_type, $entity);
   if (ctools_automodal_is_path_modal($uri['path']) && user_access('use ctools automodal')) {
     $classes[] = 'ctools-use-modal';
   }
+  if (module_exists('behavior_weights') && !$js_attached) {
+    drupal_add_js(drupal_get_path('module', 'behavior_weights') . '/behavior_weights.js');
+    drupal_add_js(drupal_get_path('module', 'ctools_overlay') . '/js/ctools_overlay.js');
+    $js_attached = TRUE;
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function ctools_overlay_menu() {
+  return array(
+    'admin/config/system/ctools-overlay' => array(
+      'title' => 'CTools Overlay',
+      'description' => 'Configure CTools Overlay paths',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ctools_overlay_admin_form'),
+    ),
+  );
+}
+/**
+ * Implements hook_fullcalendar_api().
+ */
+function overlay_fullcalendar_api() {
+  return array(
+    'api' => fullcalendar_api_version(),
+    'path' => drupal_get_path('module', 'ctools_overlay') . '/includes',
+  );
+}
+
+/**
+ * Provide a list of default modal paths.
+ */
+function ctools_overlay_default_modal_paths() {
+  return 'node/*
+taxonomy/term/*/delete
+schedulearts_clone/clone
+schedulearts_clone/clone/*
+schedulears_print/select-timeframe
+admin/people
+admin/content/*
+user/*/*';
+}
+
+/**
+ * Form builder for the configuration page.
+ */
+function ctools_overlay_admin_form($form, &$form_state) {
+  $form['ctools_overlay_modal_paths'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Modal paths'),
+    '#description' => t('Enter each path in a new line. You can use * as a wildcard and <front> for the front page.'),
+    '#default_value' => variable_get('ctools_overlay_modal_paths', ctools_overlay_default_modal_paths()),
+  );
+  return system_settings_form($form);
 }
