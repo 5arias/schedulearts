@@ -21,7 +21,6 @@ function ctools_overlay_fullcalendar_options_info() {
     'ctools_overlay' => array(
       'name' => t('CTools Overlay'),
       'js' => TRUE,
-      'parent' => 'fullcalendar_options',
     ),
   );
 }

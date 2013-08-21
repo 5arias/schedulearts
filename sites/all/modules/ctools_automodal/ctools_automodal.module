@@ -483,7 +483,6 @@ function ctools_automodal_node_add() {
     'type' => $type,
     'language' => LANGUAGE_NONE,
   );
-
   $output = ctools_automodal_get_form($type . '_node_form', $node, $args[1]);
 
   return $output;
@@ -524,6 +523,14 @@ function ctools_automodal_get_form() {
       'build_info' => array('args' => $args),
     );
     $commands = ctools_modal_form_wrapper($form_id, $form_state);
+    $modal_display =& $commands[0];
+
+    $page = array(
+      '#ctools_automodal' => TRUE,
+      '#markup' => $modal_display['output'],
+    );
+
+    $modal_display['output'] = drupal_render_page($page);
 
     // Handle submitted form.
     if (!empty($form_state['executed']) && empty($form_state['rebuild'])) {
@@ -562,6 +569,9 @@ function ctools_automodal_get_form() {
       }
       elseif ($modal_options['reload']) {
         $commands[] = ctools_ajax_command_reload();
+      }
+      else {
+        $commands[] = ctools_modal_command_dismiss();
       }
     }
 
@@ -650,6 +660,7 @@ function ctools_automodal_get_page() {
     if ($ajax) {
       ctools_include('modal');
       ctools_include('ajax');
+
       $commands = ctools_automodal_page_render($output);
 
       if (empty($commands)) {
@@ -672,18 +683,31 @@ function ctools_automodal_get_page() {
 }
 
 /**
+ * Return only page content when the content is marked as a ctools_automodal page.
+ * @return [type] [description]
+ */
+function ctools_automodal_page_alter(&$page) {
+  if (array_key_exists('#ctools_automodal', $page['content']['system_main'])
+    && $page['content']['system_main']['#ctools_automodal']) {
+    // Disable administration modules from adding output to the popup.
+    // @see http://drupal.org/node/914786
+    module_invoke_all('suppress', TRUE);
+    foreach (element_children($page) as $key) {
+      if ($key != 'content') {
+        unset($page[$key]);
+      }
+    }
+  }
+}
+
+/**
  * Render a page into an AJAX display.
  */
-function ctools_automodal_page_render($output) {
-  if (is_array($output)) {
-    $output = drupal_render($output);
+function ctools_automodal_page_render($content) {
+  if (is_array($content)) {
+    $content['#ctools_automodal'] = TRUE;
+    $output = drupal_render_page($content);
   }
-
-  // If there are messages for the form, render them.
-  if ($messages = theme('status_messages')) {
-    $output = '<div class="messages">' . $messages . '</div>' . $output;
-  }
-
   $commands = array();
   $title = drupal_get_title();
   $commands[] = ctools_modal_command_display($title, $output);
