@@ -13,10 +13,15 @@ function ctools_automodal_permission() {
 }
 
 /**
- * Wrapper to user_access with additional access checks to ctools automodals.
+ * Wrapper to access callbacks with additional access checks to ctools automodals.
  */
-function ctools_automodal_user_access($permission, $account = NULL) {
-  return user_access('use ctools automodals', $account) && user_access($permission);
+function ctools_automodal_access() {
+  $args = func_get_args();
+  $callback = array_shift($args);
+  if (!$callback) {
+    return FALSE;
+  }
+  return user_access('use ctools automodals', $account) && call_user_func_array($callback, $args);
 }
 
 /**
@@ -64,33 +69,18 @@ function ctools_automodal_menu_alter(&$items) {
     }
     $item = $items[$path];
     if ($item['page callback'] == 'drupal_get_form') {
-      $items["$path/%ctools_js"] = $item;
-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_form';
-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
-      $items["$path/%ctools_js"]['access callback'] = 'ctools_automodal_user_access';
-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
+      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_get_form');
     }
     elseif ($item['page callback'] == 'node_add') {
-      $items["$path/%ctools_js"] = $item;
-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_node_add';
-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
-      $items["$path/%ctools_js"]['access callback'] = 'ctools_automodal_user_access';
-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
+      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_node_add');
     }
     elseif ($item['page callback'] == 'node_page_edit') {
-      $items["$path/%ctools_js"] = $item;
-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_node_edit';
-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
-      $items["$path/%ctools_js"]['access callback'] = 'ctools_automodal_user_access';
-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
+      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_node_edit');
     }
     else {
-      $items["$path/%ctools_js"] = $item + array('page arguments' => array());
-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_page';
+      $item += array('page arguments' => array());
+      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_get_page');
       array_unshift($items["$path/%ctools_js"]['page arguments'], $item['page callback']);
-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
-      $items["$path/%ctools_js"]['access callback'] = 'ctools_automodal_user_access';
-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
     }
 
     $modal_regexp_pieces[] = _ctools_automodal_menu_alter_regex($path);
@@ -108,6 +98,22 @@ function ctools_automodal_menu_alter(&$items) {
 
   variable_set('ctools_automodal_regexp', $modal_regexp);
   variable_set('ctools_automodal_not_regexp', $not_modal_regexp);
+}
+
+/**
+ * Helper function that processes menu items and
+ * @param  [type] $items         [description]
+ * @param  [type] $original_item [description]
+ * @param  [type] $page_callback [description]
+ * @return [type]                [description]
+ */
+function _ctools_automodal_create_modal_menu_item(&$items, $original_item, $path, $page_callback) {
+  $items["$path/%ctools_js"] = $original_item;
+  $items["$path/%ctools_js"]['page callback'] = $page_callback;
+  $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
+  $items["$path/%ctools_js"]['access callback'] = 'ctools_automodal_access';
+  array_unshift($items["$path/%ctools_js"]['access arguments'], $original_item['access callback']);
+  $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
 }
 
 /**
