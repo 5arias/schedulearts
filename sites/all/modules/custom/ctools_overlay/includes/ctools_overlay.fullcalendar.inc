@@ -21,7 +21,43 @@ function ctools_overlay_fullcalendar_options_info() {
     'ctools_overlay' => array(
       'name' => t('CTools Overlay'),
       'js' => TRUE,
-//      'parent' => 'fullcalendar_options',
+      'parent' => 'fullcalendar_options',
     ),
   );
+}
+
+/**
+ * Implements hook_fullcalendar_options_definition().
+ */
+function ctools_overlay_fullcalendar_options_definition() {
+  $options['ctools_overlay']['contains'] = array(
+    'ctools_overlay' => array(
+      'default' => FALSE,
+      'bool' => TRUE,
+    ),
+  );
+  return $options;
+}
+
+/**
+ * Implements hook_fullcalendar_options_form().
+ */
+function ctools_overlay_fullcalendar_options_form(&$form, &$form_state, &$view) {
+  $form['ctools_overlay']['ctools_overlay'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Open events with CTools Overlay'),
+    '#default_value' => $view->options['ctools_overlay']['ctools_overlay'],
+    '#data_type' => 'bool',
+  );
+
+  $form['sameWindow']['#dependency'] = array('edit-style-options-ctools-overlay-ctools-overlay' => array(0));
+}
+
+/**
+ * Implements hook_fullcalendar_options_process().
+ */
+function ctools_overlay_fullcalendar_options_process(&$variables, &$settings) {
+  if (empty($settings['ctools_overlay']['ctools_overlay'])) {
+    unset($settings['ctools_overlay']);
+  }
 }

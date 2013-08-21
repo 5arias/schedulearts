@@ -10,16 +10,25 @@
  * @todo  add admin page to edit the paths.
  */
 function ctools_overlay_modal_paths() {
-  $paths = db_query('select path from {menu_router}')->fetchCol();
-  $overlay_path_patterns = variable_get('ctools_overlay_modal_paths', ctools_overlay_default_modal_paths());
+  $overlay_paths &= drupal_static(__FUNCTION__, array());
 
-  $overlay_paths = array();
-  foreach ($paths as $path) {
-    if (drupal_match_path($path, $overlay_path_patterns)) {
-      $overlay_paths[$path] = array();
-      if (drupal_match_path($path, $redirect_paths)) {
-        $overlay_paths[$path]['redirect'] = TRUE;
+  if (empty($overlay_paths)) {
+    $cache = cache_get(__FUNCTION__);
+    $overlay_paths = $cache->data;
+    if (empty($overlay_paths)) {
+      $paths = db_query('select path from {menu_router}')->fetchCol();
+      $overlay_path_patterns = variable_get('ctools_overlay_modal_paths', ctools_overlay_default_modal_paths());
+
+      $overlay_paths = array();
+      foreach ($paths as $path) {
+        if (drupal_match_path($path, $overlay_path_patterns)) {
+          $overlay_paths[$path] = array();
+          if (drupal_match_path($path, $redirect_paths)) {
+            $overlay_paths[$path]['redirect'] = TRUE;
+          }
+        }
       }
+      cache_set(__FUNCTION__, $overlay_paths);
     }
   }
   return $overlay_paths;
@@ -50,15 +59,30 @@ function ctools_overlay_menu() {
     'admin/config/system/ctools-overlay' => array(
       'title' => 'CTools Overlay',
       'description' => 'Configure CTools Overlay paths',
+      'menu name' => 'management',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('ctools_overlay_admin_form'),
+      'access arguments' => array('administer ctools overlay paths'),
     ),
   );
 }
+
+/**
+ * Implements hook_permission().
+ */
+function ctools_overlay_permission() {
+  return array(
+    'administer ctools overlay paths' => array(
+      'title' => t('Administer CTools Overlay paths'),
+      'description' => t('Configure and define paths to be handled by CTools Overlay.')
+    ),
+  );
+}
+
 /**
  * Implements hook_fullcalendar_api().
  */
-function overlay_fullcalendar_api() {
+function ctools_overlay_fullcalendar_api() {
   return array(
     'api' => fullcalendar_api_version(),
     'path' => drupal_get_path('module', 'ctools_overlay') . '/includes',
@@ -83,11 +107,19 @@ user/*/*';
  * Form builder for the configuration page.
  */
 function ctools_overlay_admin_form($form, &$form_state) {
+  $form['#submit'][] = 'ctools_overlay_admin_form_submit';
   $form['ctools_overlay_modal_paths'] = array(
     '#type' => 'textarea',
     '#title' => t('Modal paths'),
-    '#description' => t('Enter each path in a new line. You can use * as a wildcard and <front> for the front page.'),
+    '#description' => t('Enter each path in a new line. You can use * as a wildcard and &lt;front&gt; for the front page.'),
     '#default_value' => variable_get('ctools_overlay_modal_paths', ctools_overlay_default_modal_paths()),
   );
   return system_settings_form($form);
+}
+
+/**
+ * Clear paths cache on admin form submission.
+ */
+function ctools_overlay_admin_form_submit(&$form, &$form_state) {
+  cache_clear_all('ctools_overlay', 'cache', TRUE);
 }

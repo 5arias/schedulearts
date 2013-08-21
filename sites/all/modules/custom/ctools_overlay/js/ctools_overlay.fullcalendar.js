@@ -1,20 +1,18 @@
 (function($) {
 
-Drupal.behaviors["ZZCToolsModal.weight"] = 100;
 
-Drupal.fullcalendar.plugins.CToolsOverlay = {
+Drupal.fullcalendar.plugins.ctools_overlay = {
   options: function (fullcalendar, settings) {
-    // if (!settings.overlay) {
-    //   return;
-    // }
-    // settings = settings.overlay;
+    if (!settings.ctools_overlay) {
+      return false;
+    }
+    // Set ctools modal weight to process fullcalendar too.
+    Drupal.behaviors["ZZCToolsModal.weight"] = 100;
 
+    settings = settings.ctools_overlay;
     var options = {
       eventClick: function(calEvent, jsEvent, view) {
         // Use overlay only for events based on entities
-        console.log(calEvent);
-        console.log(jsEvent);
-        alert("a");
         return false;
       }
     };
