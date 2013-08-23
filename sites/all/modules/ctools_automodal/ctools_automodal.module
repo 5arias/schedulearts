@@ -441,7 +441,7 @@ function _ctools_automodal_get_form_redirect_path($modal_options, $form_state) {
     elseif (is_array($modal_options['redirect'])) {
       list($path, $options) = $modal_options['redirect'] + array(NULL, array());
     }
-    elseif (is_string($modal_options['redirect'])) {
+    elseif (is_string($modal_options['redirect']) && $modal_options['redirect'] !== 'modal') {
       $path = $modal_options['redirect'];
     }
     elseif (is_array($form_state['redirect'])) {
@@ -514,17 +514,19 @@ function ctools_automodal_get_form() {
   $modal_options = ctools_automodal_get_modal_options(current_path());
 
   if ($ajax) {
+
     ctools_include('modal');
     ctools_include('ajax');
     ctools_add_js('ajax-responder');
 
     $form_state = array(
-      'ajax' => $ajax,
+      'ajax' => 'ajax',
       'build_info' => array('args' => $args),
     );
-    $commands = ctools_modal_form_wrapper($form_id, $form_state);
-    $modal_display =& $commands[0];
 
+    $commands = ctools_modal_form_wrapper($form_id, $form_state);
+
+    $modal_display =& $commands[0];
     $page = array(
       '#ctools_automodal' => TRUE,
       '#markup' => $modal_display['output'],
@@ -536,7 +538,6 @@ function ctools_automodal_get_form() {
     if (!empty($form_state['executed']) && empty($form_state['rebuild'])) {
       // Overwrite the form wrapper output.
       $commands = array();
-
       // Add custom commands
       if ($modal_options['commands_callback']) {
         $commands = call_user_func_array($modal_options['commands_callback'], array($form_state));
@@ -574,7 +575,6 @@ function ctools_automodal_get_form() {
         $commands[] = ctools_modal_command_dismiss();
       }
     }
-
     print ajax_render($commands);
     exit();
   }
@@ -594,7 +594,6 @@ function ctools_automodal_get_form() {
 function _ctools_automodal_redirect($path, $options) {
   if ($router_item = menu_get_item($path)) {
     if ($router_item['access']) {
-
       if ($router_item['include_file']) {
         require_once DRUPAL_ROOT . '/' . $router_item['include_file'];
       }
@@ -618,7 +617,6 @@ function _ctools_automodal_redirect($path, $options) {
           'build_info' => array('args' => $args),
         );
         // @todo? $form = drupal_rebuild_form($form_id, $form_state);
-
         $commands = ctools_modal_form_wrapper($form_id, $form_state);
       }
       // TODO:

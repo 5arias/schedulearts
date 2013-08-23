@@ -44,7 +44,6 @@ function ctools_overlay_fullcalendar_classes_alter(&$classes, $entity) {
   }
   if (module_exists('behavior_weights') && !$js_attached) {
     drupal_add_js(drupal_get_path('module', 'behavior_weights') . '/behavior_weights.js');
-    drupal_add_js(drupal_get_path('module', 'ctools_overlay') . '/js/ctools_overlay.js');
     $js_attached = TRUE;
   }
 }
