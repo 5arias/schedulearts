@@ -23,7 +23,7 @@ function ctools_overlay_modal_paths() {
       foreach ($paths as $path) {
         if (drupal_match_path($path, $overlay_path_patterns)) {
           $overlay_paths[$path] = array();
-          $overlay_paths[$path]['redirect'] = 'modal';
+          $overlay_paths[$path]['redirect'] = 'standard';
         }
       }
       cache_set(__FUNCTION__, $overlay_paths);

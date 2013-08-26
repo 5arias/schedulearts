@@ -441,7 +441,7 @@ function _ctools_automodal_get_form_redirect_path($modal_options, $form_state) {
     elseif (is_array($modal_options['redirect'])) {
       list($path, $options) = $modal_options['redirect'] + array(NULL, array());
     }
-    elseif (is_string($modal_options['redirect']) && $modal_options['redirect'] !== 'modal') {
+    elseif (is_string($modal_options['redirect']) && $modal_options['redirect'] !== 'modal' && $modal_options['redirect'] !== 'standard') {
       $path = $modal_options['redirect'];
     }
     elseif (is_array($form_state['redirect'])) {
