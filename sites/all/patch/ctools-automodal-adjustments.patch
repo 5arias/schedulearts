@@ -256,3 +256,29 @@ diff --git a/ctools_automodal.module b/ctools_automodal.module
    $commands = array();
    $title = drupal_get_title();
    $commands[] = ctools_modal_command_display($title, $output);
+only in patch2:
+unchanged:
+--- a/sites/all/modules/ctools_automodal/ctools_automodal.module
++++ b/sites/all/modules/ctools_automodal/ctools_automodal.module
+@@ -441,7 +441,7 @@ function _ctools_automodal_get_form_redirect_path($modal_options, $form_state) {
+     elseif (is_array($modal_options['redirect'])) {
+       list($path, $options) = $modal_options['redirect'] + array(NULL, array());
+     }
+-    elseif (is_string($modal_options['redirect']) && $modal_options['redirect'] !== 'modal') {
++    elseif (is_string($modal_options['redirect']) && $modal_options['redirect'] !== 'modal' && $modal_options['redirect'] !== 'standard') {
+       $path = $modal_options['redirect'];
+     }
+     elseif (is_array($form_state['redirect'])) {
+only in patch2:
+unchanged:
+--- a/sites/all/modules/custom/ctools_overlay/ctools_overlay.module
++++ b/sites/all/modules/custom/ctools_overlay/ctools_overlay.module
+@@ -23,7 +23,7 @@ function ctools_overlay_modal_paths() {
+       foreach ($paths as $path) {
+         if (drupal_match_path($path, $overlay_path_patterns)) {
+           $overlay_paths[$path] = array();
+-          $overlay_paths[$path]['redirect'] = 'modal';
++          $overlay_paths[$path]['redirect'] = 'standard';
+         }
+       }
+       cache_set(__FUNCTION__, $overlay_paths);
