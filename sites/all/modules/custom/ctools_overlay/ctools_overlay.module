@@ -5,31 +5,118 @@
  */
 
 
-
 /**
- * Add overlay class to admin pages by default.
+ * Implements hook_modal_paths().
  * @todo  add admin page to edit the paths.
  */
-function ctools_overlay_menu_alter(&$items) {
+function ctools_overlay_modal_paths() {
+  $overlay_paths &= drupal_static(__FUNCTION__, array());
 
-  $nonadmin_paths = 'events/*
-calls/*
-conflicts/*
-schedules/*
-master-calendar-events/*
-productions/*
-locations/*
+  if (empty($overlay_paths)) {
+    $cache = cache_get(__FUNCTION__);
+    $overlay_paths = $cache->data;
+    if (empty($overlay_paths)) {
+      $paths = db_query('select path from {menu_router}')->fetchCol();
+      $overlay_path_patterns = variable_get('ctools_overlay_modal_paths', ctools_overlay_default_modal_paths());
+
+      $overlay_paths = array();
+      foreach ($paths as $path) {
+        if (drupal_match_path($path, $overlay_path_patterns)) {
+          $overlay_paths[$path] = array();
+          $overlay_paths[$path]['redirect'] = 'standard';
+        }
+      }
+      cache_set(__FUNCTION__, $overlay_paths);
+    }
+  }
+  return $overlay_paths;
+}
+
+/**
+ * Alter fullcalendar event rendering to diplay event views.
+ */
+function ctools_overlay_fullcalendar_classes_alter(&$classes, $entity) {
+  static $js_attached = FALSE;
+
+  $uri = entity_uri($entity->entity_type, $entity);
+  if (ctools_automodal_is_path_modal($uri['path']) && user_access('use ctools automodal')) {
+    $classes[] = 'ctools-use-modal';
+  }
+  if (module_exists('behavior_weights') && !$js_attached) {
+    drupal_add_js(drupal_get_path('module', 'behavior_weights') . '/behavior_weights.js');
+    $js_attached = TRUE;
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function ctools_overlay_menu() {
+  return array(
+    'admin/config/system/ctools-overlay' => array(
+      'title' => 'CTools Overlay',
+      'description' => 'Configure CTools Overlay paths',
+      'menu name' => 'management',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ctools_overlay_admin_form'),
+      'access arguments' => array('administer ctools overlay paths'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ctools_overlay_permission() {
+  return array(
+    'administer ctools overlay paths' => array(
+      'title' => t('Administer CTools Overlay paths'),
+      'description' => t('Configure and define paths to be handled by CTools Overlay.')
+    ),
+  );
+}
+
+/**
+ * Implements hook_fullcalendar_api().
+ */
+function ctools_overlay_fullcalendar_api() {
+  return array(
+    'api' => fullcalendar_api_version(),
+    'path' => drupal_get_path('module', 'ctools_overlay') . '/includes',
+  );
+}
+
+/**
+ * Provide a list of default modal paths.
+ */
+function ctools_overlay_default_modal_paths() {
+  return 'node/*
 taxonomy/term/*/delete
 schedulearts_clone/clone
 schedulearts_clone/clone/*
-node/*/repeats
-node/*/date_repeat_instance_edit
-node/*/date_repeat_instance_edit/*
-schedulears_print/select-timeframe';
+schedulears_print/select-timeframe
+admin/people
+admin/content/*
+user/*/*';
+}
 
-  foreach ($items as $path => &$info) {
-    if (path_is_admin($path) || drupal_match_path($path, $nonadmin_paths)) {
-      $info['modal'] = TRUE;
-    }
-  }
+/**
+ * Form builder for the configuration page.
+ */
+function ctools_overlay_admin_form($form, &$form_state) {
+  $form['#submit'][] = 'ctools_overlay_admin_form_submit';
+  $form['ctools_overlay_modal_paths'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Modal paths'),
+    '#description' => t('Enter each path in a new line. You can use * as a wildcard and &lt;front&gt; for the front page.'),
+    '#default_value' => variable_get('ctools_overlay_modal_paths', ctools_overlay_default_modal_paths()),
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Clear paths cache on admin form submission.
+ */
+function ctools_overlay_admin_form_submit(&$form, &$form_state) {
+  cache_clear_all('ctools_overlay', 'cache', TRUE);
 }

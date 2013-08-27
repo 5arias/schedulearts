@@ -1,0 +1,284 @@
+diff --git a/ctools_automodal.module b/ctools_automodal.module
+--- a/ctools_automodal.module
++++ b/ctools_automodal.module
+@@ -1,4 +1,28 @@
+- <?php
++<?php
++
++/**
++ * Implements hook_permission().
++ */
++function ctools_automodal_permission() {
++  return array(
++    'use ctools automodals' => array(
++      'title' => t('Use CTools automodals'),
++      'description' => t('Use the CTools modal version of the pages.'),
++    ),
++  );
++}
++
++/**
++ * Wrapper to access callbacks with additional access checks to ctools automodals.
++ */
++function ctools_automodal_access() {
++  $args = func_get_args();
++  $callback = array_shift($args);
++  if (!$callback) {
++    return FALSE;
++  }
++  return user_access('use ctools automodals', $account) && call_user_func_array($callback, $args);
++}
+ 
+ /**
+  * Implements hook_module_implements_alter().
+@@ -28,38 +52,35 @@ function ctools_automodal_menu_alter(&$items) {
+       $items['node/%node/edit/' . $type_url_str]['type'] = MENU_CALLBACK;
+     }
+   }
++  // Match menu router DB entries to unparsed hook_menu keys.
++  // This is for supporting dynamic definitions according to an existing menu router.
++  foreach(array_keys($items) as $menu_full_path) {
++    $key = preg_replace('/%[^\/]*/', '%', $menu_full_path);
++    $menu_paths[$key] = $menu_full_path;
++  }
+ 
+-  //$convert_to_regexp = function ($value) { return preg_replace('/%[^\/]*/', '[^/]+', $value); };
+   foreach ($modal_paths as $path) {
+-    if (empty($items[$path])) {
++    if (empty($items[$path]) && !in_array($path, array_keys($menu_paths))) {
+       continue;
+     }
++    // Use real hook_menu path as $path.
++    if (in_array($path, array_keys($menu_paths))) {
++      $path = $menu_paths[$path];
++    }
+     $item = $items[$path];
+-
+     if ($item['page callback'] == 'drupal_get_form') {
+-      $items["$path/%ctools_js"] = $item;
+-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_form';
+-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
+-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
++      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_get_form');
+     }
+     elseif ($item['page callback'] == 'node_add') {
+-      $items["$path/%ctools_js"] = $item;
+-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_node_add';
+-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
+-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
++      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_node_add');
+     }
+     elseif ($item['page callback'] == 'node_page_edit') {
+-      $items["$path/%ctools_js"] = $item;
+-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_node_edit';
+-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
+-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
++      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_node_edit');
+     }
+     else {
+-      $items["$path/%ctools_js"] = $item + array('page arguments' => array());
+-      $items["$path/%ctools_js"]['page callback'] = 'ctools_automodal_get_page';
++      $item += array('page arguments' => array());
++      _ctools_automodal_create_modal_menu_item($items, $item, $path, 'ctools_automodal_get_page');
+       array_unshift($items["$path/%ctools_js"]['page arguments'], $item['page callback']);
+-      $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
+-      $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
+     }
+ 
+     $modal_regexp_pieces[] = _ctools_automodal_menu_alter_regex($path);
+@@ -80,6 +101,22 @@ function ctools_automodal_menu_alter(&$items) {
+ }
+ 
+ /**
++ * Helper function that processes menu items and
++ * @param  [type] $items         [description]
++ * @param  [type] $original_item [description]
++ * @param  [type] $page_callback [description]
++ * @return [type]                [description]
++ */
++function _ctools_automodal_create_modal_menu_item(&$items, $original_item, $path, $page_callback) {
++  $items["$path/%ctools_js"] = $original_item;
++  $items["$path/%ctools_js"]['page callback'] = $page_callback;
++  $items["$path/%ctools_js"]['page arguments'][] = substr_count($path, '/') + 1;
++  $items["$path/%ctools_js"]['access callback'] = 'ctools_automodal_access';
++  array_unshift($items["$path/%ctools_js"]['access arguments'], $original_item['access callback']);
++  $items["$path/%ctools_js"]['type'] = MENU_CALLBACK;
++}
++
++/**
+  * A helper function that matches a path in ctools_automodal_menu_alter().
+  */
+ function _ctools_automodal_menu_alter_regex($value) {
+@@ -196,11 +233,10 @@ function ctools_automodal_deliver_error($path, $page_callback_result) {
+  */
+ function ctools_automodal_is_path_modal($path) {
+   $modal_regexp = variable_get('ctools_automodal_regexp');
+-  $not_modal_regexp = variable_get('ctools_automodal_not_regexp');
+-  if (!$modal_regexp || !$not_modal_regexp) {
++  if (!$modal_regexp) {
+     return FALSE;
+   }
+-  return preg_match($modal_regexp, $path) && !preg_match($not_modal_regexp, $path);
++  return (bool) preg_match($modal_regexp, $path);
+ }
+ 
+ /**
+@@ -208,25 +244,21 @@ function ctools_automodal_is_path_modal($path) {
+  */
+ function ctools_automodal_preprocess_link(&$variables) {
+   static $ctools_modal_included = FALSE;
+-
+-  if (ctools_automodal_is_path_modal($variables['path'])) {
+-
++  $router_path = _menu_find_router_path($variables['path']);
++  if (ctools_automodal_is_path_modal($router_path) && user_access('use ctools automodals')) {
+     // Only process the modal includes once per request.
+     if (!$ctools_modal_included) {
+       ctools_include('modal');
+       ctools_modal_add_js();
+       $ctools_modal_included = TRUE;
+     }
+-
+-    $options = ctools_automodal_get_modal_options($variables['path']);
++    $options = ctools_automodal_get_modal_options($router_item);
+ 
+     if (!empty($options['style'])) {
+       ctools_automodal_include_style($options['style']);
+       $variables['options']['attributes']['class'][] = 'ctools-modal-' . $options['style'];
+     }
+-
+     $variables['options']['attributes']['class'][] = 'ctools-use-modal';
+-
+     if (strpos($variables['path'], 'nojs') === FALSE) {
+       $variables['path'] .= '/nojs';
+     }
+@@ -275,12 +307,10 @@ function ctools_automodal_get_modal_options($path) {
+   //$router_item = menu_get_item($path);
+   //$path = $router_item['path'];
+ 
+-
+-
+-
+   foreach ($ctools_modal_paths as $key => $modal_options) {
+     $pattern = _ctools_automodal_menu_alter_regex($key);
+     $pattern = str_replace(array('/'), array('\/'), $pattern);
++
+     $pattern = '/^' . $pattern . '$/';
+     if (preg_match($pattern, $path)) {
+       $modal_options += array(
+@@ -453,7 +483,6 @@ function ctools_automodal_node_add() {
+     'type' => $type,
+     'language' => LANGUAGE_NONE,
+   );
+-
+   $output = ctools_automodal_get_form($type . '_node_form', $node, $args[1]);
+ 
+   return $output;
+@@ -471,8 +500,6 @@ function ctools_automodal_node_edit() {
+   return $output;
+ }
+ 
+-
+-
+ /**
+  * Display a Drupal form using CTools modal or normal page display.
+  */
+@@ -496,6 +523,14 @@ function ctools_automodal_get_form() {
+       'build_info' => array('args' => $args),
+     );
+     $commands = ctools_modal_form_wrapper($form_id, $form_state);
++    $modal_display =& $commands[0];
++
++    $page = array(
++      '#ctools_automodal' => TRUE,
++      '#markup' => $modal_display['output'],
++    );
++
++    $modal_display['output'] = drupal_render_page($page);
+ 
+     // Handle submitted form.
+     if (!empty($form_state['executed']) && empty($form_state['rebuild'])) {
+@@ -535,6 +570,9 @@ function ctools_automodal_get_form() {
+       elseif ($modal_options['reload']) {
+         $commands[] = ctools_ajax_command_reload();
+       }
++      else {
++        $commands[] = ctools_modal_command_dismiss();
++      }
+     }
+ 
+     print ajax_render($commands);
+@@ -622,6 +660,7 @@ function ctools_automodal_get_page() {
+     if ($ajax) {
+       ctools_include('modal');
+       ctools_include('ajax');
++
+       $commands = ctools_automodal_page_render($output);
+ 
+       if (empty($commands)) {
+@@ -644,18 +683,31 @@ function ctools_automodal_get_page() {
+ }
+ 
+ /**
+- * Render a page into an AJAX display.
++ * Return only page content when the content is marked as a ctools_automodal page.
++ * @return [type] [description]
+  */
+-function ctools_automodal_page_render($output) {
+-  if (is_array($output)) {
+-    $output = drupal_render($output);
++function ctools_automodal_page_alter(&$page) {
++  if (array_key_exists('#ctools_automodal', $page['content']['system_main'])
++    && $page['content']['system_main']['#ctools_automodal']) {
++    // Disable administration modules from adding output to the popup.
++    // @see http://drupal.org/node/914786
++    module_invoke_all('suppress', TRUE);
++    foreach (element_children($page) as $key) {
++      if ($key != 'content') {
++        unset($page[$key]);
++      }
++    }
+   }
++}
+ 
+-  // If there are messages for the form, render them.
+-  if ($messages = theme('status_messages')) {
+-    $output = '<div class="messages">' . $messages . '</div>' . $output;
++/**
++ * Render a page into an AJAX display.
++ */
++function ctools_automodal_page_render($content) {
++  if (is_array($content)) {
++    $content['#ctools_automodal'] = TRUE;
++    $output = drupal_render_page($content);
+   }
+-
+   $commands = array();
+   $title = drupal_get_title();
+   $commands[] = ctools_modal_command_display($title, $output);
+only in patch2:
+unchanged:
+--- a/sites/all/modules/ctools_automodal/ctools_automodal.module
++++ b/sites/all/modules/ctools_automodal/ctools_automodal.module
+@@ -441,7 +441,7 @@ function _ctools_automodal_get_form_redirect_path($modal_options, $form_state) {
+     elseif (is_array($modal_options['redirect'])) {
+       list($path, $options) = $modal_options['redirect'] + array(NULL, array());
+     }
+-    elseif (is_string($modal_options['redirect']) && $modal_options['redirect'] !== 'modal') {
++    elseif (is_string($modal_options['redirect']) && $modal_options['redirect'] !== 'modal' && $modal_options['redirect'] !== 'standard') {
+       $path = $modal_options['redirect'];
+     }
+     elseif (is_array($form_state['redirect'])) {
+only in patch2:
+unchanged:
+--- a/sites/all/modules/custom/ctools_overlay/ctools_overlay.module
++++ b/sites/all/modules/custom/ctools_overlay/ctools_overlay.module
+@@ -23,7 +23,7 @@ function ctools_overlay_modal_paths() {
+       foreach ($paths as $path) {
+         if (drupal_match_path($path, $overlay_path_patterns)) {
+           $overlay_paths[$path] = array();
+-          $overlay_paths[$path]['redirect'] = 'modal';
++          $overlay_paths[$path]['redirect'] = 'standard';
+         }
+       }
+       cache_set(__FUNCTION__, $overlay_paths);
