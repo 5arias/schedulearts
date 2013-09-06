@@ -31,6 +31,8 @@
     <div id="overlay-close-wrapper">
       <?php
       $url = '#';
+      $id = 'overlay-close';
+      $class = 'overlay-close';
       if (isset($_SESSION['last_node'])) {
         $node = $_SESSION['last_node'];
         if ($node->type == 'event') {
@@ -38,11 +40,13 @@
             $date_parts = explode(' ', $node->field_event_date['und'][0]['value']);
             $date = $date_parts[0];
             $url = url('<front>', array('query' => array('date' => $date)));
+            $id .= '-fake';
+            $class .= '-fake';
           }
         }
       }
       ?>
-      <a id="overlay-close" href="<?php print $url ?>" class="overlay-close"><span class="element-invisible"><?php print t('Close overlay'); ?></span></a>
+      <a id="<?php print $id ?>" href="<?php print $url ?>" class="<?php print $class ?>"><span class="element-invisible"><?php print t('Close overlay'); ?></span></a>
     </div>
     <?php if ($tabs): ?><h2 class="element-invisible"><?php print t('Primary tabs'); ?></h2><ul id="overlay-tabs"><?php print render($tabs); ?></ul><?php endif; ?>
   </div>

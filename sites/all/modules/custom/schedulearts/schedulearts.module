@@ -317,7 +317,7 @@ function schedulearts_node_update($node) {
   }
 }
 
-/*
+/**
  * Add my custom stylesheet to all themes
  */
 function schedulearts_init() {
@@ -329,7 +329,7 @@ function schedulearts_init() {
   drupal_add_css(drupal_get_path('module', 'schedulearts') . '/schedulearts.css', $options);
 }
 
-/*
+/**
  * Implements hook_menu_alter()
  * Improving access callbacks for Taxonomy menu items. So "edit" is the only permission you need
  */
@@ -424,6 +424,7 @@ function schedulearts_form_node_form_alter(&$form, &$form_state, $node) {
  * Sets the navigation node in session.
  */
 function schedulearts_add_node_to_session($form, &$form_state) {
+  dpm($form_state);
   $_SESSION['last_node'] = node_load($form['#node']->nid);
 }
 

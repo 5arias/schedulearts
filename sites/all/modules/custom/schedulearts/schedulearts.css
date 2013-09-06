@@ -51,3 +51,19 @@ table {
 /*overlay overrides*/
 /*#overlay-titlebar {display: none;}*/
 #overlay-content #section-header {display: none;}
+
+
+#overlay-close-fake,
+#overlay-close-fake:hover {
+  background: transparent url(images/close.png) no-repeat; /* LTR */
+  -moz-border-radius-topleft: 0; /* LTR */
+  -webkit-border-top-left-radius: 0; /* LTR */
+  border-top-left-radius: 0; /* LTR */
+  display: block;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  /* Replace with position:fixed to get a scrolling close button. */
+  position: absolute;
+  width: 26px;
+}
