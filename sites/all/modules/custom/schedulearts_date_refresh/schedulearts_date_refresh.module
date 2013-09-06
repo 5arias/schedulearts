@@ -1,20 +1,5 @@
 <?php
 
-function schedulearts_date_refresh_views_pre_view(&$view, &$display_id, &$args) {
-  if (preg_match('/.*calendar.*/i', $display_id) && isset($_REQUEST['date'])) {
-    $date_str = $_REQUEST['date'];
-    $ymd = explode('-', $date_str);
-    if (count($ymd) < 3 || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
-      return;
-    }
-    $year = $ymd[0];
-    $month = intval($ymd[1]);
-    $day = intval($ymd[2]);
-    $js = '(function($){$(document).ready(function(){$(".fullcalendar").fullCalendar("gotoDate", "'. $year . '", ' . ($month - 1) . ', ' . $day . ');})})(jQuery);';
-    drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
-  }
-}
-
 function schedulearts_date_refresh_node_view($node, $view_mode, $langcode) {
   if ($node->type == 'event' && $view_mode == 'full') {
     if (isset($node->field_event_date) && isset($node->field_event_date['und']) && isset($node->field_event_date['und'][0])) {

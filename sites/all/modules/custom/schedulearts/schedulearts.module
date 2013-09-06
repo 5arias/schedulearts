@@ -369,7 +369,7 @@ function schedulearts_repeat_field_show($node) {
   return FALSE;
 }
 
-/*
+/**
  * Rename 'Edit' tabs of events.
  */
 function schedulearts_tab_title($node) {
@@ -377,6 +377,61 @@ function schedulearts_tab_title($node) {
     return t('Edit all events');
   }
   return t('Edit');
+}
+
+/**
+ * Implements hook_theme().
+ */
+function schedulearts_theme($existing, $type, $theme, $path) {
+  return array(
+    'schedulearts_overlay' => array(
+      'template' => 'schedulearts-overlay',
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function schedulearts_views_pre_view(&$view, &$display_id, &$args) {
+  if (preg_match('/.*calendar.*/i', $display_id) && isset($_REQUEST['date'])) {
+    if (isset($_SESSION['last_node'])) {
+      unset($_SESSION['last_node']);
+    }
+    $date_str = $_REQUEST['date'];
+    $ymd = explode('-', $date_str);
+    if (count($ymd) < 3 || !is_numeric($ymd[2]) || !is_numeric($ymd[1]) || !is_numeric($ymd[0])) {
+      return;
+    }
+    $year = $ymd[0];
+    $month = intval($ymd[1]);
+    $day = intval($ymd[2]);
+    $js = '(function($){$(document).ready(function(){$(".fullcalendar").fullCalendar("gotoDate", "'. $year . '", ' . ($month - 1) . ', ' . $day . ');})})(jQuery);';
+    drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function schedulearts_form_node_form_alter(&$form, &$form_state, $node) {
+  if ($form['#node']->type === 'event') {
+    $form['#submit'][] = 'schedulearts_add_node_to_session';
+  }
+}
+
+/**
+ * Sets the navigation node in session.
+ */
+function schedulearts_add_node_to_session($form, &$form_state) {
+  $_SESSION['last_node'] = node_load($form['#node']->nid);
+}
+
+/**
+ * Implements hook_preprocess_page()
+ */
+function schedulearts_preprocess_overlay(&$variables) {
+  $variables['theme_hook_suggestions'][] = 'schedulearts_overlay';
 }
 
 // Custom access callback for taxonomy term add form - checks that you can EDIT the vocab
