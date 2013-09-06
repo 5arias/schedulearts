@@ -1,6 +1,42 @@
 <?php
 
 /**
+ * Form callback for Clone Event block.
+ */
+function schedulearts_clone_events_block_clone_form($form, &$form_state, $nid) {
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Duplicate event'),
+    '#attributes' => array(
+      'style' => 'float:left',
+    ),
+  );
+  if (!empty($form_state['build_info']['args']['0'])) {
+    //$current_nid = $form_state['build_info']['args']['0'];
+    $form['#action'] = url('schedulearts_clone/clone/' . (int)$nid);
+  }
+  return $form;
+}
+
+/**
+ * Form callback for Delete Event block.
+ */
+function schedulearts_clone_events_block_delete_form($form, &$form_state, $nid) {
+-  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete'),
+    '#attributes' => array(
+      'style' => 'float:right; clear:right',
+    ),
+  );
+  if (!empty($form_state['build_info']['args']['0'])) {
+    //$current_nid = $form_state['build_info']['args']['0'];
+    $form['#action'] = url('node/'.(int)$nid.'/delete');
+  }
+  return $form;
+}
+
+/**
  * Form callback to choose between using node_clone or repeat by pattern.
  */
 function schedulearts_clone_events_clone_method_selector_form($form, &$form_state, $nid) {
