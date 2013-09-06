@@ -424,8 +424,7 @@ function schedulearts_form_node_form_alter(&$form, &$form_state, $node) {
  * Sets the navigation node in session.
  */
 function schedulearts_add_node_to_session($form, &$form_state) {
-  dpm($form_state);
-  $_SESSION['last_node'] = node_load($form_state['nid']);
+  $_SESSION['last_node'] = $form_state['node'];
 }
 
 /**
