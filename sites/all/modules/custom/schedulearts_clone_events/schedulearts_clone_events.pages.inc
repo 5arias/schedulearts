@@ -22,7 +22,7 @@ function schedulearts_clone_events_block_clone_form($form, &$form_state, $nid) {
  * Form callback for Delete Event block.
  */
 function schedulearts_clone_events_block_delete_form($form, &$form_state, $nid) {
--  $form['submit'] = array(
+  $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Delete'),
     '#attributes' => array(
