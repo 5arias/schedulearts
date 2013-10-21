@@ -967,7 +967,8 @@ function schedulearts_rules_default_rules_configuration() {
       "REQUIRES" : [ "views_bulk_operations", "rules", "rb_views" ],
       "ON" : [ "rb_views_event_view_complete" ],
       "IF" : [
-        { "views_bulk_operations_condition_result_count" : { "view" : "pending_conflicts|page_1", "minimum" : "1" } }
+        { "views_bulk_operations_condition_result_count" : { "view" : "pending_conflicts|page_1", "minimum" : "1" } },
+        { "data_is" : { "data" : [ "view:machine-name" ], "value" : "taxonomy_term_calendar" } }
       ],
       "DO" : [
         { "views_bulk_operations_action_load_list" : {
@@ -992,7 +993,8 @@ function schedulearts_rules_default_rules_configuration() {
       "REQUIRES" : [ "views_bulk_operations", "rules", "rb_views" ],
       "ON" : [ "rb_views_event_view_complete" ],
       "IF" : [
-        { "views_bulk_operations_condition_result_count" : { "view" : "pending_conflicts|page_2", "minimum" : "1" } }
+        { "views_bulk_operations_condition_result_count" : { "view" : "pending_conflicts|page_2", "minimum" : "1" } },
+        { "data_is" : { "data" : [ "view:machine-name" ], "value" : "taxonomy_term_calendar" } }
       ],
       "DO" : [
         { "views_bulk_operations_action_load_list" : {
@@ -1017,7 +1019,8 @@ function schedulearts_rules_default_rules_configuration() {
       "REQUIRES" : [ "views_bulk_operations", "rules", "rb_views" ],
       "ON" : [ "rb_views_event_view_complete" ],
       "IF" : [
-        { "views_bulk_operations_condition_result_count" : { "view" : "pending_location_conflicts|page_1", "minimum" : "1" } }
+        { "views_bulk_operations_condition_result_count" : { "view" : "pending_location_conflicts|page_1", "minimum" : "1" } },
+        { "data_is" : { "data" : [ "view:machine-name" ], "value" : "taxonomy_term_calendar" } }
       ],
       "DO" : [
         { "views_bulk_operations_action_load_list" : {
