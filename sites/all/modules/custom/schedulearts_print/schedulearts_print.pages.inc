@@ -69,7 +69,8 @@ function schedulearts_select_timeframe_form($form, &$form_state) {
     }
     $form['timeframes']['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Print')
+      '#value' => t('Print'),
+      '#attributes' => array('target' => '_blank'),
     );
   }
   return $form;
